@@ -119,7 +119,7 @@ async function importProject(file, silent){
   }
 }
 document.getElementById('importProjectBtn').addEventListener('click', ()=> document.getElementById('projectImportFile').click());
-document.getElementById('exportProjectBtn').addEventListener('click', async ()=>{ await exportProject(); clearDirty(); });
+document.getElementById('exportProjectBtn').addEventListener('click', async ()=>{ if(await exportProject()) clearDirty(); });
 document.getElementById('projectImportFile').addEventListener('change', async (e)=>{ const file = e.target.files[0]; if(file) await importProject(file); e.target.value=''; });
 
 
