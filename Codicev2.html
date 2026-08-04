@@ -1,0 +1,1794 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Códice</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600&family=Special+Elite&family=Cinzel:wght@400;600;700&display=swap');
+
+:root{
+  --bg-deep: #0d0906;
+  --bg-panel: rgba(20,14,10,0.94);
+  --bg-panel-raised: rgba(32,24,18,0.96);
+  --bg-panel-hover: rgba(44,34,26,0.92);
+  --brass: #c9922f;
+  --brass-bright: #f1d27a;
+  --brass-dim: #8b6b33;
+  --verdigris: #7bb89d;
+  --verdigris-bright: #9cd8c6;
+  --parchment: #e8dcc3;
+  --parchment-dim: #c9b790;
+  --ink: #231914;
+  --text: #efe3cc;
+  --text-dim2: #b9a98b;
+  --danger: #c1604a;
+  --danger-bright: #e48d75;
+  --border-brass: rgba(201,146,47,0.35);
+  --card-summary-size: 13px;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; scroll-behavior:smooth;}
+body{
+  min-height:100vh; overflow-x:hidden; color: var(--text);
+  font-family: 'Inter', sans-serif; font-size: 15.5px;
+  background: radial-gradient(circle at top left, rgba(255,225,175,0.08), transparent 24%),
+              linear-gradient(180deg, #1e160f 0%, #0e0a07 55%, #060402 100%);
+  -webkit-font-smoothing: antialiased;
+}
+::-webkit-scrollbar{ width:10px; height:10px; }
+::-webkit-scrollbar-track{ background: rgba(255,255,255,0.03); }
+::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.12); border-radius:6px; }
+button{ cursor:pointer; font-family:'Inter',sans-serif; }
+input, select, textarea{ font-family:'Inter', sans-serif; }
+button, .rail-item, .ficha-card, .home-recent-item, .tab, .mode-btn, .canvas-node,
+.map-pin, .esc-rail-item, .subtab, .icon-btn, .grimoire-row, [data-add]{ cursor:pointer; }
+
+.riveted{ position:relative; }
+.riveted::before, .riveted::after{ content:''; position:absolute; width:5px; height:5px; border-radius:50%;
+  background: radial-gradient(circle at 35% 35%, #f0d190, var(--brass-dim)); box-shadow:0 0 2px rgba(0,0,0,0.6); }
+.riveted::before{ top:7px; left:7px; }
+.riveted::after{ top:7px; right:7px; }
+
+@keyframes fadeInUp{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+@keyframes popIn{ from{opacity:0; transform:scale(0.92);} to{opacity:1; transform:scale(1);} }
+.ficha-card, .home-recent-item, .esc-rail-item{ animation: fadeInUp 0.28s ease both; }
+.modal-box, .canvas-node{ animation: popIn 0.2s ease; }
+.map-pin{ animation: popIn 0.25s ease; }
+
+.btn-brass, .btn-ghost, .btn-delete, .rail-btn, .mode-btn, .tab{
+  transition: box-shadow 0.18s ease, transform 0.15s ease, background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+.btn-brass:hover{ box-shadow:0 0 14px rgba(241,210,122,0.4); transform:translateY(-1px); }
+.btn-ghost:hover, .rail-btn:hover, .mode-btn:hover{ box-shadow:0 0 10px rgba(123,184,157,0.25); }
+.tab:hover{ box-shadow:0 0 10px rgba(241,210,122,0.18); }
+.ficha-card{ transition: transform 0.18s ease, box-shadow 0.18s ease; }
+.ficha-card:hover{ transform:translateY(-3px); box-shadow:0 8px 22px rgba(0,0,0,0.45), 0 0 16px rgba(201,146,47,0.18); }
+
+/* TOPBAR */
+.topbar{ display:flex; align-items:center; justify-content:space-between; gap:18px; padding:14px 24px;
+  background: linear-gradient(180deg, #241a10, #1a130c); border-bottom:2px solid rgba(201,146,47,0.16); box-shadow:0 2px 12px rgba(0,0,0,0.4); flex-wrap:wrap; }
+.brand-mark{ font-family:'Cinzel', serif; font-weight:700; font-size:17px; color:var(--brass-bright); letter-spacing:0.08em; display:flex; align-items:center; gap:8px; }
+.world-name-input{ background:transparent; border:none; border-bottom:1px dashed var(--border-brass); color:var(--parchment);
+  font-family:'Cinzel', serif; font-size:17px; font-weight:600; padding:2px 4px; min-width:160px; }
+.world-name-input:focus{ outline:none; border-bottom-color:var(--verdigris); }
+.main-tabs{ display:flex; gap:6px; flex-wrap:wrap; }
+.tab{ background:transparent; border:1px solid transparent; color:var(--text-dim2); padding:8px 16px; border-radius:3px; font-size:12px; letter-spacing:0.05em; }
+.tab:hover{ color:var(--parchment); }
+.tab.active{ background:var(--bg-panel-raised); border-color:var(--border-brass); color:var(--brass-bright); }
+.topbar-actions{ display:flex; align-items:center; gap:10px; }
+.icon-round-btn{ background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--text); width:36px; height:36px; border-radius:50%; font-size:15px; display:flex; align-items:center; justify-content:center; }
+.icon-round-btn:hover{ box-shadow:0 0 10px rgba(241,210,122,0.3); }
+.topbar-clock{ min-width:66px; text-align:center; font-family:'Special Elite',monospace; color:var(--parchment);
+  background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); padding:8px 12px; border-radius:999px; font-size:13px; }
+
+/* VIEWS */
+.view{ display:none; min-height: calc(100vh - 78px); width:100%; opacity:0; transform:translateY(8px); transition:opacity 0.25s ease, transform 0.25s ease; }
+.view.active{ display:flex; opacity:1; transform:translateY(0); }
+#view-fichas.active, #view-mapas.active, #view-escribir.active, #view-diario.active, #view-bitacora.active{ flex-direction:row; }
+
+/* HOME */
+#view-home{ flex-direction:column; width:100%; }
+.home-panel{ flex:1; padding:28px 28px 40px; display:flex; flex-direction:column; gap:24px; }
+.home-copy{ max-width:720px; }
+.home-overline{ font-family:'Special Elite', monospace; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--brass-dim); margin-bottom:12px; }
+.home-title{ font-family:'Cormorant Garamond', serif; font-size:38px; color:var(--parchment); line-height:1.06; margin-bottom:14px; }
+.home-text{ color:var(--text-dim2); line-height:1.8; max-width:680px; }
+.home-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+.home-grid{ display:grid; grid-template-columns: minmax(360px,1.6fr) minmax(280px,1fr); gap:22px; }
+.home-card-preview, .home-sidebar{ background: rgba(30,22,16,0.94); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:24px; }
+.home-card-preview h2{ font-family:'Cormorant Garamond', serif; font-size:28px; color:var(--parchment); margin-bottom:6px; }
+.home-card-preview p{ color:var(--text-dim2); line-height:1.75; }
+.home-card-meta{ display:flex; flex-wrap:wrap; gap:10px; font-size:13px; color:var(--text-dim2); margin-top:12px; }
+.home-card-meta span{ background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:999px; padding:8px 12px; }
+.home-recent-title{ font-family:'Special Elite', monospace; font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--brass-dim); margin-bottom:14px; }
+.home-recent-list{ display:flex; flex-direction:column; gap:10px; }
+.home-recent-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 14px; border-radius:14px; background: rgba(255,255,255,0.03); }
+.home-recent-item:hover{ background: rgba(255,255,255,0.07); transform:translateX(2px); }
+.home-map-preview{ border-radius:16px; overflow:hidden; background:#14100b; margin-top:20px; }
+.home-map-preview img{ width:100%; height:180px; object-fit:cover; filter:saturate(0.85); }
+.home-map-preview .map-info{ padding:14px; color:var(--text-dim2); font-size:13px; }
+.home-map-preview .map-empty{ display:flex; align-items:center; justify-content:center; min-height:120px; color:var(--text-dim2); font-size:13px; text-align:center; padding:16px; }
+
+/* RAIL */
+.rail{ width:230px; flex-shrink:0; background:var(--bg-panel); border-right:1px solid var(--border-brass); padding:22px 16px; display:flex; flex-direction:column; gap:16px; }
+.rail-title{ font-family:'Special Elite', monospace; font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--brass-dim); margin-bottom:6px; }
+.rail-item{ display:flex; align-items:center; justify-content:space-between; gap:6px; padding:8px 10px; border-radius:3px; font-size:13.5px; color:var(--text-dim2); }
+.rail-item:hover{ background:var(--bg-panel-hover); color:var(--parchment); }
+.rail-item.active{ background:var(--bg-panel-raised); color:var(--verdigris-bright); border-left:2px solid var(--verdigris); }
+.rail-item .icon-btn{ opacity:0; font-size:11px; color:var(--text-dim2); padding:2px 4px; }
+.rail-item:hover .icon-btn{ opacity:0.7; }
+.icon-btn:hover{ opacity:1 !important; color:var(--brass-bright) !important; }
+.rail-btn{ background:transparent; border:1px dashed var(--border-brass); color:var(--brass); padding:8px 10px; border-radius:3px; font-size:11.5px; letter-spacing:0.05em; }
+.rail-btn:hover{ border-color:var(--brass); background: rgba(201,146,47,0.08); }
+.rail-count{ font-size:10px; color:var(--text-dim2); font-family:'Special Elite',monospace; }
+.esc-rail{ overflow-y:auto; }
+#escRailList, #mapList, #journalList, #sessionList{ overflow-y:auto; flex:1; }
+
+/* BUTTONS */
+.btn-brass{ background: linear-gradient(180deg, var(--brass-bright), var(--brass-dim)); color:#241a0d; border:none; padding:10px 20px; border-radius:3px;
+  font-size:12px; letter-spacing:0.06em; font-weight:bold; box-shadow:0 1px 0 rgba(255,255,255,0.2) inset, 0 2px 4px rgba(0,0,0,0.4); }
+.btn-ghost{ background:transparent; border:1px solid var(--border-brass); color:var(--text-dim2); padding:10px 18px; border-radius:3px; font-size:12px; }
+.btn-ghost:hover{ color:var(--parchment); border-color:var(--brass-dim); }
+.btn-delete{ background:transparent; border:1px solid rgba(193,96,74,0.5); color:var(--danger-bright); padding:10px 18px; border-radius:3px; font-size:12px; }
+.btn-delete:hover{ background: rgba(193,96,74,0.12); }
+.mode-btn{ background:var(--bg-panel-raised); border:1px solid var(--border-brass); color:var(--text-dim2); padding:8px 14px; border-radius:3px; font-size:12px; }
+.mode-btn.active{ color:var(--verdigris-bright); border-color:var(--verdigris); }
+
+/* FICHAS */
+.fichas-main{ flex:1; padding:26px 32px 60px; }
+.fichas-toolbar{ display:flex; gap:14px; margin-bottom:18px; flex-wrap:wrap; align-items:center; }
+.search-input{ flex:1; background:var(--bg-panel); border:1px solid var(--border-brass); border-radius:3px; padding:10px 14px; color:var(--text); font-size:14px; min-width:160px; }
+.search-input:focus{ outline:none; border-color:var(--verdigris); }
+.font-size-control{ display:flex; align-items:center; gap:8px; font-size:11px; color:var(--text-dim2); }
+.cards-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(230px,1fr)); gap:18px; }
+.ficha-card{ background:var(--bg-panel-raised); border:1px solid var(--border-brass); border-radius:4px; overflow:hidden; }
+.ficha-cover{ height:110px; background: linear-gradient(135deg,#2c2216,#1c1610); background-size:cover; background-position:center;
+  display:flex; align-items:center; justify-content:center; color:var(--border-brass); font-size:22px; border-bottom:1px solid var(--border-brass); }
+.ficha-body{ padding:14px 16px 16px; }
+.ficha-type{ font-family:'Special Elite',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--type-color, var(--verdigris)); margin-bottom:6px; }
+.ficha-name{ font-family:'Cinzel', serif; font-size:16.5px; font-weight:600; color:var(--parchment); margin-bottom:6px; }
+.ficha-summary{ font-size:var(--card-summary-size); color:var(--text-dim2); line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.ficha-tags{ margin-top:10px; display:flex; flex-wrap:wrap; gap:5px; }
+.tag-pill{ font-family:'Special Elite',monospace; font-size:9.5px; color:var(--text-dim2); border:1px solid var(--border-brass); padding:2px 7px; border-radius:8px; }
+.empty{ text-align:center; padding:90px 20px; color:var(--text-dim2); margin:auto; }
+.empty .glyph{ font-size:36px; margin-bottom:12px; opacity:0.6; color:var(--brass-dim); }
+.empty .title{ font-family:'Cinzel', serif; font-size:20px; color:var(--parchment-dim); margin-bottom:8px; }
+.empty .sub{ font-size:14px; max-width:380px; margin:0 auto; }
+
+/* WORKSPACE INLINE */
+.workspace-inline{ background:var(--parchment); color:var(--ink); border-radius:12px; margin:24px; max-width:920px; box-shadow:0 10px 30px rgba(0,0,0,0.3); position:relative; animation: fadeInUp 0.22s ease; }
+.ws-cover{ height:220px; background-size:cover; background-position:center; background-color:#d8c8a0; border-radius:12px 12px 0 0;
+  display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; cursor: grab; }
+.ws-cover:active{ cursor:grabbing; }
+.ws-cover .cover-hint{ font-family:'Special Elite',monospace; font-size:12px; color:#6b6350; background: rgba(255,255,255,0.55); padding:6px 12px; border-radius:12px; pointer-events:none; }
+.ws-cover input[type=file]{ display:none; }
+.ws-cover-controls{ display:flex; align-items:center; gap:10px; padding:10px 32px 0; }
+.ws-header{ padding:20px 32px 6px; }
+.ws-name-input{ width:100%; font-family:'Cinzel', serif; font-size:26px; font-weight:600; background:transparent; border:none; border-bottom:2px solid rgba(43,32,24,0.15); padding:4px 0; color:var(--ink); }
+.ws-name-input:focus{ outline:none; border-color:var(--verdigris); }
+.ws-meta-row{ display:flex; gap:10px; margin:14px 0; flex-wrap:wrap; }
+.ws-meta-row select, .ws-meta-row input{ background: rgba(255,255,255,0.55); border:1px solid rgba(43,32,24,0.18); border-radius:4px; padding:8px 10px; font-size:13.5px; color:var(--ink); }
+.ws-meta-row select{ flex:0 0 auto; }
+.ws-meta-row input{ flex:1; min-width:160px; }
+.ws-summary{ width:100%; background: rgba(255,255,255,0.4); border:1px solid rgba(43,32,24,0.15); border-radius:4px; padding:10px 12px; font-size:14.5px; min-height:52px; resize:vertical; color:var(--ink); }
+.ws-toolbar{ padding:4px 32px; display:flex; gap:8px; flex-wrap:wrap; }
+.ws-toolbar button{ background: rgba(43,32,24,0.06); border:1px solid rgba(43,32,24,0.15); color:var(--ink); padding:6px 12px; border-radius:4px; font-size:11.5px; }
+.ws-toolbar button:hover{ background: rgba(43,32,24,0.12); }
+.ws-content{ margin:14px 32px 0; min-height:220px; padding:14px; background: rgba(255,255,255,0.35); border:1px solid rgba(43,32,24,0.15); border-radius:4px; font-size:15.5px; line-height:1.6; }
+.ws-content:focus{ outline:none; border-color:var(--verdigris); }
+.ws-content img{ max-width:100%; border-radius:4px; margin:8px 0; display:block; }
+.ws-content:empty::before{ content: attr(data-placeholder); color: rgba(35,25,20,0.45); pointer-events:none; }
+.ws-actions{ display:flex; justify-content:space-between; align-items:center; padding:20px 32px 28px; margin-top:10px; border-top:1px solid rgba(43,32,24,0.12); }
+.ws-section-title{ margin:18px 0 10px; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; color:var(--brass-dim); }
+.ws-stats-grid{ display:grid; grid-template-columns: repeat(5, minmax(82px,1fr)); gap:12px; }
+.ws-stat{ display:flex; flex-direction:column; gap:6px; }
+.ws-stat label{ font-size:11px; letter-spacing:0.08em; color:var(--brass-dim); }
+.ws-stat input{ border:none; border-radius:5px; padding:10px 10px; background: rgba(255,255,255,0.42); color:var(--ink); font-size:14px; }
+.ws-stat.ws-short{ grid-column:span 2; }
+.ws-sheet-columns{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:16px; }
+.ws-sheet-card{ background: rgba(255,255,255,0.22); border:1px solid rgba(43,32,24,0.18); border-radius:10px; padding:14px; }
+.ws-sheet-title{ font-family:'Cormorant Garamond', serif; font-size:15px; color:var(--ink); margin-bottom:10px; }
+.ws-sheet-card textarea{ width:100%; min-height:120px; border:none; resize:vertical; border-radius:6px; padding:10px; background: rgba(255,255,255,0.4); color:var(--ink); font-size:14px; line-height:1.6; }
+.ws-sheet-card textarea:focus{ outline:none; }
+.ws-5e-toggle{ margin:14px 0 4px; display:flex; }
+.ws-5e-toggle button{ background: rgba(43,32,24,0.08); border:1px dashed rgba(43,32,24,0.25); color:var(--ink); padding:8px 14px; border-radius:4px; font-size:12px; }
+.ws-5e-toggle button:hover{ background: rgba(43,32,24,0.14); }
+.ws-5e-panel{ display:none; margin-top:8px; }
+.ws-5e-panel.active{ display:block; }
+.hint{ font-size:11.5px; color:var(--text-dim2); font-family:'Special Elite',monospace; margin-left:auto; }
+
+/* CANVAS */
+.canvas-toolbar{ display:flex; align-items:center; gap:10px; padding:12px 20px; background:var(--bg-panel); border-bottom:1px solid var(--border-brass); }
+.canvas-viewport{ flex:1; overflow:hidden; position:relative; cursor:grab; background-color:#1a140e;
+  background-image: linear-gradient(rgba(201,146,47,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(201,146,47,0.06) 1px, transparent 1px);
+  background-size:34px 34px; }
+.canvas-viewport.panning{ cursor:grabbing; }
+.canvas-inner{ position:absolute; top:0; left:0; width:4000px; height:3000px; transform-origin:0 0; }
+.canvas-edges{ position:absolute; top:0; left:0; width:4000px; height:3000px; overflow:visible; pointer-events:none; }
+.canvas-edges line{ stroke:var(--brass-dim); stroke-width:2; }
+.canvas-edges circle.edge-del{ fill:#1c1610; stroke:var(--danger); stroke-width:1.5; pointer-events:all; cursor:pointer; }
+.canvas-edges text{ fill:var(--parchment-dim); font-family:'Special Elite',monospace; font-size:11px; }
+.canvas-node{ position:absolute; width:170px; background:var(--bg-panel-raised); border:1px solid var(--border-brass); border-radius:4px; padding:10px 12px; user-select:none; cursor:grab; box-shadow:0 3px 10px rgba(0,0,0,0.35); }
+.canvas-node.connecting-src{ border-color:var(--verdigris); box-shadow:0 0 0 2px rgba(111,163,143,0.4); }
+.canvas-node .node-del{ position:absolute; top:-8px; right:-8px; width:20px; height:20px; border-radius:50%; background:var(--bg-deep); border:1px solid var(--danger); color:var(--danger-bright);
+  font-size:11px; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.12s; }
+.canvas-node:hover .node-del{ opacity:1; }
+.canvas-node .node-thumb{ width:100%; height:60px; background-size:cover; background-position:center; border-radius:3px; margin-bottom:8px; background-color:#2c2216; }
+.canvas-node .node-type{ font-family:'Special Elite',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; color:var(--type-color, var(--verdigris)); margin-bottom:4px; }
+.canvas-node .node-title{ font-family:'Cinzel', serif; font-size:13.5px; color:var(--parchment); line-height:1.3; }
+.canvas-node textarea{ width:100%; background:transparent; border:none; color:var(--text); font-family:'Inter',sans-serif; font-size:13px; resize:none; min-height:60px; }
+.canvas-node textarea:focus{ outline:none; }
+
+/* MAPAS */
+.mapas-main{ flex:1; display:flex; flex-direction:column; }
+.map-toolbar{ display:flex; align-items:center; gap:10px; padding:12px 20px; background:var(--bg-panel); border-bottom:1px solid var(--border-brass); flex-wrap:wrap; }
+.map-image-wrap{ position:relative; margin:24px; border:2px solid var(--border-brass); border-radius:10px; overflow:auto; background:#0f0c08; align-self:flex-start; min-height:420px; }
+.map-image-wrap img{ display:block; width:100%; height:auto; }
+.map-image-wrap svg{ position:absolute; top:0; left:0; width:100%; height:100%; }
+.map-pin{ position:absolute; width:22px; height:22px; margin-left:-11px; margin-top:-22px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); }
+.map-region-label{ position:absolute; font-family:'Cinzel',serif; font-size:12px; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,0.8); pointer-events:none; transform: translate(-50%,-50%); }
+
+/* DIARIO / BITACORA extras */
+.linked-ficha-check{ display:flex; align-items:center; gap:8px; padding:5px 0; font-size:13px; color: rgba(35,25,20,0.8); }
+.session-summary{ width:100%; background: rgba(255,255,255,0.4); border:1px solid rgba(43,32,24,0.15); border-radius:4px; padding:10px 12px; font-size:14.5px; min-height:70px; resize:vertical; color:var(--ink); margin-top:10px; }
+.links-box{ margin:14px 32px 0; padding:14px; background: rgba(255,255,255,0.25); border:1px solid rgba(43,32,24,0.15); border-radius:6px; }
+
+/* MODAL */
+.modal-overlay{ position:fixed; inset:0; background: rgba(8,6,4,0.7); z-index:100; display:none; align-items:center; justify-content:center; }
+.modal-overlay.open{ display:flex; }
+.modal-box{ background:var(--bg-panel-raised); border:1px solid var(--border-brass); border-radius:6px; width:min(460px,92vw); padding:26px 26px 20px; box-shadow:0 20px 50px rgba(0,0,0,0.5); max-height:86vh; overflow-y:auto; }
+.modal-title{ font-family:'Cinzel',serif; font-size:18px; color:var(--brass-bright); margin-bottom:16px; }
+.modal-message{ font-size:14.5px; color:var(--text-dim2); margin-bottom:18px; line-height:1.5; }
+.modal-fields .field{ margin-bottom:14px; }
+.modal-fields label{ display:block; font-family:'Special Elite',monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--brass-dim); margin-bottom:5px; }
+.modal-fields input, .modal-fields select, .modal-fields textarea{ width:100%; background: rgba(255,255,255,0.06); border:1px solid var(--border-brass); border-radius:3px; padding:9px 11px; color:var(--text); font-size:14px; }
+.modal-fields input:focus, .modal-fields select:focus, .modal-fields textarea:focus{ outline:none; border-color:var(--verdigris); }
+.modal-actions{ display:flex; justify-content:space-between; align-items:center; margin-top:6px; }
+.modal-actions > div{ display:flex; gap:8px; }
+.grimoire-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px; border:1px solid var(--border-brass); border-radius:8px; background: rgba(255,255,255,0.04); }
+
+@media (max-width: 960px){
+  .home-grid{ grid-template-columns:1fr; }
+  .ws-stats-grid{ grid-template-columns: repeat(2, minmax(120px,1fr)); }
+  .ws-sheet-columns{ grid-template-columns:1fr; }
+}
+@media (max-width: 760px){
+  .rail{ display:none; }
+  .ws-meta-row{ flex-direction:column; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand-mark">⚙ CÓDICE</div>
+  <input id="worldName" class="world-name-input" value="Mundo sin nombre" spellcheck="false">
+  <nav class="main-tabs">
+    <button class="tab active" data-view="home">Inicio</button>
+    <button class="tab" data-view="fichas">Fichas</button>
+    <button class="tab" data-view="escribir">Escribir</button>
+    <button class="tab" data-view="diario">Diario</button>
+    <button class="tab" data-view="bitacora">Bitácora</button>
+    <button class="tab" data-view="canvas">Canvas</button>
+    <button class="tab" data-view="mapas">Mapas</button>
+  </nav>
+  <div class="topbar-actions">
+    <button class="icon-round-btn" id="settingsBtn" title="Ajustes">⚙</button>
+    <button class="btn-ghost" id="importProjectBtn">Importar</button>
+    <button class="btn-brass" id="exportProjectBtn">Exportar</button>
+    <div class="topbar-clock" id="topbarClock">00:00</div>
+  </div>
+</div>
+<input type="file" id="projectImportFile" accept=".json" style="display:none">
+
+<!-- ===== HOME ===== -->
+<section id="view-home" class="view active">
+  <div class="home-panel">
+    <div class="home-copy">
+      <div class="home-overline">TU LABORATORIO</div>
+      <h1 class="home-title">Escribe, conecta y explora tu mundo.</h1>
+      <p class="home-text">Tus cartas aparecen aquí cuando volvés al proyecto. Mantené tus personajes, mapas y relaciones siempre a mano.</p>
+      <div class="home-actions">
+        <button class="btn-brass" id="newFichaBtnHome">+ Nueva carta</button>
+        <button class="btn-ghost" id="goToCanvasBtn">Ver conexiones</button>
+        <button class="btn-ghost" id="goToMapsBtn">Ver mapas</button>
+      </div>
+    </div>
+    <div class="home-grid">
+      <div class="home-card-preview" id="homePreviewCard">
+        <div class="home-overline">Vista rápida</div>
+        <h2>Última carta editada</h2>
+        <p id="homePreviewText">Creá una ficha y aparecerá aquí una vista previa instantánea.</p>
+        <div class="home-card-meta" id="homePreviewMeta"></div>
+      </div>
+      <div class="home-sidebar">
+        <div class="home-recent-title">Tarjetas recientes</div>
+        <div class="home-recent-list" id="homeRecentList"></div>
+        <div class="home-map-preview" id="homeMapPreview">
+          <div class="map-empty" id="homeMapEmpty">No hay mapa cargado todavía.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FICHAS ===== -->
+<section id="view-fichas" class="view">
+  <aside class="rail">
+    <div class="rail-title">Carpetas</div>
+    <div id="folderList"></div>
+    <button class="rail-btn" id="newFolderBtn" style="width:100%;">+ Nueva carpeta</button>
+    <div class="rail-title" style="margin-top:10px;">Tipo</div>
+    <div id="typeFilterList"></div>
+  </aside>
+  <div class="fichas-main">
+    <div class="fichas-toolbar">
+      <input class="search-input" id="searchFichas" placeholder="Buscar por nombre, etiqueta o contenido…">
+      <div class="font-size-control">
+        <label for="summaryFontSize">Tamaño descripción</label>
+        <input type="range" id="summaryFontSize" min="11" max="18" value="13">
+      </div>
+      <button class="btn-brass" id="newFichaBtn">+ Nueva ficha</button>
+    </div>
+    <div id="fichasGrid"></div>
+  </div>
+</section>
+
+<!-- ===== ESCRIBIR (sala de escritura, en la página) ===== -->
+<section id="view-escribir" class="view">
+  <aside class="rail esc-rail">
+    <div class="rail-title">Fichas</div>
+    <input class="search-input" id="escSearch" placeholder="Buscar…" style="margin-bottom:6px;">
+    <div id="escRailList"></div>
+    <button class="rail-btn" id="escNewBtn" style="width:100%;">+ Nueva ficha</button>
+  </aside>
+  <div class="fichas-main" style="padding:0;">
+    <div class="workspace-inline riveted" id="workspaceInline">
+      <div class="ws-cover" id="wsCover">
+        <span class="cover-hint" id="wsCoverHint">🖼 Click para subir portada</span>
+        <input type="file" id="wsCoverFile" accept="image/*">
+      </div>
+      <div class="ws-cover-controls" id="wsCoverControls" style="display:none;">
+        <span class="hint" style="margin:0;">Arrastrá la imagen para reposicionarla</span>
+        <input type="range" id="wsCoverZoomInput" min="1" max="2.5" step="0.05" value="1">
+      </div>
+      <div class="ws-header">
+        <input class="ws-name-input" id="wsName" placeholder="Nombre de la ficha">
+        <div class="ws-meta-row">
+          <select id="wsType"></select>
+          <select id="wsFolder"></select>
+          <input id="wsTags" placeholder="etiquetas, separadas, por coma">
+        </div>
+        <textarea class="ws-summary" id="wsSummary" placeholder="Resumen breve…"></textarea>
+        <div class="ws-5e-toggle" id="ws5eToggle" style="display:none;">
+          <button id="wsToggle5E" type="button">Activar hoja 5E</button>
+        </div>
+        <div id="ws5ePanel" class="ws-5e-panel">
+          <div class="ws-section-title">Hoja de personaje</div>
+          <div class="ws-stats-grid">
+            <div class="ws-stat"><label>Fuerza</label><input id="wsSTR" type="number" min="1"></div>
+            <div class="ws-stat"><label>Destreza</label><input id="wsDEX" type="number" min="1"></div>
+            <div class="ws-stat"><label>Constitución</label><input id="wsCON" type="number" min="1"></div>
+            <div class="ws-stat"><label>Inteligencia</label><input id="wsINT" type="number" min="1"></div>
+            <div class="ws-stat"><label>Sabiduría</label><input id="wsWIS" type="number" min="1"></div>
+            <div class="ws-stat"><label>Carisma</label><input id="wsCHA" type="number" min="1"></div>
+            <div class="ws-stat ws-short"><label>Pv</label><input id="wsHP" type="number" min="0"></div>
+            <div class="ws-stat ws-short"><label>CA</label><input id="wsAC" type="number" min="0"></div>
+            <div class="ws-stat ws-short"><label>Velocidad</label><input id="wsSpeed" type="text"></div>
+            <div class="ws-stat ws-short"><label>Prof.</label><input id="wsProf" type="text"></div>
+          </div>
+          <div class="ws-sheet-columns">
+            <div class="ws-sheet-card">
+              <div class="ws-sheet-title">Hechizos</div>
+              <button class="rail-btn" id="openGrimoireBtn" type="button" style="margin-bottom:8px;">📖 Abrir grimorio 5E</button>
+              <textarea id="wsSpells" placeholder="Lista de conjuros, rituales y preparaciones..."></textarea>
+            </div>
+            <div class="ws-sheet-card">
+              <div class="ws-sheet-title">Inventario</div>
+              <textarea id="wsInventory" placeholder="Objetos, tesoros, equipo y reliquias..."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ws-toolbar">
+        <button id="insertImgBtn" type="button">🖼 Insertar imagen en el texto</button>
+        <button id="printEntryBtn" type="button">🖨 Imprimir ficha</button>
+        <input type="file" id="contentImgFile" accept="image/*" style="display:none">
+        <span class="hint" id="wsDirtyHint"></span>
+      </div>
+      <div class="ws-content" id="wsContent" contenteditable="true" data-placeholder="Historia, descripción, secretos, relaciones…"></div>
+      <div class="ws-actions">
+        <button class="btn-delete" id="wsDelete">Eliminar ficha</button>
+        <button class="btn-brass" id="wsSave">Guardar ficha</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DIARIO DEL VIAJERO ===== -->
+<section id="view-diario" class="view">
+  <aside class="rail">
+    <div class="rail-title">Diario del viajero</div>
+    <div id="journalList"></div>
+    <button class="rail-btn" id="newJournalBtn" style="width:100%;">+ Nueva entrada</button>
+  </aside>
+  <div class="fichas-main" style="padding:0;">
+    <div class="workspace-inline riveted" id="journalEditor" style="display:none;">
+      <div class="ws-header">
+        <input class="ws-name-input" id="journalTitle" placeholder="Título de la entrada">
+        <div class="ws-meta-row"><input type="date" id="journalDate"></div>
+      </div>
+      <div class="ws-toolbar">
+        <button id="journalInsertImgBtn" type="button">🖼 Insertar imagen</button>
+        <input type="file" id="journalImgFile" accept="image/*" style="display:none">
+      </div>
+      <div class="ws-content" id="journalContent" contenteditable="true" data-placeholder="Qué pasó hoy en el viaje…"></div>
+      <div class="ws-actions">
+        <button class="btn-delete" id="journalDelete">Eliminar</button>
+        <button class="btn-brass" id="journalSave">Guardar entrada</button>
+      </div>
+    </div>
+    <div class="empty" id="journalEmpty"><div class="glyph">📔</div><div class="title">Sin entradas todavía</div><div class="sub">Creá tu primera entrada de diario.</div></div>
+  </div>
+</section>
+
+<!-- ===== BITÁCORA DE SESIONES ===== -->
+<section id="view-bitacora" class="view">
+  <aside class="rail">
+    <div class="rail-title">Bitácora de sesiones</div>
+    <div id="sessionList"></div>
+    <button class="rail-btn" id="newSessionBtn" style="width:100%;">+ Nueva sesión</button>
+  </aside>
+  <div class="fichas-main" style="padding:0;">
+    <div class="workspace-inline riveted" id="sessionEditor" style="display:none;">
+      <div class="ws-header">
+        <input class="ws-name-input" id="sessionTitle" placeholder="Título de la sesión">
+        <div class="ws-meta-row"><input type="date" id="sessionDate"></div>
+        <textarea class="session-summary" id="sessionSummary" placeholder="Resumen de lo ocurrido…" style="margin-top:0;"></textarea>
+      </div>
+      <div class="ws-content" id="sessionNotes" contenteditable="true" data-placeholder="Notas detalladas de la sesión…"></div>
+      <div class="links-box">
+        <div class="ws-section-title" style="margin-top:0;">Fichas relacionadas</div>
+        <div id="sessionLinks"></div>
+      </div>
+      <div class="ws-actions">
+        <button class="btn-delete" id="sessionDelete">Eliminar</button>
+        <button class="btn-brass" id="sessionSave">Guardar sesión</button>
+      </div>
+    </div>
+    <div class="empty" id="sessionEmpty"><div class="glyph">🗒</div><div class="title">Sin sesiones registradas</div><div class="sub">Creá tu primera entrada de bitácora.</div></div>
+  </div>
+</section>
+
+<!-- ===== CANVAS ===== -->
+<section id="view-canvas" class="view">
+  <div style="display:flex; flex-direction:column; width:100%;">
+    <div class="canvas-toolbar">
+      <button class="mode-btn" id="addNoteBtn">+ Nota</button>
+      <button class="mode-btn" id="addFichaNodeBtn">+ Ficha</button>
+      <button class="mode-btn" id="connectModeBtn">🔗 Conectar</button>
+      <button class="mode-btn" id="zoomOutBtn">－</button>
+      <button class="mode-btn" id="zoomInBtn">＋</button>
+      <span class="hint" id="canvasHint">Arrastrá el fondo para mover el lienzo</span>
+    </div>
+    <div class="canvas-viewport" id="canvasViewport">
+      <div class="canvas-inner" id="canvasInner"><svg class="canvas-edges" id="canvasEdges"></svg></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MAPAS ===== -->
+<section id="view-mapas" class="view">
+  <aside class="rail">
+    <div class="rail-title">Mapas</div>
+    <div id="mapList"></div>
+    <button class="rail-btn" id="newMapBtn" style="width:100%;">+ Subir mapa</button>
+    <input type="file" id="mapFileInput" accept="image/*" style="display:none">
+  </aside>
+  <div class="mapas-main">
+    <div id="mapEmpty" class="empty">
+      <div class="glyph">🗺</div><div class="title">Ningún mapa cargado</div>
+      <div class="sub">Subí una imagen para empezar a marcar pines y regiones sobre tu geografía.</div>
+    </div>
+    <div id="mapWorkspace" style="display:none; flex-direction:column;">
+      <div class="map-toolbar">
+        <button class="mode-btn active" id="pinModeBtn">📍 Pines</button>
+        <button class="mode-btn" id="regionModeBtn">▲ Regiones</button>
+        <button class="mode-btn" id="finishRegionBtn" style="display:none;">Cerrar región</button>
+        <span class="hint" id="mapHint">Click sobre el mapa para agregar un pin</span>
+        <button class="btn-ghost" id="mapRenameBtn" style="margin-left:auto;">Renombrar</button>
+        <button class="btn-delete" id="mapDeleteBtn">Eliminar mapa</button>
+      </div>
+      <div class="map-image-wrap" id="mapImageWrap">
+        <img id="mapImage"><svg id="mapRegionsSvg"></svg><div id="mapPinsLayer"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="modal-overlay" id="modalOverlay"><div class="modal-box" id="modalBox"></div></div>
+
+<script>
+/* ========================= CONSTANTS ========================= */
+const TYPES = {
+  personaje: { label:'Personaje', color:'#e0b45c', glyph:'☉' },
+  lugar:     { label:'Lugar',     color:'#8fc4b0', glyph:'△' },
+  objeto:    { label:'Objeto',    color:'#c98fd6', glyph:'◆' }
+};
+const uid = () => 'id_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8);
+
+const GRIMOIRE = [
+ {name:'Prestidigitación', level:0, school:'Transmutación', blurb:'Truco de manos menor: enciende una vela, limpia una mancha, crea un efecto sensorial pequeño.'},
+ {name:'Luz', level:0, school:'Evocación', blurb:'Un objeto emite luz brillante en un radio moderado.'},
+ {name:'Mano de mago', level:0, school:'Conjuración', blurb:'Crea una mano espectral que manipula objetos livianos a distancia.'},
+ {name:'Proyectil de fuego', level:0, school:'Evocación', blurb:'Lanza una chispa de fuego que hace daño a un objetivo.'},
+ {name:'Rayo de escarcha', level:0, school:'Evocación', blurb:'Un rayo helado daña y reduce la velocidad del objetivo.'},
+ {name:'Descarga eléctrica', level:0, school:'Evocación', blurb:'Toque cargado de electricidad que daña e impide reacciones.'},
+ {name:'Orientación', level:0, school:'Adivinación', blurb:'Otorga un pequeño bono a una prueba de habilidad.'},
+ {name:'Reparar', level:0, school:'Transmutación', blurb:'Arregla una rotura o daño menor en un objeto.'},
+ {name:'Escudo (truco menor)', level:0, school:'Abjuración', blurb:'Pequeño resplandor defensivo instintivo.'},
+ {name:'Golpe llameante', level:0, school:'Evocación', blurb:'Ataque cuerpo a cuerpo envuelto en llamas.'},
+ {name:'Detectar magia', level:1, school:'Adivinación', blurb:'Sientes la presencia de magia cercana y su escuela general.'},
+ {name:'Identificar', level:1, school:'Adivinación', blurb:'Revela las propiedades mágicas de un objeto o hechizo activo.'},
+ {name:'Escudo', level:1, school:'Abjuración', blurb:'Barrera invisible que aumenta la defensa por un instante.'},
+ {name:'Armadura de mago', level:1, school:'Abjuración', blurb:'Una fuerza protectora envuelve al conjurador sin armadura.'},
+ {name:'Palabra de curación', level:1, school:'Evocación', blurb:'Cura heridas leves con una sola palabra, a distancia.'},
+ {name:'Curar heridas', level:1, school:'Evocación', blurb:'Restaura puntos de golpe con el toque del sanador.'},
+ {name:'Misil mágico', level:1, school:'Evocación', blurb:'Dardos de energía que impactan sin posibilidad de fallo.'},
+ {name:'Sueño', level:1, school:'Encantamiento', blurb:'Sume a varias criaturas débiles en un sueño mágico.'},
+ {name:'Fuego feérico', level:1, school:'Ilusión', blurb:'Cubre objetivos con luz coloreada, revelándolos aunque sean invisibles.'},
+ {name:'Amistad', level:1, school:'Encantamiento', blurb:'Vuelve amistosa temporalmente a una criatura.'},
+ {name:'Salto', level:1, school:'Transmutación', blurb:'Triplica la distancia de salto del objetivo.'},
+ {name:'Caballo fantasmal', level:1, school:'Ilusión', blurb:'Invoca una montura espectral veloz y silenciosa.'},
+ {name:'Alarma', level:1, school:'Abjuración', blurb:'Protege una zona con una advertencia mágica silenciosa o audible.'},
+ {name:'Nube de niebla', level:1, school:'Conjuración', blurb:'Crea una niebla densa que bloquea la visión en un área.'},
+ {name:'Invisibilidad', level:2, school:'Ilusión', blurb:'Vuelve invisible al objetivo hasta que ataque o lance un conjuro.'},
+ {name:'Telaraña', level:2, school:'Conjuración', blurb:'Llena un área con telarañas pegajosas que atrapan criaturas.'},
+ {name:'Ceguera/Sordera', level:2, school:'Transmutación', blurb:'Priva a una criatura de la vista o el oído.'},
+ {name:'Sugestión', level:2, school:'Encantamiento', blurb:'Sugiere mágicamente un curso de acción razonable.'},
+ {name:'Rayo abrasador', level:2, school:'Evocación', blurb:'Dos rayos de fuego que pueden incendiar objetos inflamables.'},
+ {name:'Ver invisible', level:2, school:'Adivinación', blurb:'Permite ver criaturas y objetos invisibles cercanos.'},
+ {name:'Levitar', level:2, school:'Transmutación', blurb:'Hace flotar a una criatura u objeto en el aire.'},
+ {name:'Silencio', level:2, school:'Ilusión', blurb:'Crea una zona donde no se puede producir sonido.'},
+ {name:'Restablecimiento menor', level:2, school:'Abjuración', blurb:'Cura una enfermedad o elimina una condición debilitante.'},
+ {name:'Rayo de relámpago', level:3, school:'Evocación', blurb:'Una línea de electricidad que daña a todos en su trayectoria.'},
+ {name:'Bola de fuego', level:3, school:'Evocación', blurb:'Explosión ardiente que daña a todos en un área amplia.'},
+ {name:'Contrahechizo', level:3, school:'Abjuración', blurb:'Interrumpe el conjuro que otra criatura está lanzando.'},
+ {name:'Volar', level:3, school:'Transmutación', blurb:'Otorga velocidad de vuelo al objetivo durante varios minutos.'},
+ {name:'Velocidad', level:3, school:'Transmutación', blurb:'Duplica la velocidad y mejora reflejos del objetivo.'},
+ {name:'Lentitud', level:3, school:'Transmutación', blurb:'Ralentiza drásticamente a varios enemigos en un área.'},
+ {name:'Disipar magia', level:3, school:'Abjuración', blurb:'Termina un efecto mágico activo en un objetivo.'},
+ {name:'Respirar bajo el agua', level:3, school:'Transmutación', blurb:'Permite respirar bajo el agua durante horas.'},
+ {name:'Clarividencia', level:3, school:'Adivinación', blurb:'Crea un sensor invisible que ve y oye un lugar distante.'},
+ {name:'Puerta dimensional', level:4, school:'Conjuración', blurb:'Teletransporta instantáneamente al conjurador a un punto visible.'},
+ {name:'Polimorfar', level:4, school:'Transmutación', blurb:'Transforma a una criatura en otra forma, alterando sus estadísticas.'},
+ {name:'Muro de fuego', level:4, school:'Evocación', blurb:'Erige un muro ardiente que daña a quien lo cruza.'},
+ {name:'Piel de piedra', level:4, school:'Abjuración', blurb:'Resistencia casi total al daño físico durante un tiempo.'},
+ {name:'Confusión', level:4, school:'Encantamiento', blurb:'Vuelve errático el comportamiento de varias criaturas.'},
+ {name:'Libertad de movimiento', level:4, school:'Abjuración', blurb:'Ignora efectos que restringen el movimiento.'},
+ {name:'Convocar elemental', level:4, school:'Conjuración', blurb:'Invoca a un elemental para que luche a tu lado.'},
+ {name:'Muro de fuerza', level:5, school:'Evocación', blurb:'Barrera invisible e indestructible que nada puede atravesar.'},
+ {name:'Telepatía', level:5, school:'Evocación', blurb:'Comunicación mental a gran distancia con una criatura conocida.'},
+ {name:'Legión de espadas', level:5, school:'Evocación', blurb:'Docenas de espadas espectrales atacan en un área.'},
+ {name:'Contactar a otro plano', level:5, school:'Adivinación', blurb:'Contacta con una entidad de otro plano para hacer preguntas.'},
+ {name:'Curación en masa', level:5, school:'Evocación', blurb:'Restaura puntos de golpe a varias criaturas a la vez.'},
+ {name:'Palabra de poder: aturdir', level:8, school:'Encantamiento', blurb:'Aturde instantáneamente a una criatura con una sola palabra.'},
+ {name:'Sol vengativo', level:6, school:'Evocación', blurb:'Crea un pequeño sol que daña con su luz radiante.'},
+ {name:'Muro de hielo', level:6, school:'Evocación', blurb:'Erige una muralla helada que bloquea el paso.'},
+ {name:'Verdadera resurrección', level:9, school:'Necromancia', blurb:'Devuelve la vida a un fallecido, aunque el cuerpo ya no exista.'},
+ {name:'Enjambre de meteoros', level:9, school:'Evocación', blurb:'Bólidos de fuego caen del cielo devastando un área enorme.'},
+ {name:'Deseo', level:9, school:'Conjuración', blurb:'El conjuro más poderoso: altera la realidad según se desee.'},
+ {name:'Portal', level:9, school:'Conjuración', blurb:'Abre un portal circular entre dos ubicaciones distantes o planos.'},
+ {name:'Time Stop / Alto en el tiempo', level:9, school:'Transmutación', blurb:'Detiene el flujo del tiempo para todos menos el conjurador.'},
+ {name:'Aliento vital', level:5, school:'Necromancia', blurb:'Devuelve a la vida a una criatura fallecida recientemente.'},
+ {name:'Golpe letal', level:6, school:'Necromancia', blurb:'Un toque que puede matar instantáneamente si el objetivo falla.'},
+ {name:'Prisión mental', level:9, school:'Ilusión', blurb:'Atrapa a una criatura en una prisión ilusoria de su propia mente.'},
+ {name:'Restauración mayor', level:5, school:'Abjuración', blurb:'Revierte maldiciones, transformaciones o pérdida de habilidad.'},
+ {name:'Contingencia', level:6, school:'Evocación', blurb:'Prepara un conjuro que se activa automáticamente ante una condición.'},
+ {name:'Proyección astral', level:9, school:'Nigromancia', blurb:'Proyecta el espíritu a otro plano dejando el cuerpo protegido.'},
+ {name:'Invocar demonio', level:6, school:'Conjuración', blurb:'Trae a un demonio a este plano para que sirva o luche.'},
+ {name:'Escudriñar', level:5, school:'Adivinación', blurb:'Crea un sensor invisible en un lugar que se conoce muy bien.'},
+ {name:'Portal etéreo', level:7, school:'Conjuración', blurb:'Permite viajar entre el plano material y el plano etéreo.'},
+ {name:'Simulacro', level:7, school:'Ilusión', blurb:'Crea una copia ilusoria pero funcional de una criatura conocida.'},
+];
+
+/* ========================= STATE ========================= */
+let worldMeta = { worldName:'Mundo sin nombre', folders:[], settings:{}, theme:{} };
+let entriesIndex = [];
+let activeFolder = 'all';
+let activeType = 'all';
+let searchTerm = '';
+let currentEntryId = null;
+let wsEnable5E = false;
+let wsCoverData = null;
+let wsCoverPos = { x:50, y:50 };
+let wsCoverZoom = 1;
+let coverDragState = null;
+let wsDirty = false;
+
+let canvasData = { nodes:[], edges:[] };
+let canvasLoaded = false;
+let canvasPan = { x:60, y:40 };
+let canvasZoom = 1;
+let draggingNode = null;
+let panningCanvas = false;
+let connectMode = false;
+let connectSrc = null;
+
+let mapsIndex = [];
+let mapsLoaded = false;
+let currentMap = null;
+let mapMode = 'pin';
+let regionDraft = [];
+let projectDirty = false;
+let dirHandle = null;
+
+let journalEntries = [];
+let currentJournalId = null;
+let sessionLog = [];
+let currentSessionId = null;
+
+function markDirty(){ projectDirty = true; }
+function clearDirty(){ projectDirty = false; }
+window.addEventListener('beforeunload', (e)=>{
+  if(projectDirty || wsDirty){ e.preventDefault(); e.returnValue = ''; }
+});
+
+/* ========================= STORAGE ========================= */
+const STORAGE_PREFIX = 'codice:';
+async function storeGet(key){
+  try{
+    if(window.storage && typeof window.storage.get === 'function'){
+      const r = await window.storage.get(key, false);
+      return r ? JSON.parse(r.value) : null;
+    }
+    const v = localStorage.getItem(STORAGE_PREFIX + key);
+    return v ? JSON.parse(v) : null;
+  }catch(e){ return null; }
+}
+async function storeSet(key, value){
+  const json = JSON.stringify(value);
+  try{
+    if(window.storage && typeof window.storage.set === 'function'){ await window.storage.set(key, json, false); return; }
+    localStorage.setItem(STORAGE_PREFIX + key, json);
+  }catch(e){ try{ localStorage.setItem(STORAGE_PREFIX + key, json); }catch(e2){} }
+}
+async function storeDelete(key){
+  try{
+    if(window.storage && typeof window.storage.delete === 'function'){ await window.storage.delete(key, false); return; }
+    localStorage.removeItem(STORAGE_PREFIX + key);
+  }catch(e){}
+}
+
+/* ========================= IMAGES ========================= */
+function resizeImageFile(file, maxDim, quality){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        if(w > maxDim || h > maxDim){
+          if(w > h){ h = Math.round(h * maxDim / w); w = maxDim; } else { w = Math.round(w * maxDim / h); h = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = reader.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ========================= MODAL ========================= */
+function renderField(f){
+  const val = (f.value||'').toString().replace(/"/g,'&quot;');
+  if(f.type === 'select'){
+    return `<div class="field"><label>${f.label}</label><select id="mf-${f.key}">
+      ${f.options.map(o=>`<option value="${o.value}" ${String(o.value)===String(f.value)?'selected':''}>${o.label}</option>`).join('')}
+    </select></div>`;
+  }
+  if(f.type === 'textarea'){
+    return `<div class="field"><label>${f.label}</label><textarea id="mf-${f.key}" placeholder="${f.placeholder||''}">${f.value||''}</textarea></div>`;
+  }
+  if(f.type === 'color'){
+    return `<div class="field"><label>${f.label}</label><input type="color" id="mf-${f.key}" value="${f.value||'#c9922f'}"></div>`;
+  }
+  return `<div class="field"><label>${f.label}</label><input type="text" id="mf-${f.key}" value="${val}" placeholder="${f.placeholder||''}"></div>`;
+}
+function openModal(cfg){
+  const overlay = document.getElementById('modalOverlay');
+  const box = document.getElementById('modalBox');
+  box.style.width = '';
+  box.innerHTML = `
+    <div class="modal-title">${cfg.title}</div>
+    ${cfg.message ? `<div class="modal-message">${cfg.message}</div>` : ''}
+    <div class="modal-fields">${(cfg.fields||[]).map(renderField).join('')}</div>
+    <div class="modal-actions">
+      <div>${cfg.showDelete ? '<button class="btn-delete" id="modalDelete">Eliminar</button>' : ''}</div>
+      <div>
+        <button class="btn-ghost" id="modalCancel">Cancelar</button>
+        <button class="btn-brass" id="modalSubmit">${cfg.submitLabel||'Guardar'}</button>
+      </div>
+    </div>`;
+  overlay.classList.add('open');
+  document.getElementById('modalCancel').onclick = closeModal;
+  document.getElementById('modalSubmit').onclick = () => {
+    const values = {};
+    (cfg.fields||[]).forEach(f => { values[f.key] = document.getElementById('mf-'+f.key).value; });
+    closeModal();
+    if(cfg.onSubmit) cfg.onSubmit(values);
+  };
+  if(cfg.showDelete){
+    document.getElementById('modalDelete').onclick = () => { closeModal(); if(cfg.onDelete) cfg.onDelete(); };
+  }
+  const firstInput = box.querySelector('input, select, textarea');
+  if(firstInput) setTimeout(()=>firstInput.focus(), 30);
+}
+function openConfirm({title, message, onConfirm}){
+  const overlay = document.getElementById('modalOverlay');
+  const box = document.getElementById('modalBox');
+  box.innerHTML = `
+    <div class="modal-title">${title}</div>
+    <div class="modal-message">${message}</div>
+    <div class="modal-actions"><div></div><div>
+      <button class="btn-ghost" id="modalCancel">Cancelar</button>
+      <button class="btn-delete" id="modalConfirm">Eliminar</button>
+    </div></div>`;
+  overlay.classList.add('open');
+  document.getElementById('modalCancel').onclick = closeModal;
+  document.getElementById('modalConfirm').onclick = () => { closeModal(); onConfirm(); };
+}
+function openUnsavedGuard(name, onSave, onDiscard){
+  const overlay = document.getElementById('modalOverlay');
+  const box = document.getElementById('modalBox');
+  box.innerHTML = `
+    <div class="modal-title">Cambios sin guardar</div>
+    <div class="modal-message">Tenés cambios sin guardar en "${escapeHtml(name||'esta ficha')}". ¿Qué querés hacer?</div>
+    <div class="modal-actions">
+      <div><button class="btn-delete" id="guardDiscard">Descartar</button></div>
+      <div><button class="btn-ghost" id="guardCancel">Cancelar</button><button class="btn-brass" id="guardSave">Guardar y continuar</button></div>
+    </div>`;
+  overlay.classList.add('open');
+  document.getElementById('guardCancel').onclick = closeModal;
+  document.getElementById('guardSave').onclick = async ()=>{ closeModal(); await onSave(); };
+  document.getElementById('guardDiscard').onclick = async ()=>{ closeModal(); await onDiscard(); };
+}
+function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); }
+document.getElementById('modalBox').addEventListener('keydown', (e)=>{
+  if(e.key==='Enter' && e.target.tagName==='INPUT' && e.target.type!=='color'){
+    e.preventDefault();
+    const btn = document.getElementById('modalSubmit') || document.getElementById('guardSave') || document.getElementById('modalConfirm');
+    if(btn) btn.click();
+  }
+});
+function escapeHtml(str){
+  return String(str||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+document.addEventListener('focusin', (e)=>{
+  if(e.target.isContentEditable){ document.execCommand('defaultParagraphSeparator', false, 'p'); }
+});
+
+/* ========================= THEME / SETTINGS ========================= */
+function defaultTheme(){ return { brass:'#c9922f', verdigris:'#7bb89d', bgDeep:'#0d0906', parchment:'#e8dcc3' }; }
+function applyTheme(){
+  const t = Object.assign(defaultTheme(), worldMeta.theme||{});
+  const root = document.documentElement.style;
+  root.setProperty('--brass', t.brass);
+  root.setProperty('--verdigris', t.verdigris);
+  root.setProperty('--parchment', t.parchment);
+}
+async function connectFolder(){
+  if(!window.showDirectoryPicker){
+    openModal({ title:'No disponible', fields:[], submitLabel:'Cerrar', message:'Tu navegador no soporta conectar carpetas directamente. Usá Exportar/Importar para mover el proyecto entre computadoras.' });
+    return;
+  }
+  try{
+    dirHandle = await window.showDirectoryPicker({ mode:'readwrite' });
+    openModal({ title:'Carpeta conectada', fields:[], submitLabel:'Cerrar', message:`Conectado a "${dirHandle.name}". Cada vez que uses Exportar, también se guardará una copia ahí.` });
+  }catch(e){ /* cancelado */ }
+}
+function openSettings(){
+  const overlay = document.getElementById('modalOverlay');
+  const box = document.getElementById('modalBox');
+  const theme = Object.assign(defaultTheme(), worldMeta.theme||{});
+  box.innerHTML = `
+    <div class="modal-title">Ajustes</div>
+    <div class="modal-fields">
+      <div class="field"><label>Color latón</label><input type="color" id="th-brass" value="${theme.brass}"></div>
+      <div class="field"><label>Color verdigris</label><input type="color" id="th-verdigris" value="${theme.verdigris}"></div>
+      <div class="field"><label>Color pergamino</label><input type="color" id="th-parchment" value="${theme.parchment}"></div>
+    </div>
+    <div class="modal-message">📁 Carpeta local: ${dirHandle ? 'conectada — '+escapeHtml(dirHandle.name) : 'no conectada'}. Si esa carpeta está dentro de Google Drive, Dropbox o OneDrive, tu proyecto queda sincronizado entre computadoras cada vez que exportás.</div>
+    <div class="modal-actions">
+      <div><button class="btn-ghost" id="connectFolderBtn2" type="button">${dirHandle?'Cambiar carpeta':'Conectar carpeta'}</button></div>
+      <div><button class="btn-ghost" id="modalCancel">Cerrar</button><button class="btn-brass" id="saveThemeBtn">Guardar paleta</button></div>
+    </div>`;
+  overlay.classList.add('open');
+  document.getElementById('modalCancel').onclick = closeModal;
+  document.getElementById('connectFolderBtn2').onclick = connectFolder;
+  document.getElementById('saveThemeBtn').onclick = async ()=>{
+    worldMeta.theme = {
+      brass: document.getElementById('th-brass').value,
+      verdigris: document.getElementById('th-verdigris').value,
+      bgDeep: theme.bgDeep,
+      parchment: document.getElementById('th-parchment').value
+    };
+    applyTheme(); await storeSet('world-meta', worldMeta); markDirty(); closeModal();
+  };
+}
+document.getElementById('settingsBtn').addEventListener('click', openSettings);
+
+/* ========================= NAV ========================= */
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click', async () => await navigateTo(tab.dataset.view));
+});
+function switchView(view){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===view));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active', v.id === 'view-'+view));
+  if(view === 'canvas' && !canvasLoaded) initCanvas();
+  if(view === 'mapas' && !mapsLoaded) initMapas();
+}
+async function confirmExportBeforeNavigate(){ /* export reminder disabled inline; beforeunload covers it */ }
+async function navigateTo(view){
+  const leavingEscribir = document.getElementById('view-escribir').classList.contains('active') && view !== 'escribir';
+  if(leavingEscribir && wsDirty){
+    openUnsavedGuard(document.getElementById('wsName').value,
+      async ()=>{ await saveCurrentWorkspace(); switchView(view); },
+      async ()=>{ wsDirty=false; switchView(view); });
+    return;
+  }
+  switchView(view);
+}
+
+async function renderHomeDashboard(){
+  const previewText = document.getElementById('homePreviewText');
+  const previewMeta = document.getElementById('homePreviewMeta');
+  const recentList = document.getElementById('homeRecentList');
+  const mapPreview = document.getElementById('homeMapPreview');
+  if(entriesIndex.length === 0){
+    previewText.textContent = 'Creá una ficha y aparecerá aquí una vista previa instantánea.';
+    previewMeta.innerHTML = '';
+    recentList.innerHTML = '<div class="home-recent-item"><span>No hay fichas aún.</span></div>';
+  } else {
+    const latest = entriesIndex.slice().sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0))[0];
+    previewText.textContent = latest.summary || 'Seleccioná una ficha para ver sus detalles.';
+    const typeLabel = TYPES[latest.type] ? `${TYPES[latest.type].glyph} ${TYPES[latest.type].label}` : 'Ficha';
+    const folderName = latest.folderId ? (worldMeta.folders.find(f=>f.id===latest.folderId)?.name || 'Carpeta') : 'Sin carpeta';
+    previewMeta.innerHTML = `<span>${escapeHtml(typeLabel)}</span><span>${escapeHtml(folderName)}</span>`;
+    const recent = entriesIndex.slice().sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0)).slice(0,5);
+    recentList.innerHTML = recent.map(item=>`<div class="home-recent-item" data-id="${item.id}"><span>${escapeHtml(item.name||'Sin nombre')}</span><span>${TYPES[item.type].glyph}</span></div>`).join('');
+    recentList.querySelectorAll('.home-recent-item').forEach(item=> item.addEventListener('click', ()=> openInEscribir(item.dataset.id)));
+  }
+  if(currentMap){
+    mapPreview.innerHTML = `<img src="${currentMap.image}" alt="${escapeHtml(currentMap.name)}"><div class="map-info"><strong>${escapeHtml(currentMap.name)}</strong></div>`;
+  } else if(mapsIndex.length){
+    mapPreview.innerHTML = `<div class="map-empty">Hay ${mapsIndex.length} mapa(s) guardado(s). Abrí la pestaña Mapas.</div>`;
+  } else {
+    mapPreview.innerHTML = `<div class="map-empty">No hay mapa cargado todavía.</div>`;
+  }
+}
+
+/* ========================= EXPORT / IMPORT ========================= */
+async function exportProject(){
+  const project = { worldMeta, entriesIndex, canvasData, mapsIndex, journalEntries, sessionLog, entries:[], maps:[] };
+  for(const entry of entriesIndex){ const full = await storeGet('entry:'+entry.id); if(full) project.entries.push(full); }
+  for(const mapItem of mapsIndex){ const fullMap = await storeGet('map:'+mapItem.id); if(fullMap) project.maps.push(fullMap); }
+  const json = JSON.stringify(project, null, 2);
+  const blob = new Blob([json], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `${(worldMeta.worldName||'codice').replace(/\s+/g,'_')}_project.json`;
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  if(dirHandle){
+    try{
+      const fh = await dirHandle.getFileHandle((worldMeta.worldName||'codice').replace(/\s+/g,'_')+'_project.json', { create:true });
+      const w = await fh.createWritable(); await w.write(json); await w.close();
+    }catch(e){ console.warn('No se pudo escribir en la carpeta conectada', e); }
+  }
+}
+async function importProject(file){
+  try{
+    const text = await file.text();
+    const data = JSON.parse(text);
+    if(!data || typeof data !== 'object') throw new Error('Archivo inválido');
+    worldMeta = data.worldMeta || { worldName:'Mundo sin nombre', folders:[] };
+    await storeSet('world-meta', worldMeta);
+    const importedEntries = data.entries || [];
+    const importedIndex = data.entriesIndex || importedEntries.map(e=>({ id:e.id, name:e.name, type:e.type, folderId:e.folderId, tags:e.tags, summary:e.summary, coverThumb:e.coverThumb, updatedAt:e.updatedAt, createdAt:e.createdAt }));
+    await storeSet('entries-index', importedIndex);
+    for(const entry of importedEntries){ await storeSet('entry:'+entry.id, entry); }
+    const importedMaps = data.maps || [];
+    await storeSet('maps-index', data.mapsIndex || importedMaps.map(m=>({ id:m.id, name:m.name })));
+    for(const mapItem of importedMaps){ await storeSet('map:'+mapItem.id, mapItem); }
+    await storeSet('canvas-data', data.canvasData || { nodes:[], edges:[] });
+    canvasData = data.canvasData || { nodes:[], edges:[] };
+    journalEntries = data.journalEntries || [];
+    await storeSet('journal-entries', journalEntries);
+    sessionLog = data.sessionLog || [];
+    await storeSet('session-log', sessionLog);
+    currentMap = null;
+    await loadWorld();
+    applyTheme();
+    if(canvasLoaded){ applyCanvasTransform(); renderCanvasNodes(); renderCanvasEdges(); }
+    if(mapsLoaded) renderMapList();
+    renderJournalList(); renderSessionList();
+    clearDirty();
+    openModal({ title:'Proyecto importado', fields:[], submitLabel:'Cerrar' });
+  } catch(err){
+    openModal({ title:'Error al importar', fields:[], submitLabel:'Cerrar', message: err.message || 'El archivo no corresponde a un proyecto válido.' });
+  }
+}
+document.getElementById('importProjectBtn').addEventListener('click', ()=> document.getElementById('projectImportFile').click());
+document.getElementById('exportProjectBtn').addEventListener('click', async ()=>{ await exportProject(); clearDirty(); });
+document.getElementById('projectImportFile').addEventListener('change', async (e)=>{ const file = e.target.files[0]; if(file) await importProject(file); e.target.value=''; });
+
+/* ========================= WORLD META / FOLDERS ========================= */
+async function loadWorld(){
+  const meta = await storeGet('world-meta');
+  if(meta) worldMeta = meta;
+  worldMeta.folders = worldMeta.folders || [];
+  worldMeta.settings = worldMeta.settings || {};
+  document.getElementById('worldName').value = worldMeta.worldName;
+  if(worldMeta.settings.summaryFontSize){
+    document.documentElement.style.setProperty('--card-summary-size', worldMeta.settings.summaryFontSize+'px');
+    document.getElementById('summaryFontSize').value = worldMeta.settings.summaryFontSize;
+  }
+  applyTheme();
+
+  const idx = await storeGet('entries-index');
+  entriesIndex = idx || [];
+  const mapsIdx = await storeGet('maps-index');
+  mapsIndex = mapsIdx || [];
+
+  if(worldMeta.lastMapId && mapsIndex.some(m=>m.id===worldMeta.lastMapId)){
+    await loadMap(worldMeta.lastMapId);
+  } else {
+    currentMap = null;
+    document.getElementById('mapEmpty').style.display = 'block';
+    document.getElementById('mapWorkspace').style.display = 'none';
+  }
+
+  renderFolderList(); renderTypeFilterList(); renderFichasGrid(); renderHomeDashboard();
+  renderWsFolderOptions(null); renderEscRail();
+}
+document.getElementById('worldName').addEventListener('change', async (e)=>{
+  worldMeta.worldName = e.target.value.trim() || 'Mundo sin nombre';
+  await storeSet('world-meta', worldMeta); markDirty();
+});
+document.getElementById('summaryFontSize').addEventListener('input', async (e)=>{
+  document.documentElement.style.setProperty('--card-summary-size', e.target.value+'px');
+  worldMeta.settings.summaryFontSize = e.target.value;
+  await storeSet('world-meta', worldMeta); markDirty();
+});
+document.getElementById('newFolderBtn').addEventListener('click', ()=>{
+  openModal({
+    title:'Nueva carpeta', fields:[{ key:'name', label:'Nombre', placeholder:'ej: Reino del Norte' }], submitLabel:'Crear',
+    onSubmit: async (v) => {
+      if(!v.name.trim()) return;
+      worldMeta.folders.push({ id: uid(), name: v.name.trim() });
+      await storeSet('world-meta', worldMeta); markDirty();
+      renderFolderList(); renderWsFolderOptions(document.getElementById('wsFolder').value);
+    }
+  });
+});
+function renderFolderList(){
+  const el = document.getElementById('folderList');
+  const counts = { all: entriesIndex.length, none: entriesIndex.filter(e=>!e.folderId).length };
+  worldMeta.folders.forEach(f => counts[f.id] = entriesIndex.filter(e=>e.folderId===f.id).length);
+  let html = `<div class="rail-item ${activeFolder==='all'?'active':''}" data-folder="all"><span>Todas</span><span class="rail-count">${counts.all}</span></div>`;
+  html += `<div class="rail-item ${activeFolder==='none'?'active':''}" data-folder="none"><span>Sin carpeta</span><span class="rail-count">${counts.none}</span></div>`;
+  worldMeta.folders.forEach(f=>{
+    html += `<div class="rail-item ${activeFolder===f.id?'active':''}" data-folder="${f.id}">
+      <span>${escapeHtml(f.name)}</span>
+      <span style="display:flex;align-items:center;gap:4px;"><span class="rail-count">${counts[f.id]||0}</span><span class="icon-btn" data-del-folder="${f.id}" title="Eliminar carpeta">✕</span></span>
+    </div>`;
+  });
+  el.innerHTML = html;
+  el.querySelectorAll('.rail-item').forEach(item=>{
+    item.addEventListener('click', (e)=>{
+      if(e.target.closest('[data-del-folder]')) return;
+      activeFolder = item.dataset.folder; renderFolderList(); renderFichasGrid();
+    });
+  });
+  el.querySelectorAll('[data-del-folder]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const fid = btn.dataset.delFolder;
+      openConfirm({
+        title:'Eliminar carpeta', message:'Las fichas dentro quedarán sin carpeta. Esta acción no se puede deshacer.',
+        onConfirm: async ()=>{
+          worldMeta.folders = worldMeta.folders.filter(f=>f.id!==fid);
+          for(const en of entriesIndex){
+            if(en.folderId===fid){
+              en.folderId = null;
+              const full = await storeGet('entry:'+en.id);
+              if(full){ full.folderId = null; await storeSet('entry:'+en.id, full); }
+            }
+          }
+          await storeSet('world-meta', worldMeta); await storeSet('entries-index', entriesIndex); markDirty();
+          if(activeFolder===fid) activeFolder = 'all';
+          renderFolderList(); renderFichasGrid(); renderWsFolderOptions(document.getElementById('wsFolder').value);
+        }
+      });
+    });
+  });
+}
+function renderTypeFilterList(){
+  const el = document.getElementById('typeFilterList');
+  const counts = { all: entriesIndex.length };
+  Object.keys(TYPES).forEach(k => counts[k] = entriesIndex.filter(e=>e.type===k).length);
+  let html = `<div class="rail-item ${activeType==='all'?'active':''}" data-type="all"><span>Todas</span><span class="rail-count">${counts.all}</span></div>`;
+  Object.keys(TYPES).forEach(k=>{
+    html += `<div class="rail-item ${activeType===k?'active':''}" data-type="${k}"><span>${TYPES[k].glyph} ${TYPES[k].label}</span><span class="rail-count">${counts[k]}</span></div>`;
+  });
+  el.innerHTML = html;
+  el.querySelectorAll('.rail-item').forEach(item=>{
+    item.addEventListener('click', ()=>{ activeType = item.dataset.type; renderTypeFilterList(); renderFichasGrid(); });
+  });
+}
+
+/* ========================= FICHAS GRID ========================= */
+document.getElementById('searchFichas').addEventListener('input', (e)=>{ searchTerm = e.target.value; renderFichasGrid(); });
+function filteredEntries(){
+  let list = entriesIndex;
+  if(activeFolder === 'none') list = list.filter(e=>!e.folderId);
+  else if(activeFolder !== 'all') list = list.filter(e=>e.folderId===activeFolder);
+  if(activeType !== 'all') list = list.filter(e=>e.type===activeType);
+  if(searchTerm.trim()){
+    const q = searchTerm.toLowerCase();
+    list = list.filter(e => (e.name||'').toLowerCase().includes(q) || (e.summary||'').toLowerCase().includes(q) || (e.tags||[]).some(t=>t.toLowerCase().includes(q)));
+  }
+  return list.slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+}
+function renderFichasGrid(){
+  const grid = document.getElementById('fichasGrid');
+  const list = filteredEntries();
+  if(entriesIndex.length === 0){
+    grid.innerHTML = `<div class="empty"><div class="glyph">⚙</div><div class="title">El taller está vacío</div><div class="sub">Creá tu primera ficha de personaje, lugar u objeto.</div></div>`;
+    return;
+  }
+  if(list.length === 0){
+    grid.innerHTML = `<div class="empty"><div class="glyph">◌</div><div class="title">Sin resultados</div><div class="sub">Nada coincide con esa búsqueda o filtro.</div></div>`;
+    return;
+  }
+  grid.innerHTML = `<div class="cards-grid">${list.map(e=>{
+    const t = TYPES[e.type] || TYPES.personaje;
+    const pos = e.coverPosition || {x:50,y:50};
+    const zoom = e.coverZoom || 1;
+    const coverStyle = e.coverThumb ? `background-image:url('${e.coverThumb}');background-position:${pos.x}% ${pos.y}%;background-size:${zoom*100}%;` : '';
+    return `<div class="ficha-card" style="--type-color:${t.color}" data-id="${e.id}">
+      <div class="ficha-cover" style="${coverStyle}">${e.coverThumb ? '' : t.glyph}</div>
+      <div class="ficha-body">
+        <div class="ficha-type">${t.glyph} ${t.label}</div>
+        <div class="ficha-name">${escapeHtml(e.name||'Sin nombre')}</div>
+        <div class="ficha-summary">${escapeHtml(e.summary||'')}</div>
+        ${(e.tags&&e.tags.length) ? `<div class="ficha-tags">${e.tags.map(tg=>`<span class="tag-pill">${escapeHtml(tg)}</span>`).join('')}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+  grid.querySelectorAll('.ficha-card').forEach(card=> card.addEventListener('click', ()=> openInEscribir(card.dataset.id)));
+}
+
+/* ========================= WORKSPACE (Escribir, inline) ========================= */
+function defaultEntry(){
+  return { name:'', type:'personaje', folderId:null, tags:[], summary:'', content:'', coverImage:null, coverThumb:null,
+    coverPosition:{x:50,y:50}, coverZoom:1, enable5eSheet:false, stats:{}, spells:'', inventory:'' };
+}
+function renderWsTypeOptions(selected){
+  document.getElementById('wsType').innerHTML = Object.keys(TYPES).map(k=>`<option value="${k}" ${k===selected?'selected':''}>${TYPES[k].glyph} ${TYPES[k].label}</option>`).join('');
+}
+function renderWsFolderOptions(selected){
+  let html = `<option value="">Sin carpeta</option>`;
+  html += worldMeta.folders.map(f=>`<option value="${f.id}" ${f.id===selected?'selected':''}>${escapeHtml(f.name)}</option>`).join('');
+  document.getElementById('wsFolder').innerHTML = html;
+}
+function applyCoverStyle(){
+  const cover = document.getElementById('wsCover');
+  cover.style.backgroundImage = wsCoverData ? `url('${wsCoverData}')` : '';
+  cover.style.backgroundPosition = `${wsCoverPos.x}% ${wsCoverPos.y}%`;
+  cover.style.backgroundSize = `${wsCoverZoom*100}%`;
+  document.getElementById('wsCoverHint').style.display = wsCoverData ? 'none' : 'block';
+  document.getElementById('wsCoverControls').style.display = wsCoverData ? 'flex' : 'none';
+}
+function update5EVisibility(){
+  const type = document.getElementById('wsType').value;
+  const toggle = document.getElementById('ws5eToggle');
+  const panel = document.getElementById('ws5ePanel');
+  if(type === 'personaje'){
+    toggle.style.display = 'flex';
+    panel.classList.toggle('active', wsEnable5E);
+    document.getElementById('wsToggle5E').textContent = wsEnable5E ? 'Ocultar hoja 5E' : 'Activar hoja 5E';
+  } else {
+    toggle.style.display = 'none'; panel.classList.remove('active'); wsEnable5E = false;
+  }
+}
+async function loadEntryIntoWorkspace(id){
+  currentEntryId = id || null;
+  let full = defaultEntry();
+  if(id){ const loaded = await storeGet('entry:'+id); if(loaded) full = Object.assign(defaultEntry(), loaded); }
+  wsCoverData = full.coverImage || null;
+  wsCoverPos = full.coverPosition || { x:50, y:50 };
+  wsCoverZoom = full.coverZoom || 1;
+  wsEnable5E = full.enable5eSheet || false;
+  renderWsTypeOptions(full.type);
+  renderWsFolderOptions(full.folderId);
+  document.getElementById('wsName').value = full.name || '';
+  document.getElementById('wsTags').value = (full.tags||[]).join(', ');
+  document.getElementById('wsSummary').value = full.summary || '';
+  document.getElementById('wsSTR').value = full.stats?.STR || '';
+  document.getElementById('wsDEX').value = full.stats?.DEX || '';
+  document.getElementById('wsCON').value = full.stats?.CON || '';
+  document.getElementById('wsINT').value = full.stats?.INT || '';
+  document.getElementById('wsWIS').value = full.stats?.WIS || '';
+  document.getElementById('wsCHA').value = full.stats?.CHA || '';
+  document.getElementById('wsHP').value = full.stats?.HP || '';
+  document.getElementById('wsAC').value = full.stats?.AC || '';
+  document.getElementById('wsSpeed').value = full.stats?.Speed || '';
+  document.getElementById('wsProf').value = full.stats?.Prof || '';
+  document.getElementById('wsSpells').value = full.spells || '';
+  document.getElementById('wsInventory').value = full.inventory || '';
+  document.getElementById('wsContent').innerHTML = full.content || '';
+  document.getElementById('wsCoverZoomInput').value = wsCoverZoom;
+  applyCoverStyle();
+  document.getElementById('wsDelete').style.display = id ? 'inline-block' : 'none';
+  update5EVisibility();
+  wsDirty = false;
+  document.getElementById('wsDirtyHint').textContent = '';
+  renderEscRail();
+}
+function markWsDirty(){ wsDirty = true; document.getElementById('wsDirtyHint').textContent = '● cambios sin guardar'; }
+['wsName','wsTags','wsSummary','wsSTR','wsDEX','wsCON','wsINT','wsWIS','wsCHA','wsHP','wsAC','wsSpeed','wsProf','wsSpells','wsInventory'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', markWsDirty);
+});
+document.getElementById('wsType').addEventListener('change', ()=>{ markWsDirty(); update5EVisibility(); });
+document.getElementById('wsFolder').addEventListener('change', markWsDirty);
+document.getElementById('wsContent').addEventListener('input', ()=>{ markWsDirty(); });
+document.getElementById('wsToggle5E').addEventListener('click', ()=>{ wsEnable5E = !wsEnable5E; markWsDirty(); update5EVisibility(); });
+
+document.getElementById('wsCover').addEventListener('click', (e)=>{ if(!wsCoverData) document.getElementById('wsCoverFile').click(); });
+document.getElementById('wsCoverFile').addEventListener('change', async (e)=>{
+  const file = e.target.files[0]; if(!file) return;
+  wsCoverData = await resizeImageFile(file, 900, 0.75);
+  wsCoverPos = { x:50, y:50 }; wsCoverZoom = 1;
+  document.getElementById('wsCoverZoomInput').value = 1;
+  applyCoverStyle(); markWsDirty();
+});
+document.getElementById('wsCover').addEventListener('mousedown', (e)=>{
+  if(!wsCoverData) return;
+  coverDragState = { startX:e.clientX, startY:e.clientY, origX:wsCoverPos.x, origY:wsCoverPos.y, rect: document.getElementById('wsCover').getBoundingClientRect() };
+});
+window.addEventListener('mousemove', (e)=>{
+  if(coverDragState){
+    const dx = (e.clientX - coverDragState.startX) / coverDragState.rect.width * 100;
+    const dy = (e.clientY - coverDragState.startY) / coverDragState.rect.height * 100;
+    wsCoverPos.x = Math.min(100, Math.max(0, coverDragState.origX - dx));
+    wsCoverPos.y = Math.min(100, Math.max(0, coverDragState.origY - dy));
+    applyCoverStyle(); markWsDirty();
+  }
+});
+window.addEventListener('mouseup', ()=>{ coverDragState = null; });
+document.getElementById('wsCoverZoomInput').addEventListener('input', (e)=>{
+  wsCoverZoom = parseFloat(e.target.value); applyCoverStyle(); markWsDirty();
+});
+
+document.getElementById('insertImgBtn').addEventListener('click', ()=> document.getElementById('contentImgFile').click());
+document.getElementById('contentImgFile').addEventListener('change', async (e)=>{
+  const file = e.target.files[0]; if(!file) return;
+  const dataUrl = await resizeImageFile(file, 800, 0.7);
+  document.getElementById('wsContent').focus();
+  document.execCommand('insertImage', false, dataUrl);
+  markWsDirty();
+  e.target.value = '';
+});
+
+async function saveCurrentWorkspace(){
+  const name = document.getElementById('wsName').value.trim();
+  if(!name){ document.getElementById('wsName').focus(); return false; }
+  const type = document.getElementById('wsType').value;
+  const folderId = document.getElementById('wsFolder').value || null;
+  const tags = document.getElementById('wsTags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const summary = document.getElementById('wsSummary').value.trim();
+  const content = document.getElementById('wsContent').innerHTML;
+  const stats = {
+    STR: document.getElementById('wsSTR').value, DEX: document.getElementById('wsDEX').value, CON: document.getElementById('wsCON').value,
+    INT: document.getElementById('wsINT').value, WIS: document.getElementById('wsWIS').value, CHA: document.getElementById('wsCHA').value,
+    HP: document.getElementById('wsHP').value, AC: document.getElementById('wsAC').value, Speed: document.getElementById('wsSpeed').value, Prof: document.getElementById('wsProf').value
+  };
+  const spells = document.getElementById('wsSpells').value.trim();
+  const inventory = document.getElementById('wsInventory').value.trim();
+  const id = currentEntryId || uid();
+  const now = Date.now();
+  const full = { id, name, type, folderId, tags, summary, content, stats, spells, inventory, enable5eSheet: wsEnable5E,
+    coverImage: wsCoverData, coverThumb: wsCoverData, coverPosition: wsCoverPos, coverZoom: wsCoverZoom, updatedAt: now, createdAt: currentEntryId ? undefined : now };
+  const prevIdx = entriesIndex.findIndex(e=>e.id===id);
+  if(prevIdx>-1 && full.createdAt===undefined) full.createdAt = entriesIndex[prevIdx].createdAt || now;
+  await storeSet('entry:'+id, full); markDirty();
+  const lightEntry = { id, name, type, folderId, tags, summary, coverThumb: wsCoverData, coverPosition: wsCoverPos, coverZoom: wsCoverZoom, updatedAt: now, createdAt: full.createdAt };
+  if(prevIdx>-1) entriesIndex[prevIdx] = lightEntry; else entriesIndex.push(lightEntry);
+  await storeSet('entries-index', entriesIndex);
+  currentEntryId = id; wsDirty = false;
+  document.getElementById('wsDirtyHint').textContent = 'Guardado ✓';
+  renderFolderList(); renderTypeFilterList(); renderFichasGrid(); renderHomeDashboard(); renderEscRail();
+  if(canvasLoaded){ renderCanvasNodes(); renderCanvasEdges(); }
+  return true;
+}
+document.getElementById('wsSave').addEventListener('click', saveCurrentWorkspace);
+
+document.getElementById('wsDelete').addEventListener('click', ()=>{
+  if(!currentEntryId) return;
+  openConfirm({
+    title:'Eliminar ficha', message:'Esta ficha se borrará de tu códice de forma permanente.',
+    onConfirm: async ()=>{
+      await storeDelete('entry:'+currentEntryId);
+      entriesIndex = entriesIndex.filter(e=>e.id!==currentEntryId);
+      await storeSet('entries-index', entriesIndex);
+      const removedIds = canvasData.nodes.filter(n=>n.kind==='entry'&&n.entryId===currentEntryId).map(n=>n.id);
+      if(removedIds.length){
+        canvasData.nodes = canvasData.nodes.filter(n=>!removedIds.includes(n.id));
+        canvasData.edges = canvasData.edges.filter(ed=>!removedIds.includes(ed.from)&&!removedIds.includes(ed.to));
+        await saveCanvas();
+        if(canvasLoaded){ renderCanvasNodes(); renderCanvasEdges(); }
+      }
+      markDirty(); wsDirty = false;
+      renderFolderList(); renderTypeFilterList(); renderFichasGrid(); renderHomeDashboard();
+      await loadEntryIntoWorkspace(entriesIndex[0]?.id || null);
+    }
+  });
+});
+
+function renderEscRail(){
+  const el = document.getElementById('escRailList');
+  const q = (document.getElementById('escSearch').value||'').toLowerCase();
+  let list = entriesIndex.slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  if(q) list = list.filter(e=>(e.name||'').toLowerCase().includes(q));
+  el.innerHTML = list.map(e=>{
+    const t = TYPES[e.type]||TYPES.personaje;
+    return `<div class="rail-item esc-rail-item ${currentEntryId===e.id?'active':''}" data-id="${e.id}" style="border-left:2px solid ${t.color};">
+      <span>${t.glyph} ${escapeHtml(e.name||'Sin nombre')}</span></div>`;
+  }).join('') || '<div class="hint" style="margin:8px 0;">Sin fichas.</div>';
+  el.querySelectorAll('.esc-rail-item').forEach(item=> item.addEventListener('click', ()=> guardSwitchTo(item.dataset.id)));
+}
+document.getElementById('escSearch').addEventListener('input', renderEscRail);
+document.getElementById('escNewBtn').addEventListener('click', ()=> guardSwitchTo(null));
+function guardSwitchTo(id){
+  if(wsDirty){
+    openUnsavedGuard(document.getElementById('wsName').value,
+      async ()=>{ const ok = await saveCurrentWorkspace(); if(ok) await loadEntryIntoWorkspace(id); },
+      async ()=>{ wsDirty=false; await loadEntryIntoWorkspace(id); });
+  } else {
+    loadEntryIntoWorkspace(id);
+  }
+}
+async function openInEscribir(id){
+  switchView('escribir');
+  if(wsDirty){
+    openUnsavedGuard(document.getElementById('wsName').value,
+      async ()=>{ const ok = await saveCurrentWorkspace(); if(ok) await loadEntryIntoWorkspace(id); },
+      async ()=>{ wsDirty=false; await loadEntryIntoWorkspace(id); });
+  } else {
+    await loadEntryIntoWorkspace(id);
+  }
+}
+document.getElementById('newFichaBtn').addEventListener('click', ()=> openInEscribir(null));
+document.getElementById('newFichaBtnHome').addEventListener('click', ()=> openInEscribir(null));
+document.getElementById('goToCanvasBtn').addEventListener('click', ()=> navigateTo('canvas'));
+document.getElementById('goToMapsBtn').addEventListener('click', ()=> navigateTo('mapas'));
+
+/* Grimoire picker */
+function openGrimoire(){
+  const overlay = document.getElementById('modalOverlay');
+  const box = document.getElementById('modalBox');
+  box.style.width = 'min(560px,92vw)';
+  const renderList = (q='') => {
+    const filtered = GRIMOIRE.filter(s => !q || s.name.toLowerCase().includes(q.toLowerCase()));
+    return filtered.slice(0,60).map(s=>`
+      <div class="grimoire-row">
+        <div><strong>${escapeHtml(s.name)}</strong><br><span class="hint" style="margin:0;">${s.level===0?'Truco':'Nivel '+s.level} · ${escapeHtml(s.school)}</span></div>
+        <button class="rail-btn" data-add="${escapeHtml(s.name)}" type="button">+ Agregar</button>
+      </div>`).join('') || '<div class="hint" style="margin:10px 0;">Sin resultados.</div>';
+  };
+  box.innerHTML = `
+    <div class="modal-title">Grimorio 5E</div>
+    <input class="search-input" id="grimoireSearch" placeholder="Buscar hechizo…" style="margin-bottom:12px;width:100%;">
+    <div id="grimoireResults" style="max-height:360px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">${renderList()}</div>
+    <div class="modal-actions"><div></div><div><button class="btn-ghost" id="modalCancel">Cerrar</button></div></div>`;
+  overlay.classList.add('open');
+  document.getElementById('modalCancel').onclick = closeModal;
+  const wire = ()=>{
+    document.querySelectorAll('#grimoireResults [data-add]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const spell = GRIMOIRE.find(s=>s.name===btn.dataset.add);
+        const ta = document.getElementById('wsSpells');
+        const line = `${spell.name} (${spell.level===0?'Truco':'Nv '+spell.level}, ${spell.school}) — ${spell.blurb}`;
+        ta.value = ta.value ? ta.value + '\n' + line : line;
+        markWsDirty();
+        btn.textContent = 'Agregado ✓'; btn.disabled = true;
+      });
+    });
+  };
+  wire();
+  document.getElementById('grimoireSearch').addEventListener('input', (e)=>{
+    document.getElementById('grimoireResults').innerHTML = renderList(e.target.value);
+    wire();
+  });
+  setTimeout(()=>document.getElementById('grimoireSearch').focus(), 30);
+}
+document.getElementById('openGrimoireBtn').addEventListener('click', openGrimoire);
+
+/* Print */
+function printEntry(){
+  const name = document.getElementById('wsName').value || 'Ficha';
+  const type = TYPES[document.getElementById('wsType').value]?.label || '';
+  const tags = document.getElementById('wsTags').value;
+  const summary = document.getElementById('wsSummary').value;
+  const content = document.getElementById('wsContent').innerHTML;
+  const cover = wsCoverData;
+  const win = window.open('', '_blank');
+  if(!win) return;
+  win.document.write(`<html><head><title>${escapeHtml(name)}</title><style>
+    body{ font-family: Georgia, serif; padding:40px; color:#231914; max-width:700px; margin:auto; }
+    h1{ font-size:28px; margin-bottom:4px; } .meta{ color:#7d5f2c; font-size:13px; margin-bottom:20px; }
+    img{ max-width:100%; border-radius:6px; } .cover{ width:100%; max-height:280px; object-fit:cover; border-radius:8px; margin-bottom:20px; }
+    .summary{ font-style:italic; margin-bottom:20px; }
+  </style></head><body>
+    ${cover?`<img class="cover" src="${cover}">`:''}
+    <h1>${escapeHtml(name)}</h1><div class="meta">${escapeHtml(type)} ${tags?'· '+escapeHtml(tags):''}</div>
+    ${summary?`<p class="summary">${escapeHtml(summary)}</p>`:''}
+    <div>${content}</div>
+  </body></html>`);
+  win.document.close(); win.focus();
+  setTimeout(()=>win.print(), 400);
+}
+document.getElementById('printEntryBtn').addEventListener('click', printEntry);
+
+function updateClock(){
+  const now = new Date();
+  document.getElementById('topbarClock').textContent = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+}
+updateClock(); setInterval(updateClock, 30000);
+
+/* ========================= CANVAS ========================= */
+async function initCanvas(){
+  canvasLoaded = true;
+  const data = await storeGet('canvas-data');
+  if(data) canvasData = data;
+  applyCanvasTransform(); renderCanvasNodes(); renderCanvasEdges();
+}
+function applyCanvasTransform(){
+  document.getElementById('canvasInner').style.transform = `translate(${canvasPan.x}px, ${canvasPan.y}px) scale(${canvasZoom})`;
+}
+async function saveCanvas(){ await storeSet('canvas-data', canvasData); markDirty(); }
+function renderCanvasNodes(){
+  const inner = document.getElementById('canvasInner');
+  inner.querySelectorAll('.canvas-node').forEach(n=>n.remove());
+  canvasData.nodes.forEach(node => inner.appendChild(buildNodeEl(node)));
+}
+function buildNodeEl(node){
+  const el = document.createElement('div');
+  el.className = 'canvas-node'; el.style.left = node.x+'px'; el.style.top = node.y+'px'; el.dataset.id = node.id;
+  if(node.kind === 'entry'){
+    const entry = entriesIndex.find(e=>e.id===node.entryId);
+    const t = TYPES[(entry&&entry.type)||'personaje'];
+    el.style.setProperty('--type-color', t.color);
+    el.innerHTML = `<span class="node-del" data-del="${node.id}">✕</span>
+      ${entry && entry.coverThumb ? `<div class="node-thumb" style="background-image:url('${entry.coverThumb}')"></div>` : ''}
+      <div class="node-type">${t.glyph} ${t.label}</div>
+      <div class="node-title">${escapeHtml(entry ? entry.name : 'Ficha eliminada')}</div>`;
+    el.addEventListener('dblclick', (e)=>{ e.stopPropagation(); if(entry) openInEscribir(entry.id); });
+  } else {
+    el.innerHTML = `<span class="node-del" data-del="${node.id}">✕</span>`;
+    const ta = document.createElement('textarea');
+    ta.placeholder = 'Nota libre…'; ta.value = node.text || '';
+    ta.addEventListener('mousedown', ev => ev.stopPropagation());
+    ta.addEventListener('input', ()=>{ node.text = ta.value; saveCanvas(); });
+    el.appendChild(ta);
+  }
+  el.querySelector('.node-del').addEventListener('click', (e)=>{
+    e.stopPropagation();
+    canvasData.nodes = canvasData.nodes.filter(n=>n.id!==node.id);
+    canvasData.edges = canvasData.edges.filter(ed=>ed.from!==node.id && ed.to!==node.id);
+    saveCanvas(); renderCanvasNodes(); renderCanvasEdges();
+  });
+  el.addEventListener('mousedown', (e)=>{
+    if(e.target.closest('.node-del') || e.target.tagName==='TEXTAREA') return;
+    if(connectMode){ e.stopPropagation(); handleConnectClick(node.id, el); return; }
+    e.stopPropagation();
+    draggingNode = { id: node.id, startX: e.clientX, startY: e.clientY, origX: node.x, origY: node.y };
+  });
+  return el;
+}
+function handleConnectClick(nodeId, el){
+  if(!connectSrc){ connectSrc = nodeId; el.classList.add('connecting-src'); }
+  else if(connectSrc !== nodeId){
+    canvasData.edges.push({ id: uid(), from: connectSrc, to: nodeId, label: '' });
+    saveCanvas(); renderCanvasEdges();
+    document.querySelectorAll('.canvas-node').forEach(n=>n.classList.remove('connecting-src'));
+    connectSrc = null;
+  } else {
+    document.querySelectorAll('.canvas-node').forEach(n=>n.classList.remove('connecting-src'));
+    connectSrc = null;
+  }
+}
+function renderCanvasEdges(){
+  const svg = document.getElementById('canvasEdges'); svg.innerHTML = '';
+  canvasData.edges.forEach(edge=>{
+    const a = canvasData.nodes.find(n=>n.id===edge.from), b = canvasData.nodes.find(n=>n.id===edge.to);
+    if(!a || !b) return;
+    const ax = a.x+85, ay = a.y+30, bx = b.x+85, by = b.y+30;
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1', ax); line.setAttribute('y1', ay); line.setAttribute('x2', bx); line.setAttribute('y2', by);
+    svg.appendChild(line);
+    const mx = (ax+bx)/2, my = (ay+by)/2;
+    if(edge.label){
+      const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+      text.setAttribute('x', mx); text.setAttribute('y', my-8); text.setAttribute('text-anchor','middle'); text.textContent = edge.label;
+      svg.appendChild(text);
+    }
+    const del = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    del.setAttribute('class','edge-del'); del.setAttribute('cx', mx); del.setAttribute('cy', my); del.setAttribute('r', 7);
+    del.addEventListener('click', ()=>{
+      openModal({
+        title:'Editar conexión', fields:[{key:'label', label:'Etiqueta de la relación', value:edge.label, placeholder:'ej: aliado de, enemigo de'}],
+        submitLabel:'Guardar', showDelete:true,
+        onSubmit: async(v)=>{ edge.label=v.label; await saveCanvas(); renderCanvasEdges(); },
+        onDelete: async()=>{ canvasData.edges = canvasData.edges.filter(e=>e.id!==edge.id); await saveCanvas(); renderCanvasEdges(); }
+      });
+    });
+    svg.appendChild(del);
+  });
+}
+document.getElementById('addNoteBtn').addEventListener('click', ()=>{
+  canvasData.nodes.push({ id: uid(), kind:'note', text:'', x: 200 - canvasPan.x + 100, y: 150 - canvasPan.y + 60 });
+  saveCanvas(); renderCanvasNodes(); renderCanvasEdges();
+});
+document.getElementById('addFichaNodeBtn').addEventListener('click', ()=>{
+  if(entriesIndex.length===0){ openModal({title:'No hay fichas todavía', fields:[], submitLabel:'Cerrar'}); return; }
+  openModal({
+    title:'Elegí una ficha', fields:[{ key:'entryId', label:'Ficha', type:'select', options: entriesIndex.map(e=>({value:e.id,label:`${TYPES[e.type].glyph} ${e.name}`})) }],
+    submitLabel:'Agregar al lienzo',
+    onSubmit: async (v)=>{
+      canvasData.nodes.push({ id: uid(), kind:'entry', entryId: v.entryId, x: 220 - canvasPan.x + 100, y: 180 - canvasPan.y + 60 });
+      await saveCanvas(); renderCanvasNodes(); renderCanvasEdges();
+    }
+  });
+});
+document.getElementById('connectModeBtn').addEventListener('click', (e)=>{
+  connectMode = !connectMode; connectSrc = null;
+  e.target.classList.toggle('active', connectMode);
+  document.getElementById('canvasHint').textContent = connectMode ? 'Click en dos fichas para conectarlas' : 'Arrastrá el fondo para mover el lienzo';
+  document.querySelectorAll('.canvas-node').forEach(n=>n.classList.remove('connecting-src'));
+});
+document.getElementById('zoomInBtn').addEventListener('click', ()=>{ canvasZoom = Math.min(2, canvasZoom+0.15); applyCanvasTransform(); });
+document.getElementById('zoomOutBtn').addEventListener('click', ()=>{ canvasZoom = Math.max(0.4, canvasZoom-0.15); applyCanvasTransform(); });
+const canvasViewport = document.getElementById('canvasViewport');
+canvasViewport.addEventListener('mousedown', (e)=>{
+  if(connectMode) return;
+  if(e.target.closest('.canvas-node') || e.target.closest('.edge-del')) return;
+  e.preventDefault();
+  canvasViewport.classList.add('panning');
+  panningCanvas = { startX: e.clientX, startY: e.clientY, origX: canvasPan.x, origY: canvasPan.y };
+});
+window.addEventListener('mousemove', (e)=>{
+  if(draggingNode){
+    const node = canvasData.nodes.find(n=>n.id===draggingNode.id);
+    if(node){
+      node.x = draggingNode.origX + (e.clientX - draggingNode.startX)/canvasZoom;
+      node.y = draggingNode.origY + (e.clientY - draggingNode.startY)/canvasZoom;
+      const el = document.querySelector(`.canvas-node[data-id="${node.id}"]`);
+      if(el){ el.style.left = node.x+'px'; el.style.top = node.y+'px'; }
+      renderCanvasEdges();
+    }
+  } else if(panningCanvas && typeof panningCanvas === 'object'){
+    canvasPan.x = panningCanvas.origX + (e.clientX - panningCanvas.startX);
+    canvasPan.y = panningCanvas.origY + (e.clientY - panningCanvas.startY);
+    applyCanvasTransform();
+  }
+});
+window.addEventListener('mouseup', ()=>{
+  if(draggingNode) saveCanvas();
+  draggingNode = null; panningCanvas = false; canvasViewport.classList.remove('panning');
+});
+canvasViewport.addEventListener('wheel', (e)=>{
+  e.preventDefault();
+  canvasZoom = Math.max(0.4, Math.min(2, canvasZoom + (e.deltaY < 0 ? 0.08 : -0.08)));
+  applyCanvasTransform();
+}, { passive:false });
+
+/* ========================= MAPAS ========================= */
+async function initMapas(){
+  mapsLoaded = true;
+  const idx = await storeGet('maps-index');
+  mapsIndex = idx || [];
+  renderMapList();
+}
+function renderMapList(){
+  const el = document.getElementById('mapList');
+  el.innerHTML = mapsIndex.map(m => `<div class="rail-item ${currentMap && currentMap.id===m.id ? 'active':''}" data-map="${m.id}"><span>🗺 ${escapeHtml(m.name)}</span></div>`).join('');
+  el.querySelectorAll('.rail-item').forEach(item=> item.addEventListener('click', ()=> loadMap(item.dataset.map)));
+}
+document.getElementById('newMapBtn').addEventListener('click', ()=> document.getElementById('mapFileInput').click());
+document.getElementById('mapFileInput').addEventListener('change', async (e)=>{
+  const file = e.target.files[0]; if(!file) return;
+  const dataUrl = await resizeImageFile(file, 1600, 0.78);
+  e.target.value = '';
+  openModal({
+    title:'Nombre del mapa', fields:[{ key:'name', label:'Nombre', placeholder:'ej: Continente Occidental' }], submitLabel:'Crear mapa',
+    onSubmit: async (v)=>{
+      const id = uid(); const name = v.name.trim() || 'Mapa sin nombre';
+      mapsIndex.push({ id, name });
+      await storeSet('maps-index', mapsIndex);
+      await storeSet('map:'+id, { id, name, image: dataUrl, pins: [], regions: [] });
+      markDirty(); renderMapList(); loadMap(id); renderHomeDashboard();
+    }
+  });
+});
+async function loadMap(id){
+  const data = await storeGet('map:'+id);
+  if(!data) return;
+  currentMap = data;
+  worldMeta.lastMapId = id;
+  await storeSet('world-meta', worldMeta);
+  renderMapList();
+  document.getElementById('mapEmpty').style.display = 'none';
+  document.getElementById('mapWorkspace').style.display = 'flex';
+  const img = document.getElementById('mapImage');
+  img.style.opacity = '0'; img.src = currentMap.image;
+  const renderAll = () => { img.style.opacity = '1'; renderPins(); renderRegions(); };
+  if(img.complete && img.naturalWidth !== 0){ renderAll(); } else { img.onload = renderAll; }
+}
+window.addEventListener('resize', ()=>{ if(currentMap) renderRegions(); });
+async function saveCurrentMap(){ if(currentMap){ await storeSet('map:'+currentMap.id, currentMap); markDirty(); renderHomeDashboard(); } }
+document.getElementById('mapRenameBtn').addEventListener('click', ()=>{
+  if(!currentMap) return;
+  openModal({
+    title:'Renombrar mapa', fields:[{ key:'name', label:'Nombre', value: currentMap.name }], submitLabel:'Guardar',
+    onSubmit: async (v)=>{
+      currentMap.name = v.name.trim() || currentMap.name;
+      const idxEntry = mapsIndex.find(m=>m.id===currentMap.id);
+      if(idxEntry) idxEntry.name = currentMap.name;
+      await storeSet('maps-index', mapsIndex); await saveCurrentMap(); renderMapList();
+    }
+  });
+});
+document.getElementById('mapDeleteBtn').addEventListener('click', ()=>{
+  if(!currentMap) return;
+  openConfirm({
+    title:'Eliminar mapa', message:'Se borrarán también todos sus pines y regiones.',
+    onConfirm: async ()=>{
+      const deletedId = currentMap.id;
+      await storeDelete('map:'+deletedId);
+      mapsIndex = mapsIndex.filter(m=>m.id!==deletedId);
+      await storeSet('maps-index', mapsIndex);
+      if(worldMeta.lastMapId === deletedId){ worldMeta.lastMapId = null; await storeSet('world-meta', worldMeta); }
+      markDirty(); currentMap = null;
+      document.getElementById('mapEmpty').style.display = 'block';
+      document.getElementById('mapWorkspace').style.display = 'none';
+      renderMapList(); renderHomeDashboard();
+    }
+  });
+});
+document.getElementById('pinModeBtn').addEventListener('click', ()=> setMapMode('pin'));
+document.getElementById('regionModeBtn').addEventListener('click', ()=> setMapMode('region'));
+function setMapMode(mode){
+  mapMode = mode; regionDraft = [];
+  document.getElementById('pinModeBtn').classList.toggle('active', mode==='pin');
+  document.getElementById('regionModeBtn').classList.toggle('active', mode==='region');
+  document.getElementById('finishRegionBtn').style.display = mode==='region' ? 'inline-block' : 'none';
+  document.getElementById('mapHint').textContent = mode==='pin' ? 'Click sobre el mapa para agregar un pin' : 'Click para marcar los vértices de una región, luego "Cerrar región"';
+  renderRegions();
+}
+document.getElementById('mapImageWrap').addEventListener('click', (e)=>{
+  if(!currentMap) return;
+  if(e.target.closest('.map-pin')) return;
+  const img = document.getElementById('mapImage');
+  const rect = img.getBoundingClientRect();
+  const px = ((e.clientX - rect.left) / rect.width) * 100;
+  const py = ((e.clientY - rect.top) / rect.height) * 100;
+  if(px<0||px>100||py<0||py>100) return;
+  if(mapMode === 'pin'){
+    openModal({
+      title:'Nuevo pin', fields:[
+        { key:'title', label:'Título', placeholder:'ej: Puerto de las Sombras' },
+        { key:'note', label:'Nota', type:'textarea', placeholder:'Detalles de este punto' },
+        { key:'entryId', label:'Vincular a ficha (opcional)', type:'select', options:[{value:'',label:'— Ninguna —'}, ...entriesIndex.map(en=>({value:en.id,label:en.name}))] }
+      ],
+      submitLabel:'Crear pin',
+      onSubmit: async (v)=>{
+        currentMap.pins.push({ id: uid(), x:px, y:py, title:v.title||'Sin título', note:v.note||'', entryId:v.entryId||null });
+        await saveCurrentMap(); renderPins();
+      }
+    });
+  } else { regionDraft.push({ x:px, y:py }); renderRegions(); }
+});
+document.getElementById('finishRegionBtn').addEventListener('click', ()=>{
+  if(regionDraft.length < 3){ regionDraft = []; renderRegions(); return; }
+  openModal({
+    title:'Nueva región', fields:[
+      { key:'name', label:'Nombre de la región', placeholder:'ej: Bosque Encantado' },
+      { key:'color', label:'Color', type:'color', value:'#8fc4b0' }
+    ],
+    submitLabel:'Crear región',
+    onSubmit: async (v)=>{
+      currentMap.regions.push({ id: uid(), name: v.name||'Región sin nombre', color: v.color||'#8fc4b0', points: regionDraft });
+      regionDraft = []; await saveCurrentMap(); renderRegions();
+    }
+  });
+});
+function renderPins(){
+  const layer = document.getElementById('mapPinsLayer'); layer.innerHTML = '';
+  if(!currentMap) return;
+  currentMap.pins.forEach(pin=>{
+    const el = document.createElement('div');
+    el.className = 'map-pin'; el.style.left = pin.x+'%'; el.style.top = pin.y+'%';
+    el.innerHTML = `<svg viewBox="0 0 24 24" width="22" height="22"><path fill="#c9922f" stroke="#2b2018" stroke-width="1" d="M12 2C7.6 2 4 5.6 4 10c0 6 8 12 8 12s8-6 8-12c0-4.4-3.6-8-8-8z"/><circle cx="12" cy="10" r="3" fill="#2b2018"/></svg>`;
+    el.title = pin.title;
+    el.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      openModal({
+        title: pin.title, fields:[{ key:'title', label:'Título', value:pin.title }, { key:'note', label:'Nota', type:'textarea', value:pin.note }],
+        submitLabel:'Guardar', showDelete:true,
+        onSubmit: async (v)=>{ pin.title=v.title; pin.note=v.note; await saveCurrentMap(); renderPins(); },
+        onDelete: async ()=>{ currentMap.pins = currentMap.pins.filter(p=>p.id!==pin.id); await saveCurrentMap(); renderPins(); }
+      });
+    });
+    layer.appendChild(el);
+  });
+}
+function renderRegions(){
+  const svg = document.getElementById('mapRegionsSvg');
+  const img = document.getElementById('mapImage');
+  if(!img) return;
+  svg.innerHTML = '';
+  document.querySelectorAll('.map-region-label').forEach(l=>l.remove());
+  if(!currentMap) return;
+  const w = img.clientWidth || 1, h = img.clientHeight || 1;
+  currentMap.regions.forEach(region=>{
+    const pts = region.points.map(p => `${p.x/100*w},${p.y/100*h}`).join(' ');
+    const poly = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+    poly.setAttribute('points', pts); poly.setAttribute('fill', region.color + '55'); poly.setAttribute('stroke', region.color); poly.setAttribute('stroke-width', '2');
+    poly.style.cursor = 'pointer';
+    poly.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      openModal({
+        title: region.name, fields:[{ key:'name', label:'Nombre', value:region.name }, { key:'color', label:'Color', type:'color', value:region.color }],
+        submitLabel:'Guardar', showDelete:true,
+        onSubmit: async (v)=>{ region.name=v.name; region.color=v.color; await saveCurrentMap(); renderRegions(); },
+        onDelete: async ()=>{ currentMap.regions = currentMap.regions.filter(r=>r.id!==region.id); await saveCurrentMap(); renderRegions(); }
+      });
+    });
+    svg.appendChild(poly);
+    const cx = region.points.reduce((s,p)=>s+p.x,0)/region.points.length;
+    const cy = region.points.reduce((s,p)=>s+p.y,0)/region.points.length;
+    const label = document.createElement('div');
+    label.className = 'map-region-label'; label.style.left = cx+'%'; label.style.top = cy+'%'; label.textContent = region.name;
+    document.getElementById('mapImageWrap').appendChild(label);
+  });
+  if(regionDraft.length){
+    const pts = regionDraft.map(p => `${p.x/100*w},${p.y/100*h}`).join(' ');
+    const poly = document.createElementNS('http://www.w3.org/2000/svg','polyline');
+    poly.setAttribute('points', pts); poly.setAttribute('fill', 'none'); poly.setAttribute('stroke', '#8fc4b0');
+    poly.setAttribute('stroke-dasharray', '4'); poly.setAttribute('stroke-width', '2');
+    svg.appendChild(poly);
+  }
+}
+
+/* ========================= DIARIO DEL VIAJERO ========================= */
+function renderJournalList(){
+  const el = document.getElementById('journalList');
+  const sorted = journalEntries.slice().sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+  el.innerHTML = sorted.map(j=>`<div class="rail-item ${currentJournalId===j.id?'active':''}" data-id="${j.id}"><span>${escapeHtml(j.title||'Sin título')}</span><span class="rail-count">${j.date||''}</span></div>`).join('') || '<div class="hint" style="margin:8px 0;">Sin entradas.</div>';
+  el.querySelectorAll('.rail-item').forEach(item=> item.addEventListener('click', ()=> loadJournalEntry(item.dataset.id)));
+}
+function loadJournalEntry(id){
+  currentJournalId = id;
+  const j = journalEntries.find(x=>x.id===id);
+  document.getElementById('journalEmpty').style.display = j ? 'none' : 'flex';
+  document.getElementById('journalEditor').style.display = j ? 'block' : 'none';
+  if(j){
+    document.getElementById('journalTitle').value = j.title || '';
+    document.getElementById('journalDate').value = j.date || '';
+    document.getElementById('journalContent').innerHTML = j.content || '';
+  }
+  renderJournalList();
+}
+document.getElementById('newJournalBtn').addEventListener('click', async ()=>{
+  const j = { id:uid(), title:'Nueva entrada', date: new Date().toISOString().slice(0,10), content:'' };
+  journalEntries.push(j); await storeSet('journal-entries', journalEntries); markDirty();
+  loadJournalEntry(j.id);
+});
+document.getElementById('journalTitle').addEventListener('keydown', (e)=>{
+  if(e.key==='Enter'){ e.preventDefault(); document.getElementById('journalContent').focus(); }
+});
+document.getElementById('journalSave').addEventListener('click', async ()=>{
+  const j = journalEntries.find(x=>x.id===currentJournalId); if(!j) return;
+  j.title = document.getElementById('journalTitle').value.trim() || 'Sin título';
+  j.date = document.getElementById('journalDate').value;
+  j.content = document.getElementById('journalContent').innerHTML;
+  await storeSet('journal-entries', journalEntries); markDirty(); renderJournalList();
+});
+document.getElementById('journalDelete').addEventListener('click', ()=>{
+  if(!currentJournalId) return;
+  openConfirm({ title:'Eliminar entrada', message:'Esta entrada del diario se eliminará.', onConfirm: async ()=>{
+    journalEntries = journalEntries.filter(x=>x.id!==currentJournalId);
+    await storeSet('journal-entries', journalEntries); markDirty();
+    currentJournalId = null; loadJournalEntry(null);
+  }});
+});
+document.getElementById('journalInsertImgBtn').addEventListener('click', ()=> document.getElementById('journalImgFile').click());
+document.getElementById('journalImgFile').addEventListener('change', async (e)=>{
+  const file = e.target.files[0]; if(!file) return;
+  const dataUrl = await resizeImageFile(file, 800, 0.7);
+  document.getElementById('journalContent').focus();
+  document.execCommand('insertImage', false, dataUrl);
+  e.target.value='';
+});
+
+/* ========================= BITÁCORA DE SESIONES ========================= */
+function renderSessionList(){
+  const el = document.getElementById('sessionList');
+  const sorted = sessionLog.slice().sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+  el.innerHTML = sorted.map(s=>`<div class="rail-item ${currentSessionId===s.id?'active':''}" data-id="${s.id}"><span>${escapeHtml(s.title||'Sesión')}</span><span class="rail-count">${s.date||''}</span></div>`).join('') || '<div class="hint" style="margin:8px 0;">Sin sesiones.</div>';
+  el.querySelectorAll('.rail-item').forEach(item=> item.addEventListener('click', ()=> loadSession(item.dataset.id)));
+}
+function loadSession(id){
+  currentSessionId = id;
+  const s = sessionLog.find(x=>x.id===id);
+  document.getElementById('sessionEmpty').style.display = s? 'none':'flex';
+  document.getElementById('sessionEditor').style.display = s? 'block':'none';
+  if(s){
+    document.getElementById('sessionTitle').value = s.title||'';
+    document.getElementById('sessionDate').value = s.date||'';
+    document.getElementById('sessionSummary').value = s.summary||'';
+    document.getElementById('sessionNotes').innerHTML = s.notes||'';
+    renderSessionLinks(s);
+  }
+  renderSessionList();
+}
+function renderSessionLinks(s){
+  const el = document.getElementById('sessionLinks');
+  el.innerHTML = entriesIndex.map(en=>`
+    <label class="linked-ficha-check"><input type="checkbox" data-link="${en.id}" ${s.linkedEntryIds&&s.linkedEntryIds.includes(en.id)?'checked':''}> ${TYPES[en.type].glyph} ${escapeHtml(en.name)}</label>`).join('') || '<div class="hint">No hay fichas creadas.</div>';
+}
+document.getElementById('newSessionBtn').addEventListener('click', async ()=>{
+  const s = { id:uid(), title:'Nueva sesión', date:new Date().toISOString().slice(0,10), summary:'', notes:'', linkedEntryIds:[] };
+  sessionLog.push(s); await storeSet('session-log', sessionLog); markDirty();
+  loadSession(s.id);
+});
+document.getElementById('sessionTitle').addEventListener('keydown', (e)=>{
+  if(e.key==='Enter'){ e.preventDefault(); document.getElementById('sessionSummary').focus(); }
+});
+document.getElementById('sessionSave').addEventListener('click', async ()=>{
+  const s = sessionLog.find(x=>x.id===currentSessionId); if(!s) return;
+  s.title = document.getElementById('sessionTitle').value.trim() || 'Sesión';
+  s.date = document.getElementById('sessionDate').value;
+  s.summary = document.getElementById('sessionSummary').value;
+  s.notes = document.getElementById('sessionNotes').innerHTML;
+  s.linkedEntryIds = Array.from(document.querySelectorAll('[data-link]:checked')).map(el=>el.dataset.link);
+  await storeSet('session-log', sessionLog); markDirty(); renderSessionList();
+});
+document.getElementById('sessionDelete').addEventListener('click', ()=>{
+  if(!currentSessionId) return;
+  openConfirm({ title:'Eliminar sesión', message:'Se eliminará esta entrada de la bitácora.', onConfirm: async ()=>{
+    sessionLog = sessionLog.filter(x=>x.id!==currentSessionId);
+    await storeSet('session-log', sessionLog); markDirty();
+    currentSessionId = null; loadSession(null);
+  }});
+});
+
+/* ========================= INIT ========================= */
+async function loadExtras(){
+  const jr = await storeGet('journal-entries'); journalEntries = jr || [];
+  const sl = await storeGet('session-log'); sessionLog = sl || [];
+  renderJournalList(); renderSessionList();
+}
+loadWorld().then(()=>{ loadEntryIntoWorkspace(entriesIndex[0]?.id || null); });
+loadExtras();
+</script>
+</body>
+</html>
