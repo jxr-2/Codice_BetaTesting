@@ -64,8 +64,27 @@ function initGrimorio(){
 }
 function refreshGrimoireTargetSelect(){
   const sel = document.getElementById('grimoireTargetEntry');
-  const personajes = entriesIndex.filter(e=>e.type==='personaje');
-  sel.innerHTML = personajes.length ? personajes.map(e=>`<option value="${e.id}">${escapeHtml(e.name)}</option>`).join('') : '<option value="">(sin personajes creados)</option>';
+  const byFolder = worldMeta.folders.reduce((acc,f)=>{ acc[f.id] = { folder:f, entries:[] }; return acc; }, {});
+  const orphanGroup = { folder:{ name:'Sin carpeta' }, entries:[] };
+
+  entriesIndex.forEach(entry => {
+    const option = `<option value="${entry.id}">${TYPES[entry.type]?.glyph||''} ${escapeHtml(entry.name||'Sin nombre')}</option>`;
+    if(entry.folderId && byFolder[entry.folderId]){
+      byFolder[entry.folderId].entries.push(option);
+    } else {
+      orphanGroup.entries.push(option);
+    }
+  });
+
+  const sections = [];
+  if(orphanGroup.entries.length) sections.push(`<optgroup label="${escapeHtml(orphanGroup.folder.name)}">${orphanGroup.entries.join('')}</optgroup>`);
+  Object.values(byFolder).forEach(group => {
+    if(group.entries.length){
+      sections.push(`<optgroup label="${escapeHtml(group.folder.name)}">${group.entries.join('')}</optgroup>`);
+    }
+  });
+
+  sel.innerHTML = sections.length ? sections.join('') : '<option value="">(sin fichas creadas)</option>';
 }
 function renderGrimoireBasicList(q=''){
   const el = document.getElementById('grimoireBasicList');
@@ -84,12 +103,30 @@ function renderGrimoireBasicList(q=''){
       const targetId = document.getElementById('grimoireTargetEntry').value;
       if(!targetId){ return; }
       const spell = GRIMOIRE.find(s=>s.name===btn.dataset.addBasic);
-      await addSpellLineToEntry(targetId, `${spell.name} (${spell.level===0?'Truco':'Nv '+spell.level}, ${spell.school}) — ${spell.blurb}`);
-      btn.textContent = 'Agregado ✓';
+      const line = `${spell.name} (${spell.level===0?'Truco':'Nv '+spell.level}, ${spell.school}) — ${spell.blurb}`;
+      const added = await toggleSpellLineOnEntry(targetId, line);
+      btn.textContent = added ? 'Agregado ✓' : '+ Agregar a ficha';
     });
   });
 }
 document.getElementById('grimoireBasicSearch').addEventListener('input', (e)=> renderGrimoireBasicList(e.target.value));
+async function toggleSpellLineOnEntry(entryId, line){
+  const full = await storeGet('entry:'+entryId);
+  if(!full) return null;
+  const lines = full.spells ? full.spells.split('\n') : [];
+  const index = lines.findIndex(l=>l===line);
+  const added = index === -1;
+  if(added){
+    full.spells = full.spells ? full.spells + '\n' + line : line;
+  } else {
+    lines.splice(index, 1);
+    full.spells = lines.filter(Boolean).join('\n');
+  }
+  await storeSet('entry:'+entryId, full);
+  markDirty();
+  if(currentEntryId === entryId && fichasMode==='editor'){ document.getElementById('wsSpells').value = full.spells; }
+  return added;
+}
 async function addSpellLineToEntry(entryId, line){
   const full = await storeGet('entry:'+entryId);
   if(!full) return;
