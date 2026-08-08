@@ -14,15 +14,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Special+Elite&family=Cinzel:wght@400;600;700&display=swap');
 
 :root{
+  /* Core palette — overridden by themes */
   --bg-deep: #0d0906;
+  --bg-body-from: #1e160f;
+  --bg-body-to: #060402;
   --bg-panel: rgba(20,14,10,0.94);
   --bg-panel-raised: rgba(32,24,18,0.96);
   --bg-panel-hover: rgba(44,34,26,0.92);
+  --topbar-from: #241a10;
+  --topbar-to: #1a130c;
+  --topbar-border: rgba(201,146,47,0.16);
+
+  /* Accent — overridden by themes */
   --brass: #c9922f;
   --brass-bright: #f1d27a;
   --brass-dim: #8b6b33;
   --verdigris: #7bb89d;
   --verdigris-bright: #9cd8c6;
+
+  /* Surfaces */
   --parchment: #e8dcc3;
   --parchment-dim: #c9b790;
   --ink: #231914;
@@ -38,7 +48,7 @@ body{
   min-height:100vh; overflow-x:hidden; color: var(--text);
   font-family: 'Inter', sans-serif; font-size: 15.5px;
   background: radial-gradient(circle at top left, rgba(255,225,175,0.08), transparent 24%),
-              linear-gradient(180deg, #1e160f 0%, #0e0a07 55%, #060402 100%);
+              linear-gradient(180deg, var(--bg-body-from) 0%, #0e0a07 55%, var(--bg-body-to) 100%);
   background-attachment: fixed;
   background-size: cover;
   -webkit-font-smoothing: antialiased;
@@ -76,17 +86,63 @@ button, .rail-item, .ficha-card, .home-recent-item, .tab, .mode-btn, .canvas-nod
 
 /* TOPBAR */
 .topbar{ display:flex; align-items:center; gap:16px; padding:14px 24px;
-  background: linear-gradient(180deg, #241a10, #1a130c); border-bottom:2px solid rgba(201,146,47,0.16); box-shadow:0 2px 12px rgba(0,0,0,0.4); flex-wrap:wrap; }
+  background: linear-gradient(180deg, var(--topbar-from), var(--topbar-to)); border-bottom:2px solid var(--topbar-border); box-shadow:0 2px 12px rgba(0,0,0,0.4); flex-wrap:wrap; }
 .brand-mark{ font-family:'Cinzel', serif; font-weight:700; font-size:17px; color:var(--brass-bright); letter-spacing:0.08em; display:flex; align-items:center; gap:8px; }
 .world-name-input{ background:transparent; border:none; border-bottom:1px dashed var(--border-brass); color:var(--parchment);
   font-family:'Cinzel', serif; font-size:17px; font-weight:600; padding:2px 4px; min-width:140px; }
 .world-name-input:focus{ outline:none; border-bottom-color:var(--verdigris); }
-.nav-dropdown{ position:relative; }
-.nav-menu{ position:absolute; top:120%; left:0; background:var(--bg-panel-raised); border:1px solid var(--border-brass); border-radius:8px; padding:6px; display:none; flex-direction:column; min-width:170px; z-index:80; box-shadow:0 10px 24px rgba(0,0,0,0.4); animation: fadeInUp 0.15s ease; }
-.nav-menu.open{ display:flex; }
-.nav-menu button{ background:transparent; border:none; color:var(--text-dim2); text-align:left; padding:9px 12px; border-radius:5px; font-size:13px; }
+/* ---- NAV LATERAL DRAWER ---- */
+.nav-edge-trigger{
+  position:fixed; left:0; top:50%; transform:translateY(-50%);
+  z-index:91; background:var(--bg-panel-raised); border:1px solid var(--border-brass);
+  border-left:none; border-radius:0 10px 10px 0;
+  width:24px; height:52px; display:flex; align-items:center; justify-content:center;
+  color:var(--brass-bright); font-size:13px;
+  box-shadow:3px 0 12px rgba(0,0,0,0.4);
+  transition:width 0.18s ease, background 0.18s ease;
+  cursor:pointer; padding:0;
+}
+.nav-edge-trigger:hover{ width:30px; background:var(--bg-panel-hover); }
+.nav-edge-trigger span{ transition:transform 0.22s ease; display:block; }
+.nav-edge-trigger.open span{ transform:rotate(180deg); }
+
+.nav-drawer-scrim{
+  position:fixed; inset:0; background:rgba(6,4,2,0.55);
+  z-index:89; opacity:0; pointer-events:none;
+  transition:opacity 0.22s ease;
+}
+.nav-drawer-scrim.open{ opacity:1; pointer-events:all; }
+
+.nav-menu{
+  position:fixed; top:0; left:0; bottom:0;
+  width:220px; background:var(--bg-panel-raised);
+  border-right:1px solid var(--border-brass);
+  padding:22px 10px 28px;
+  display:flex; flex-direction:column; gap:2px;
+  z-index:90;
+  box-shadow:6px 0 24px rgba(0,0,0,0.45);
+  transform:translateX(-100%);
+  transition:transform 0.24s cubic-bezier(0.4,0,0.2,1);
+}
+.nav-menu.open{ transform:translateX(0); }
+.nav-menu-logo{
+  font-family:'Cinzel', serif; font-size:13px; font-weight:600; letter-spacing:0.12em;
+  color:var(--brass-dim); padding:0 12px 16px; border-bottom:1px solid var(--border-brass);
+  margin-bottom:10px; display:flex; align-items:center; gap:8px;
+}
+.nav-menu button{
+  background:transparent; border:none; color:var(--text-dim2);
+  text-align:left; padding:11px 14px; border-radius:6px;
+  font-size:14px; letter-spacing:0.02em;
+  transition:background 0.14s ease, color 0.14s ease;
+  width:100%;
+}
 .nav-menu button:hover{ background:var(--bg-panel-hover); color:var(--parchment); }
-.nav-menu button.active{ color:var(--brass-bright); }
+.nav-menu button.active{
+  color:var(--brass-bright); background:rgba(201,146,47,0.1);
+  border-left:2px solid var(--brass);
+  padding-left:12px;
+}
 .tab{ background:transparent; border:1px solid var(--border-brass); color:var(--text-dim2); padding:8px 16px; border-radius:3px; font-size:12px; letter-spacing:0.05em; }
 .tab:hover{ color:var(--parchment); }
 .topbar-actions{ display:flex; align-items:center; gap:10px; margin-left:auto; }
@@ -271,6 +327,21 @@ button, .rail-item, .ficha-card, .home-recent-item, .tab, .mode-btn, .canvas-nod
 /* GRIMORIO */
 .grimoire-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 12px; border:1px solid var(--border-brass); border-radius:8px; background: rgba(255,255,255,0.04); }
 
+/* IMAGE BLOCKS in editor */
+.img-block{ display:block; position:relative; margin:10px 0; }
+.img-toolbar{
+  display:flex; align-items:center; gap:4px; flex-wrap:wrap;
+  background: rgba(35,25,20,0.85); padding:5px 8px; border-radius:6px 6px 0 0;
+  border:1px solid rgba(43,32,24,0.3);
+}
+.img-toolbar button{
+  background: rgba(255,255,255,0.10); border:1px solid rgba(255,255,255,0.15);
+  color:var(--parchment, #e8dcc3); width:28px; height:28px; border-radius:4px; font-size:12px;
+  cursor:pointer; line-height:1;
+}
+.img-toolbar button:hover{ background: rgba(255,255,255,0.22); }
+.img-block img{ border-radius:0 0 4px 4px; max-width:100%; }
+
 /* MODAL */
 .modal-overlay{ position:fixed; inset:0; background: rgba(8,6,4,0.7); z-index:100; display:none; align-items:center; justify-content:center; }
 .modal-overlay.open{ display:flex; }
@@ -297,26 +368,65 @@ button, .rail-item, .ficha-card, .home-recent-item, .tab, .mode-btn, .canvas-nod
   .ws-stats-grid{ grid-template-columns: repeat(2, minmax(100px,1fr)); }
   .canvas-palette{ flex-direction:row; top:auto; bottom:16px; right:16px; }
 }
+
+/* ---- TOAST ---- */
+#codice-toast{
+  position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(12px);
+  background: rgba(32,24,18,0.97); border:1px solid var(--border-brass);
+  color:var(--parchment-dim); font-family:'Special Elite',monospace; font-size:12.5px;
+  padding:10px 22px; border-radius:999px;
+  box-shadow:0 4px 18px rgba(0,0,0,0.45);
+  z-index:200; opacity:0; pointer-events:none;
+  transition:opacity 0.22s ease, transform 0.22s ease;
+  white-space:nowrap;
+}
+#codice-toast.visible{
+  opacity:1; transform:translateX(-50%) translateY(0);
+}
+#codice-toast.autosave{
+  border-color:var(--verdigris); color:var(--verdigris-bright);
+}
+
+/* ---- WS TOPBAR contrast fix ---- */
+.ws-topbar{
+  background: rgba(35,25,20,0.88);
+  border-radius:12px 12px 0 0;
+}
+.ws-topbar .btn-ghost{
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.18);
+  color: var(--parchment-dim);
+}
+.ws-topbar .btn-ghost:hover{
+  background: rgba(255,255,255,0.15);
+  color: var(--parchment);
+  border-color: var(--brass-bright);
+}
+.ws-topbar .hint{ color:var(--parchment-dim); }
 </style>
 </head>
 <body>
+
+<div id="codice-toast" role="status" aria-live="polite"></div>
+
+<!-- NAV LATERAL DRAWER -->
+<button class="nav-edge-trigger" id="navEdgeBtn" type="button" title="Secciones"><span>▸</span></button>
+<div class="nav-drawer-scrim" id="navScrim"></div>
+<nav class="nav-menu" id="navMenu" aria-label="Secciones">
+  <div class="nav-menu-logo">⚙ CÓDICE</div>
+  <button data-view="home" class="active">🏠 Inicio</button>
+  <button data-view="fichas">📋 Fichas</button>
+  <button data-view="diario">📔 Diario</button>
+  <button data-view="bitacora">🗒 Bitácora</button>
+  <button data-view="canvas">🕸 Canvas</button>
+  <button data-view="mapas">🗺 Mapas</button>
+  <button data-view="grimorio">✨ Grimorio</button>
+</nav>
 
 <div class="topbar">
   <div class="brand-mark">⚙ CÓDICE</div>
   <input id="worldName" class="world-name-input" value="Mundo sin nombre" spellcheck="false">
   <button class="rail-btn" id="railToggleBtn" type="button">☰ Panel</button>
-  <div class="nav-dropdown">
-    <button class="tab" id="navMenuBtn" type="button">☰ Secciones ▾</button>
-    <div class="nav-menu" id="navMenu">
-      <button data-view="home" class="active">Inicio</button>
-      <button data-view="fichas">Fichas</button>
-      <button data-view="diario">Diario</button>
-      <button data-view="bitacora">Bitácora</button>
-      <button data-view="canvas">Canvas</button>
-      <button data-view="mapas">Mapas</button>
-      <button data-view="grimorio">Grimorio</button>
-    </div>
-  </div>
   <div class="topbar-actions">
     <button class="icon-round-btn" id="settingsBtn" title="Ajustes" type="button">⚙</button>
     <button class="icon-round-btn" id="folderBtn" title="Conectar carpeta" type="button">📁</button>
@@ -331,9 +441,9 @@ button, .rail-item, .ficha-card, .home-recent-item, .tab, .mode-btn, .canvas-nod
 <section id="view-home" class="view active">
   <div class="home-panel">
     <div class="home-copy">
-      <div class="home-overline">TU LABORATORIO</div>
-      <h1 class="home-title">Escribe, conecta y explora tu mundo.</h1>
-      <p class="home-text">Tus cartas aparecen aquí cuando volvés al proyecto.</p>
+      <div class="home-overline" id="homeOverline">TU LABORATORIO</div>
+      <h1 class="home-title" id="homeGreetTitle">Escribe, conecta y explora tu mundo.</h1>
+      <p class="home-text" id="homeGreetText">Tus cartas aparecen aquí cuando volvés al proyecto.</p>
       <div class="home-actions">
         <button class="btn-brass" id="newFichaBtnHome">+ Nueva carta</button>
         <button class="btn-ghost" id="goToCanvasBtn">Ver conexiones</button>
@@ -343,7 +453,7 @@ button, .rail-item, .ficha-card, .home-recent-item, .tab, .mode-btn, .canvas-nod
     <div class="home-grid">
       <div class="home-card-preview" id="homePreviewCard">
         <div class="home-overline">Vista rápida</div>
-        <h2>Última carta editada</h2>
+        <h2 id="homePreviewName">Última carta editada</h2>
         <p id="homePreviewText">Creá una ficha y aparecerá aquí una vista previa instantánea.</p>
         <div class="home-card-meta" id="homePreviewMeta"></div>
       </div>

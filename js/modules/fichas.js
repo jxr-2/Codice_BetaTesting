@@ -15,7 +15,7 @@ function renderFolderList(){
   el.querySelectorAll('.rail-item').forEach(item=>{
     item.addEventListener('click', (e)=>{
       if(e.target.closest('[data-del-folder]')) return;
-      activeFolder = item.dataset.folder; renderFolderList(); renderFichasGrid();
+      activeFolder = item.dataset.folder; setFichasMode('grid'); renderFolderList(); renderFichasGrid();
     });
   });
   el.querySelectorAll('[data-del-folder]').forEach(btn=>{
@@ -51,7 +51,7 @@ function renderTypeFilterList(){
   });
   el.innerHTML = html;
   el.querySelectorAll('.rail-item').forEach(item=>{
-    item.addEventListener('click', ()=>{ activeType = item.dataset.type; renderTypeFilterList(); renderFichasGrid(); });
+    item.addEventListener('click', ()=>{ activeType = item.dataset.type; setFichasMode('grid'); renderTypeFilterList(); renderFichasGrid(); });
   });
 }
 
@@ -262,12 +262,107 @@ document.getElementById('addBlockBtn').addEventListener('click', ()=>{
 });
 document.getElementById('contentImgFile').addEventListener('change', async (e)=>{
   const file = e.target.files[0]; if(!file) return;
-  const dataUrl = await resizeImageFile(file, 800, 0.7);
+  const dataUrl = await resizeImageFile(file, 1200, 0.8);
   const blockId = e.target.dataset.forBlock;
   const target = document.querySelector(`[data-block-content="${blockId}"]`);
-  if(target){ target.focus(); document.execCommand('insertImage', false, dataUrl); const b = currentBlocks.find(x=>x.id===blockId); if(b) b.html = target.innerHTML; markWsDirty(); }
+  if(target){
+    target.focus();
+    insertResizableImage(target, dataUrl, blockId);
+    const b = currentBlocks.find(x=>x.id===blockId);
+    if(b) b.html = target.innerHTML;
+    markWsDirty();
+  }
   e.target.value = '';
 });
+
+/* ---- Resizable / alignable image helper ---- */
+function insertResizableImage(container, src, blockId){
+  const wrapper = document.createElement('div');
+  wrapper.className = 'img-block';
+  wrapper.dataset.imgBlock = '1';
+  wrapper.contentEditable = 'false';
+
+  const img = document.createElement('img');
+  img.src = src;
+  img.style.width = '60%';
+  img.style.display = 'block';
+  img.style.margin = '8px auto';
+  img.draggable = false;
+
+  const toolbar = document.createElement('div');
+  toolbar.className = 'img-toolbar';
+  toolbar.innerHTML = `
+    <button data-align="left"   title="Izquierda">◀</button>
+    <button data-align="center" title="Centro">▬</button>
+    <button data-align="right"  title="Derecha">▶</button>
+    <button data-align="full"   title="Ancho completo">⇔</button>
+    <input type="range" min="20" max="100" value="60" title="Tamaño" style="width:70px;">
+    <button data-remove title="Eliminar">✕</button>`;
+
+  toolbar.querySelector('input[type=range]').addEventListener('input', ev=>{
+    img.style.width = ev.target.value + '%';
+    syncBlock(blockId, container);
+  });
+  toolbar.querySelectorAll('[data-align]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const a = btn.dataset.align;
+      if(a==='left')  { img.style.marginLeft='0'; img.style.marginRight='auto'; img.style.display='block'; }
+      else if(a==='center'){ img.style.margin='8px auto'; img.style.display='block'; }
+      else if(a==='right') { img.style.marginLeft='auto'; img.style.marginRight='0'; img.style.display='block'; }
+      else if(a==='full')  { img.style.width='100%'; img.style.margin='8px 0'; }
+      syncBlock(blockId, container);
+    });
+  });
+  toolbar.querySelector('[data-remove]').addEventListener('click', ()=>{
+    wrapper.remove();
+    syncBlock(blockId, container);
+  });
+
+  wrapper.appendChild(toolbar);
+  wrapper.appendChild(img);
+
+  // Insert at cursor position or append
+  const sel = window.getSelection();
+  if(sel && sel.rangeCount && container.contains(sel.anchorNode)){
+    const range = sel.getRangeAt(0);
+    range.deleteContents();
+    range.insertNode(wrapper);
+    range.setStartAfter(wrapper);
+    range.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  } else {
+    container.appendChild(wrapper);
+  }
+}
+
+function syncBlock(blockId, container){
+  const b = currentBlocks.find(x=>x.id===blockId);
+  if(b){ b.html = container.innerHTML; markWsDirty(); }
+}
+
+/* Wire click-to-show-toolbar on existing saved images when a block renders */
+function wireExistingImages(container, blockId){
+  container.querySelectorAll('img:not([data-wired])').forEach(img=>{
+    img.dataset.wired = '1';
+    img.style.cursor = 'pointer';
+    img.addEventListener('click', ()=>{
+      // wrap orphan img in a block and show controls
+      if(!img.closest('.img-block')){
+        const w = document.createElement('div');
+        w.className = 'img-block';
+        w.contentEditable = 'false';
+        img.parentNode.insertBefore(w, img);
+        w.appendChild(img);
+        const dataUrl = img.src;
+        img.parentNode.replaceChild(document.createElement('span'), img); // remove then re-insert
+        w.innerHTML = '';
+        insertResizableImage(container, dataUrl, blockId);
+        img.remove();
+      }
+    });
+  });
+}
 
 async function loadEntryIntoWorkspace(id){
   setFichasMode('editor');
@@ -448,10 +543,14 @@ document.getElementById('openGrimoireBtn').addEventListener('click', ()=>{
     document.querySelectorAll('#grimoireResults [data-add]').forEach(btn=>{
       btn.addEventListener('click', ()=>{
         const spell = GRIMOIRE.find(s=>s.name===btn.dataset.add);
-        const ta = document.getElementById('wsSpells');
         const line = `${spell.name} (${spell.level===0?'Truco':'Nv '+spell.level}, ${spell.school}) — ${spell.blurb}`;
-        ta.value = ta.value ? ta.value + '\n' + line : line;
-        markWsDirty(); btn.textContent = 'Agregado ✓'; btn.disabled = true;
+        // wsSpells textarea lives inside the 5E panel — grab it from the page
+        const ta = document.getElementById('wsSpells');
+        if(ta){
+          ta.value = ta.value ? ta.value + '\n' + line : line;
+          markWsDirty();
+        }
+        btn.textContent = 'Agregado ✓'; btn.disabled = true;
       });
     });
   };
