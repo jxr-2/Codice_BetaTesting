@@ -134,10 +134,13 @@ const THEME_PRESETS = {
     verd:'#7bb89d', verdB:'#9cd8c6',
     parch:'#e8dcc3', parchD:'#c9b790',
     text:'#efe3cc', textD:'#b9a98b',
+    ink:'#231914',
+    danger:'#c1604a', dangerB:'#e48d75',
     bgDeep:'#0d0906', bgFrom:'#1e160f', bgTo:'#060402',
     bgPanel:'rgba(20,14,10,0.94)', bgRaised:'rgba(32,24,18,0.96)', bgHover:'rgba(44,34,26,0.92)',
     topFrom:'#241a10', topTo:'#1a130c', topBorder:'rgba(201,146,47,0.16)',
     borderBrass:'rgba(201,146,47,0.35)',
+    bgGridOpacity: 0.04, bgBlur: 0,
   },
   lotr: {
     label: 'Tierra Media',
@@ -146,10 +149,13 @@ const THEME_PRESETS = {
     verd:'#6b9a6f', verdB:'#8ab878',
     parch:'#c9bfa8', parchD:'#3a3a38',
     text:'#ddd5c8', textD:'#9a8f80',
+    ink:'#2a2620',
+    danger:'#b85a3a', dangerB:'#d87858',
     bgDeep:'#0b0f08', bgFrom:'#15191f', bgTo:'#08090a',
     bgPanel:'rgba(18,22,15,0.96)', bgRaised:'rgba(26,30,20,0.96)', bgHover:'rgba(38,44,28,0.92)',
     topFrom:'#1a1f15', topTo:'#0e1109', topBorder:'rgba(184,155,81,0.26)',
     borderBrass:'rgba(184,155,81,0.42)',
+    bgGridOpacity: 0.03, bgBlur: 0,
   },
   starwars: {
     label: 'Star Wars',
@@ -158,10 +164,13 @@ const THEME_PRESETS = {
     verd:'#00d9ff', verdB:'#66f0ff',
     parch:'#1a2942', parchD:'#0d1620',
     text:'#ffffff', textD:'#e8f0ff',
+    ink:'#0d1620',
+    danger:'#ff4d4d', dangerB:'#ff7878',
     bgDeep:'#02040a', bgFrom:'#0a1424', bgTo:'#050810',
     bgPanel:'rgba(10,15,28,0.96)', bgRaised:'rgba(16,22,40,0.97)', bgHover:'rgba(26,35,56,0.93)',
     topFrom:'#0b1428', topTo:'#050810', topBorder:'rgba(255,232,31,0.3)',
     borderBrass:'rgba(255,232,31,0.45)',
+    bgGridOpacity: 0.05, bgBlur: 2,
   },
   assassin: {
     label: 'Assassin\'s Creed',
@@ -170,10 +179,13 @@ const THEME_PRESETS = {
     verd:'#b0b0b0', verdB:'#e0e0e0',
     parch:'#e8e8e8', parchD:'#2a2a2c',
     text:'#f0f0f0', textD:'#a8a8a8',
+    ink:'#1a1a1c',
+    danger:'#ff4d4d', dangerB:'#ff7878',
     bgDeep:'#0a0a0c', bgFrom:'#141416', bgTo:'#080809',
     bgPanel:'rgba(20,20,22,0.96)', bgRaised:'rgba(30,30,32,0.96)', bgHover:'rgba(45,45,48,0.92)',
     topFrom:'#1a1a1c', topTo:'#0d0d0e', topBorder:'rgba(191,31,36,0.28)',
     borderBrass:'rgba(191,31,36,0.45)',
+    bgGridOpacity: 0.02, bgBlur: 0,
   },
   stalker: {
     label: 'S.T.A.L.K.E.R.',
@@ -182,10 +194,13 @@ const THEME_PRESETS = {
     verd:'#d4c458', verdB:'#f0e88a',
     parch:'#2a2820', parchD:'#151310',
     text:'#e8e4d0', textD:'#b8b0a0',
+    ink:'#151310',
+    danger:'#c87838', dangerB:'#e89858',
     bgDeep:'#080b06', bgFrom:'#14180c', bgTo:'#040502',
     bgPanel:'rgba(14,16,8,0.96)', bgRaised:'rgba(22,26,12,0.97)', bgHover:'rgba(32,40,16,0.93)',
     topFrom:'#1a2010', topTo:'#0d1206', topBorder:'rgba(154,170,90,0.28)',
     borderBrass:'rgba(154,170,90,0.42)',
+    bgGridOpacity: 0.05, bgBlur: 1,
   },
   fallout: {
     label: 'Fallout (Vault-Tec)',
@@ -194,10 +209,13 @@ const THEME_PRESETS = {
     verd:'#2d5fa3', verdB:'#4a90d9',
     parch:'#c4d7f2', parchD:'#9ab6d4',
     text:'#e8f0ff', textD:'#9ab8d4',
+    ink:'#061129',
+    danger:'#ff5a3a', dangerB:'#ff7858',
     bgDeep:'#031024', bgFrom:'#0a1a3d', bgTo:'#061129',
     bgPanel:'rgba(10,20,45,0.94)', bgRaised:'rgba(16,28,60,0.96)', bgHover:'rgba(20,35,75,0.92)',
     topFrom:'#0a1b44', topTo:'#051025', topBorder:'rgba(230,194,0,0.22)',
     borderBrass:'rgba(230,194,0,0.38)',
+    bgGridOpacity: 0.04, bgBlur: 0,
   },
   skyrim: {
     label: 'Skyrim',
@@ -206,10 +224,13 @@ const THEME_PRESETS = {
     verd:'#a488c4', verdB:'#d0a8e8',
     parch:'#1e2d42', parchD:'#0f1623',
     text:'#e0e8f8', textD:'#a8b8d8',
+    ink:'#0f1623',
+    danger:'#c85858', dangerB:'#e87878',
     bgDeep:'#060810', bgFrom:'#0f1828', bgTo:'#020308',
     bgPanel:'rgba(12,16,26,0.96)', bgRaised:'rgba(18,24,38,0.97)', bgHover:'rgba(28,38,56,0.93)',
     topFrom:'#121a32', topTo:'#080f1c', topBorder:'rgba(143,164,200,0.28)',
     borderBrass:'rgba(143,164,200,0.42)',
+    bgGridOpacity: 0.03, bgBlur: 1,
   },
   hogwarts: {
     label: 'Hogwarts',
@@ -218,10 +239,13 @@ const THEME_PRESETS = {
     verd:'#9a7a5a', verdB:'#c0a070',
     parch:'#2a2620', parchD:'#151310',
     text:'#f0f0f0', textD:'#d0c0b0',
+    ink:'#151310',
+    danger:'#c84838', dangerB:'#e86858',
     bgDeep:'#0a0805', bgFrom:'#15110d', bgTo:'#080604',
     bgPanel:'rgba(18,14,12,0.96)', bgRaised:'rgba(26,20,18,0.96)', bgHover:'rgba(40,30,26,0.92)',
     topFrom:'#191512', topTo:'#0d0a08', topBorder:'rgba(180,160,140,0.24)',
     borderBrass:'rgba(212,166,68,0.42)',
+    bgGridOpacity: 0.04, bgBlur: 0,
   },
 };
 
@@ -239,6 +263,9 @@ function applyTheme(){
   r.setProperty('--parchment-dim',preset.parchD);
   r.setProperty('--text',         preset.text);
   r.setProperty('--text-dim2',    preset.textD);
+  r.setProperty('--ink',          preset.ink);
+  r.setProperty('--danger',       preset.danger);
+  r.setProperty('--danger-bright',preset.dangerB);
   r.setProperty('--bg-deep',      preset.bgDeep);
   r.setProperty('--bg-body-from', preset.bgFrom);
   r.setProperty('--bg-body-to',   preset.bgTo);
@@ -249,6 +276,19 @@ function applyTheme(){
   r.setProperty('--topbar-to',     preset.topTo);
   r.setProperty('--topbar-border', preset.topBorder);
   r.setProperty('--border-brass',  preset.borderBrass);
+  r.setProperty('--bg-grid-opacity', preset.bgGridOpacity ?? 0.04);
+  r.setProperty('--bg-blur', (preset.bgBlur ?? 0) + 'px');
+
+  const brandLogo = document.getElementById('brandLogo');
+  const brandText = document.getElementById('brandText');
+  if(worldMeta.logoDataUrl){
+    brandLogo.src = worldMeta.logoDataUrl;
+    brandLogo.style.display = 'block';
+    brandText.style.display = 'none';
+  } else {
+    brandLogo.style.display = 'none';
+    brandText.style.display = 'block';
+  }
 }
 
 function openSettings(){
@@ -280,6 +320,19 @@ function openSettings(){
         <div class="field"><label>Acento principal</label><input type="color" id="th-brass" value="${curr.brass}"></div>
         <div class="field"><label>Acento secundario</label><input type="color" id="th-verd" value="${curr.verd}"></div>
         <div class="field"><label>Superficie (pergamino)</label><input type="color" id="th-parch" value="${curr.parch}"></div>
+        <div class="field"><label>Tinta (texto oscuro)</label><input type="color" id="th-ink" value="${curr.ink}"></div>
+        <div class="field"><label>Peligro (borrar)</label><input type="color" id="th-danger" value="${curr.danger}"></div>
+      </div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div class="modal-message" style="margin-bottom:8px;">Logo personalizado</div>
+      <div class="modal-fields">
+        <div class="field">
+          <label>Importar logo</label>
+          <input type="file" id="logoFileInput" accept="image/*" style="font-size:13px;">
+        </div>
+        ${worldMeta.logoDataUrl ? `<div class="field"><label>Vista previa</label><img src="${worldMeta.logoDataUrl}" style="max-width:60px; max-height:60px; border-radius:4px; border:1px solid var(--border-brass);"></div>` : ''}
+        ${worldMeta.logoDataUrl ? `<div class="field"><button class="btn-delete" id="removeLogoBtn" type="button" style="width:100%;">Eliminar logo</button></div>` : ''}
       </div>
     </div>
     <div class="modal-message">📁 Carpeta local: ${dirHandle ? 'conectada — '+escapeHtml(dirHandle.name) : 'no conectada'}.</div>
@@ -308,7 +361,32 @@ function openSettings(){
       document.getElementById('th-brass').value = preset.brass;
       document.getElementById('th-verd').value  = preset.verd;
       document.getElementById('th-parch').value = preset.parch;
+      document.getElementById('th-ink').value   = preset.ink;
+      document.getElementById('th-danger').value = preset.danger;
     });
+
+  const logoInput = document.getElementById('logoFileInput');
+  if(logoInput){
+    logoInput.addEventListener('change', async (e)=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      const resized = await resizeImageFile(file, 128, 0.8);
+      worldMeta.logoDataUrl = resized;
+      await storeSet('world-meta', worldMeta); markDirty();
+      closeModal();
+      openSettings();
+    });
+  }
+
+  const removeLogoBtn = document.getElementById('removeLogoBtn');
+  if(removeLogoBtn){
+    removeLogoBtn.addEventListener('click', async ()=>{
+      worldMeta.logoDataUrl = null;
+      await storeSet('world-meta', worldMeta); markDirty();
+      closeModal();
+      openSettings();
+    });
+  }
   });
 
   document.getElementById('saveThemeBtn').onclick = async ()=>{
@@ -320,6 +398,8 @@ function openSettings(){
       verdB:  document.getElementById('th-verd').value,
       parch:  document.getElementById('th-parch').value,
       parchD: document.getElementById('th-parch').value,
+      ink:    document.getElementById('th-ink').value,
+      danger: document.getElementById('th-danger').value,
       _preset: existingPreset,
     });
     applyTheme();
@@ -328,3 +408,31 @@ function openSettings(){
   };
 }
 document.getElementById('settingsBtn').addEventListener('click', openSettings);
+
+function openHelp(){
+  openModal({
+    title: 'Acerca de Códice',
+    message: `
+      <div style="line-height:1.7;">
+        <p><strong>Códice</strong> es una herramienta de worldbuilding para RPGs y narrativa.</p>
+        <p><strong>Estado:</strong> Beta testing en progreso. Si encontrás bugs o tenés sugerencias, por favor reportalas.</p>
+        <p><strong>Changelog reciente:</strong></p>
+        <ul style="margin-left:18px; margin-top:8px; margin-bottom:12px;">
+          <li>Sistema de temas con 8 presets (Códice, LOTR, Star Wars, Assassin's Creed, S.T.A.L.K.E.R., Fallout, Skyrim, Hogwarts)</li>
+          <li>Logo personalizable importable</li>
+          <li>Fondo con grilla sutil y control de blur</li>
+          <li>Navegación reestructurada con secciones primarias directas</li>
+          <li>Pantalla de carga al inicio</li>
+          <li>Grimorio con base de datos completa en español</li>
+          <li>En <a href="https://jxr-2.github.io/Codice_BetaTesting" target="_blank" style="color:var(--verdigris); text-decoration:underline;">jxr-2.github.io/Codice_BetaTesting</a> podes encontrar la última versión en desarrollo.</li>
+        </ul>
+        <p><strong>Créditos:</strong></p>
+        <p style="margin-top:8px;">Desarrollado con ❤️ para la comunidad de RPG.</p>
+      </div>
+    `,
+    fields: [],
+    submitLabel: 'Cerrar',
+    onSubmit: closeModal
+  });
+}
+document.getElementById('helpBtn').addEventListener('click', openHelp);

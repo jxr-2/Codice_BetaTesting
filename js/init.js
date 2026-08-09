@@ -3,5 +3,14 @@
    bloque INIT original de index.html). */
 renderWsTypeOptions('personaje');
 renderWsFolderOptions(null);
-loadWorld();
-loadExtras();
+loadWorld().then(()=>{
+  loadExtras().then(()=>{
+    const loadingScreen = document.getElementById('loading-screen');
+    if(loadingScreen){
+      loadingScreen.classList.add('hidden');
+      setTimeout(()=>{
+        loadingScreen.style.display = 'none';
+      }, 400);
+    }
+  });
+});

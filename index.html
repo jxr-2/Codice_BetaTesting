@@ -21,6 +21,13 @@
 </head>
 <body>
 
+<div id="loading-screen">
+  <div class="loading-content">
+    <img id="loadingLogo" class="loading-logo" src="Logo.jpeg" alt="Códice">
+    <div class="loading-text">⚙ CÓDICE</div>
+  </div>
+</div>
+
 <div id="codice-toast" role="status" aria-live="polite"></div>
 
 <!-- NAV LATERAL DRAWER -->
@@ -38,10 +45,28 @@
 </nav>
 
 <div class="topbar">
-  <div class="brand-mark">⚙ CÓDICE</div>
+  <div class="brand-mark">
+    <img id="brandLogo" class="brand-logo" src="" alt="" style="display:none;">
+    <span id="brandText">⚙ CÓDICE</span>
+  </div>
   <input id="worldName" class="world-name-input" value="Mundo sin nombre" spellcheck="false">
+  <nav class="topbar-nav">
+    <button class="topbar-nav-btn" data-view="home" title="Inicio">🏠</button>
+    <button class="topbar-nav-btn" data-view="fichas" title="Fichas">📋</button>
+    <button class="topbar-nav-btn" data-view="diario" title="Diario">📔</button>
+    <button class="topbar-nav-btn" data-view="bitacora" title="Bitácora">🗒</button>
+    <button class="topbar-nav-btn" data-view="mapas" title="Mapas">🗺</button>
+    <div class="topbar-dropdown">
+      <button class="topbar-nav-btn" id="moreNavBtn" title="Más">▾</button>
+      <div class="topbar-dropdown-menu" id="moreNavMenu">
+        <button data-view="canvas">🕸 Canvas</button>
+        <button data-view="grimorio">✨ Grimorio</button>
+      </div>
+    </div>
+  </nav>
   <button class="rail-btn" id="railToggleBtn" type="button">☰ Panel</button>
   <div class="topbar-actions">
+    <button class="icon-round-btn" id="helpBtn" title="Ayuda" type="button">?</button>
     <button class="icon-round-btn" id="settingsBtn" title="Ajustes" type="button">⚙</button>
     <button class="icon-round-btn" id="folderBtn" title="Conectar carpeta" type="button">📁</button>
     <button class="btn-ghost" id="importProjectBtn">Importar</button>
@@ -283,8 +308,13 @@
 <section id="view-grimorio" class="view">
   <div class="fichas-main" style="padding:26px 32px 60px;">
     <div class="fichas-toolbar">
-      <select id="grimoireTargetEntry" style="max-width:220px;"></select>
       <input class="search-input" id="grimoireBasicSearch" placeholder="Buscar en el grimorio básico (español)…">
+      <select class="grimoire-filter" id="grimoireClassFilter" aria-label="Filtrar por clase">
+        <option value="">Todas las clases</option>
+      </select>
+      <select class="grimoire-filter" id="grimoireSchoolFilter" aria-label="Filtrar por escuela">
+        <option value="">Todas las escuelas</option>
+      </select>
     </div>
     <div class="rail-title">Grimorio básico (español, sin conexión)</div>
     <div id="grimoireBasicList" class="cards-grid"></div>

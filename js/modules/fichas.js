@@ -520,16 +520,24 @@ document.getElementById('goToCanvasBtn').addEventListener('click', ()=> navigate
 document.getElementById('goToMapsBtn').addEventListener('click', ()=> navigateTo('mapas'));
 
 /* Grimorio picker (básico, panel lateral de la ficha) */
-document.getElementById('openGrimoireBtn').addEventListener('click', ()=>{
+document.getElementById('openGrimoireBtn').addEventListener('click', async ()=>{
   const overlay = document.getElementById('modalOverlay');
   const box = document.getElementById('modalBox');
   box.style.width = 'min(520px,92vw)';
+  box.innerHTML = '<div class="modal-title">Grimorio básico</div><div class="hint">Cargando hechizos…</div>';
+  overlay.classList.add('open');
+  await loadSpellsDB();
+  if(grimorioLoadState === 'error'){
+    box.innerHTML = '<div class="modal-title">Grimorio básico</div><div class="hint">No se pudieron cargar los hechizos. Comprobá que data/all.json esté disponible.</div><div class="modal-actions"><div></div><div><button class="btn-ghost" id="modalCancel">Cerrar</button></div></div>';
+    document.getElementById('modalCancel').onclick = closeModal;
+    return;
+  }
   const renderList = (q='') => {
     const filtered = GRIMOIRE.filter(s => !q || s.name.toLowerCase().includes(q.toLowerCase()));
     return filtered.slice(0,60).map(s=>`
       <div class="grimoire-row">
         <div><strong>${escapeHtml(s.name)}</strong><br><span class="hint">${s.level===0?'Truco':'Nivel '+s.level} · ${escapeHtml(s.school)}</span></div>
-        <button class="rail-btn" data-add="${escapeHtml(s.name)}" type="button">+ Agregar</button>
+        <button class="rail-btn" data-add="${s.id}" type="button">+ Agregar</button>
       </div>`).join('') || '<div class="hint" style="margin:10px 0;">Sin resultados.</div>';
   };
   box.innerHTML = `
@@ -542,7 +550,8 @@ document.getElementById('openGrimoireBtn').addEventListener('click', ()=>{
   const wire = ()=>{
     document.querySelectorAll('#grimoireResults [data-add]').forEach(btn=>{
       btn.addEventListener('click', ()=>{
-        const spell = GRIMOIRE.find(s=>s.name===btn.dataset.add);
+        const spell = GRIMOIRE.find(s=>s.id===Number(btn.dataset.add));
+        if(!spell) return;
         const line = `${spell.name} (${spell.level===0?'Truco':'Nv '+spell.level}, ${spell.school}) — ${spell.blurb}`;
         // wsSpells textarea lives inside the 5E panel — grab it from the page
         const ta = document.getElementById('wsSpells');

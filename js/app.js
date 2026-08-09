@@ -13,6 +13,32 @@ document.querySelectorAll('#navMenu button').forEach(btn=>{
     document.querySelectorAll('#navMenu button').forEach(b=>b.classList.toggle('active', b===btn));
   });
 });
+
+/* TOPBAR NAV */
+document.getElementById('moreNavBtn').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  document.getElementById('moreNavMenu').classList.toggle('open');
+});
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('#moreNavBtn') && !e.target.closest('#moreNavMenu')){
+    document.getElementById('moreNavMenu').classList.remove('open');
+  }
+});
+document.querySelectorAll('.topbar-nav-btn[data-view]').forEach(btn=>{
+  btn.addEventListener('click', async (e)=>{
+    e.stopPropagation();
+    document.getElementById('moreNavMenu').classList.remove('open');
+    await navigateTo(btn.dataset.view);
+    document.querySelectorAll('.topbar-nav-btn[data-view]').forEach(b=>b.classList.toggle('active', b===btn));
+  });
+});
+document.querySelectorAll('#moreNavMenu button').forEach(btn=>{
+  btn.addEventListener('click', async (e)=>{
+    e.stopPropagation();
+    document.getElementById('moreNavMenu').classList.remove('open');
+    await navigateTo(btn.dataset.view);
+  });
+});
 document.getElementById('railToggleBtn').addEventListener('click', ()=>{
   const rail = document.querySelector('.view.active .rail');
   if(rail) rail.classList.toggle('open');
@@ -45,6 +71,7 @@ async function renderHomeDashboard(){
     recentList.innerHTML = '<div class="home-recent-item"><span>No hay fichas aún.</span></div>';
   } else {
     const latest = entriesIndex.slice().sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0))[0];
+    document.getElementById('homePreviewName').textContent = latest.name || 'Última carta editada';
     previewText.textContent = latest.summary || 'Seleccioná una ficha para ver sus detalles.';
     const typeLabel = TYPES[latest.type] ? `${TYPES[latest.type].glyph} ${TYPES[latest.type].label}` : 'Ficha';
     const folderName = latest.folderId ? (worldMeta.folders.find(f=>f.id===latest.folderId)?.name || 'Carpeta') : 'Sin carpeta';
@@ -114,6 +141,17 @@ async function loadWorld(){
   worldMeta.settings = worldMeta.settings || {};
   document.getElementById('worldName').value = worldMeta.worldName;
   applyTheme();
+
+  const brandLogo = document.getElementById('brandLogo');
+  const brandText = document.getElementById('brandText');
+  if(worldMeta.logoDataUrl){
+    brandLogo.src = worldMeta.logoDataUrl;
+    brandLogo.style.display = 'block';
+    brandText.style.display = 'none';
+  } else {
+    brandLogo.style.display = 'none';
+    brandText.style.display = 'block';
+  }
 
   const idx = await storeGet('entries-index');
   entriesIndex = idx || [];
