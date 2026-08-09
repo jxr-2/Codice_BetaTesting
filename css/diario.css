@@ -1,0 +1,8 @@
+/* DIARIO / BITACORA */
+.chapter-writing{ max-width:660px; margin:0 auto; }
+.chapter-title-row{ display:flex; align-items:baseline; gap:10px; }
+.chapter-num{ font-family:'Special Elite',monospace; font-size:12px; color:var(--brass-dim); }
+.chapter-content{ font-family:'Cormorant Garamond', serif; font-size:19px; line-height:1.85; }
+.linked-ficha-check{ display:flex; align-items:center; gap:8px; padding:5px 0; font-size:13px; color: rgba(35,25,20,0.8); }
+.session-summary{ width:100%; background: rgba(255,255,255,0.4); border:1px solid rgba(43,32,24,0.15); border-radius:4px; padding:10px 12px; font-size:14.5px; min-height:70px; resize:vertical; color:var(--ink); margin-top:10px; }
+.links-box{ margin:14px 32px 0; padding:14px; background: rgba(255,255,255,0.25); border:1px solid rgba(43,32,24,0.15); border-radius:6px; }

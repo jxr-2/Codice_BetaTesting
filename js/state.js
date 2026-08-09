@@ -42,6 +42,7 @@ let mapMode = 'pin';
 let regionDraft = [];
 let projectDirty = false;
 let dirHandle = null;
+let projectFileName = null;
 
 let journalEntries = [];
 let currentJournalId = null;

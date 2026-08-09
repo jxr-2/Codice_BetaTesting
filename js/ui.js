@@ -125,7 +125,8 @@ document.addEventListener('focusin', (e)=>{
 /* ========================= THEMES ========================= */
 const THEME_PRESETS = {
   codice: {
-    label: '⚙ Códice (clásico)',
+    label: 'Códice (clásico)',
+    logo: 'assets/Imagenes/Temas/codice.png',
     brass:'#c9922f', brassB:'#f1d27a', brassD:'#8b6b33',
     verd:'#7bb89d', verdB:'#9cd8c6',
     parch:'#e8dcc3', parchD:'#c9b790',
@@ -136,40 +137,44 @@ const THEME_PRESETS = {
     borderBrass:'rgba(201,146,47,0.35)',
   },
   lotr: {
-    label: '💍 Tierra Media',
-    brass:'#8d7b5a', brassB:'#c8b88a', brassD:'#5c4e36',
-    verd:'#6b9e74', verdB:'#8fcb99',
-    parch:'#e6dcc0', parchD:'#c4b48c',
-    text:'#e8dabb', textD:'#a89874',
-    bgDeep:'#0c0f09', bgFrom:'#16200f', bgTo:'#050804',
-    bgPanel:'rgba(15,19,10,0.95)', bgRaised:'rgba(24,30,16,0.96)', bgHover:'rgba(34,44,22,0.92)',
-    topFrom:'#1a2411', topTo:'#0e160a', topBorder:'rgba(141,123,90,0.20)',
-    borderBrass:'rgba(141,123,90,0.38)',
+    label: 'Tierra Media',
+    logo: 'assets/Imagenes/Temas/lotr.png',
+    brass:'#b89b51', brassB:'#e7d5a4', brassD:'#7b6538',
+    verd:'#527a4a', verdB:'#8aa978',
+    parch:'#e7decd', parchD:'#c7b791',
+    text:'#ede4d6', textD:'#9f8b74',
+    bgDeep:'#0b1208', bgFrom:'#1f2f17', bgTo:'#09110a',
+    bgPanel:'rgba(20,26,14,0.95)', bgRaised:'rgba(32,42,24,0.96)', bgHover:'rgba(48,62,32,0.92)',
+    topFrom:'#24321a', topTo:'#121b0f', topBorder:'rgba(184,155,81,0.22)',
+    borderBrass:'rgba(184,155,81,0.38)',
   },
   starwars: {
-    label: '⚡ Galaxia Lejana',
-    brass:'#5b9bbf', brassB:'#89ccee', brassD:'#2e6a8e',
-    verd:'#e8c456', verdB:'#f5d97a',
-    parch:'#d8e6f0', parchD:'#9ab8cc',
-    text:'#d0e8f5', textD:'#7aaabb',
-    bgDeep:'#03060e', bgFrom:'#060d1a', bgTo:'#010208',
-    bgPanel:'rgba(4,8,18,0.95)', bgRaised:'rgba(8,14,28,0.97)', bgHover:'rgba(12,22,44,0.92)',
-    topFrom:'#060d1c', topTo:'#03060f', topBorder:'rgba(91,155,191,0.22)',
-    borderBrass:'rgba(91,155,191,0.35)',
+    label: 'Star Wars',
+    logo: 'assets/Imagenes/Temas/starwars.svg',
+    brass:'#ffffff', brassB:'#ffe81f', brassD:'#b2b2b2',
+    verd:'#00b8ff', verdB:'#6de0ff',
+    parch:'#08121f', parchD:'#151f2d',
+    text:'#f2f2f2', textD:'#8fa7c1',
+    bgDeep:'#02040a', bgFrom:'#070c18', bgTo:'#04060f',
+    bgPanel:'rgba(8,12,24,0.96)', bgRaised:'rgba(14,20,36,0.97)', bgHover:'rgba(24,32,56,0.93)',
+    topFrom:'#09101d', topTo:'#050812', topBorder:'rgba(255,232,31,0.22)',
+    borderBrass:'rgba(255,232,31,0.35)',
   },
   assassin: {
-    label: '🦅 Orden del Credo',
-    brass:'#c0392b', brassB:'#e74c3c', brassD:'#922b21',
-    verd:'#d4ac0d', verdB:'#f1c40f',
-    parch:'#f0e6c8', parchD:'#c9b68a',
-    text:'#ede0c4', textD:'#9e8a65',
-    bgDeep:'#0a0706', bgFrom:'#160e0a', bgTo:'#050302',
-    bgPanel:'rgba(18,10,8,0.95)', bgRaised:'rgba(28,16,12,0.97)', bgHover:'rgba(42,24,18,0.92)',
-    topFrom:'#1e0f0b', topTo:'#100806', topBorder:'rgba(192,57,43,0.28)',
-    borderBrass:'rgba(192,57,43,0.42)',
+    label: 'Assassin\'s Creed',
+    logo: 'assets/Imagenes/Temas/assassins_creed.png',
+    brass:'#bf1f24', brassB:'#f7f7f7', brassD:'#7d1016',
+    verd:'#b0b0b0', verdB:'#dedede',
+    parch:'#ffffff', parchD:'#d8d8d8',
+    text:'#111111', textD:'#4f4f4f',
+    bgDeep:'#060608', bgFrom:'#0d0d0f', bgTo:'#050507',
+    bgPanel:'rgba(255,255,255,0.96)', bgRaised:'rgba(245,245,245,0.96)', bgHover:'rgba(230,230,230,0.94)',
+    topFrom:'#18181a', topTo:'#0c0c0d', topBorder:'rgba(191,31,36,0.24)',
+    borderBrass:'rgba(191,31,36,0.40)',
   },
   stalker: {
-    label: '☢ La Zona',
+    label: 'S.T.A.L.K.E.R.',
+    logo: 'assets/Imagenes/Temas/stalker.png',
     brass:'#7a8a5a', brassB:'#a4b87a', brassD:'#505e38',
     verd:'#c4b454', verdB:'#e0cc72',
     parch:'#d2cdb0', parchD:'#a09a80',
@@ -180,18 +185,20 @@ const THEME_PRESETS = {
     borderBrass:'rgba(122,138,90,0.38)',
   },
   fallout: {
-    label: '⚛ Yermo Nuclear',
-    brass:'#c8a432', brassB:'#f0ca58', brassD:'#8a6e1e',
-    verd:'#7caf34', verdB:'#9dd452',
-    parch:'#dcd4a0', parchD:'#b4ac74',
-    text:'#d8cc94', textD:'#948e58',
-    bgDeep:'#0c0b04', bgFrom:'#1a180a', bgTo:'#060502',
-    bgPanel:'rgba(16,15,5,0.96)', bgRaised:'rgba(26,24,8,0.97)', bgHover:'rgba(38,36,12,0.93)',
-    topFrom:'#201e08', topTo:'#100f04', topBorder:'rgba(200,164,50,0.24)',
-    borderBrass:'rgba(200,164,50,0.40)',
+    label: 'Fallout (Vault-Tec)',
+    logo: 'assets/Imagenes/Temas/fallout.png',
+    brass:'#ffd800', brassB:'#ffff6d', brassD:'#b2a500',
+    verd:'#1c4f8a', verdB:'#5ca6ff',
+    parch:'#c4d7f2', parchD:'#9ab6d4',
+    text:'#f1f8ff', textD:'#aac4dd',
+    bgDeep:'#031024', bgFrom:'#0a1a3d', bgTo:'#061129',
+    bgPanel:'rgba(10,20,45,0.94)', bgRaised:'rgba(16,28,60,0.96)', bgHover:'rgba(20,35,75,0.92)',
+    topFrom:'#0a1b44', topTo:'#051025', topBorder:'rgba(255,216,0,0.24)',
+    borderBrass:'rgba(255,216,0,0.40)',
   },
   skyrim: {
-    label: '🐉 Tierras de Tamriel',
+    label: 'Skyrim',
+    logo: 'assets/Imagenes/Temas/skyrim.svg',
     brass:'#7890b4', brassB:'#a4b8d8', brassD:'#4e6890',
     verd:'#9070b0', verdB:'#b898d4',
     parch:'#dce4f0', parchD:'#b0bcd4',
@@ -202,15 +209,16 @@ const THEME_PRESETS = {
     borderBrass:'rgba(120,144,180,0.36)',
   },
   hogwarts: {
-    label: '⚗ Escuela de Magia',
-    brass:'#9e7b2c', brassB:'#d4aa50', brassD:'#6a5020',
-    verd:'#5a3a7e', verdB:'#8060aa',
-    parch:'#ecddc0', parchD:'#c8b490',
-    text:'#e8d8b8', textD:'#a08860',
-    bgDeep:'#0c0810', bgFrom:'#16101e', bgTo:'#060408',
-    bgPanel:'rgba(16,10,22,0.95)', bgRaised:'rgba(26,16,34,0.97)', bgHover:'rgba(38,24,50,0.93)',
-    topFrom:'#1e1428', topTo:'#100a18', topBorder:'rgba(158,123,44,0.24)',
-    borderBrass:'rgba(158,123,44,0.40)',
+    label: 'Hogwarts',
+    logo: 'assets/Imagenes/Temas/hogwarts.png',
+    brass:'#a12b0f', brassB:'#f0b429', brassD:'#7b1f09',
+    verd:'#87191f', verdB:'#b94a1f',
+    parch:'#f3dfb7', parchD:'#ceb77b',
+    text:'#f7edde', textD:'#aa7f3b',
+    bgDeep:'#15090b', bgFrom:'#321819', bgTo:'#12050a',
+    bgPanel:'rgba(48,14,16,0.95)', bgRaised:'rgba(55,18,18,0.97)', bgHover:'rgba(72,20,22,0.93)',
+    topFrom:'#3a1513', topTo:'#220b0b', topBorder:'rgba(240,180,41,0.24)',
+    borderBrass:'rgba(240,180,41,0.40)',
   },
 };
 
@@ -251,7 +259,8 @@ function openSettings(){
     <button type="button" class="theme-preset-btn ${k===currentPresetKey && !isCustom ?'active':''}"
       data-preset="${k}"
       style="--th-brass:${p.brassB}; --th-verd:${p.verdB}; --th-bg:${p.bgFrom}; --th-text:${p.parch};">
-      ${p.label}
+      <img class="theme-preset-logo" src="${p.logo}" alt="">
+      <span>${p.label}</span>
     </button>`).join('');
 
   const curr = Object.assign({}, defaultTheme(), worldMeta.theme||{});
@@ -278,18 +287,6 @@ function openSettings(){
         <button class="btn-brass" id="saveThemeBtn">Guardar</button>
       </div>
     </div>`;
-
-  /* preset button style */
-  const styleEl = document.createElement('style');
-  styleEl.textContent = `
-    .theme-preset-btn{
-      background:var(--th-bg, #1a140e); border:2px solid transparent;
-      color:var(--th-text, #e8dcc3); padding:10px 12px; border-radius:6px;
-      font-size:12px; text-align:left; transition:border-color 0.15s;
-    }
-    .theme-preset-btn:hover{ border-color: var(--th-brass, #c9922f); }
-    .theme-preset-btn.active{ border-color: var(--th-brass, #c9922f); box-shadow:0 0 8px rgba(0,0,0,0.5); }`;
-  box.appendChild(styleEl);
 
   overlay.classList.add('open');
   document.getElementById('modalCancel').onclick = closeModal;

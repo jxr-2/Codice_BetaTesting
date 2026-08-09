@@ -37,6 +37,7 @@ async function tryAutoImportFromFolder(){
     if(!jsonFile) return { ok:false, reason:'none' };
     const file = await jsonFile.getFile();
     await importProject(file, true);
+    projectFileName = jsonFile.name;
     return { ok:true };
   }catch(e){ return { ok:false, reason:'error' }; }
 }
@@ -60,13 +61,6 @@ async function connectFolder(){
 }
 
 /* ========================= EXPORT / IMPORT ========================= */
-function triggerDownload(json, name){
-  const blob = new Blob([json], { type:'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = name;
-  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-}
 async function exportProject(){
   const btn = document.getElementById('exportProjectBtn');
   btn.classList.add('spinning'); btn.disabled = true;
@@ -75,15 +69,25 @@ async function exportProject(){
     for(const entry of entriesIndex){ const full = await storeGet('entry:'+entry.id); if(full) project.entries.push(full); }
     for(const mapItem of mapsIndex){ const fullMap = await storeGet('map:'+mapItem.id); if(fullMap) project.maps.push(fullMap); }
     const json = JSON.stringify(project, null, 2);
-    const fileName = `${(worldMeta.worldName||'codice').replace(/\s+/g,'_')}${PROJECT_FILE_NAME_SUFFIX}`;
-    if(dirHandle){
-      try{
-        const fh = await dirHandle.getFileHandle(fileName, { create:true });
-        const w = await fh.createWritable(); await w.write(json); await w.close();
-      }catch(e){ console.warn('No se pudo escribir en la carpeta, descargando como respaldo', e); triggerDownload(json, fileName); }
-    } else {
-      triggerDownload(json, fileName);
+    if(!dirHandle){
+      openModal({
+        title:'Conectá una carpeta', fields:[], submitLabel:'Conectar carpeta',
+        message:'Para guardar el proyecto sin descargar un archivo nuevo, conectá la carpeta donde está el JSON.',
+        onSubmit: connectFolder
+      });
+      return false;
     }
+    projectFileName = projectFileName || `${(worldMeta.worldName||'codice').replace(/\s+/g,'_')}${PROJECT_FILE_NAME_SUFFIX}`;
+    const fh = await dirHandle.getFileHandle(projectFileName, { create:true });
+    const w = await fh.createWritable(); await w.write(json); await w.close();
+    return true;
+  }catch(e){
+    console.warn('No se pudo guardar el proyecto en la carpeta conectada', e);
+    openModal({
+      title:'No se pudo guardar', fields:[], submitLabel:'Cerrar',
+      message:'No pudimos sobrescribir el archivo del proyecto. Verificá que la carpeta siga conectada y que tengas permiso para escribir en ella.'
+    });
+    return false;
   } finally {
     btn.classList.remove('spinning'); btn.disabled = false;
   }
@@ -119,7 +123,7 @@ async function importProject(file, silent){
   }
 }
 document.getElementById('importProjectBtn').addEventListener('click', ()=> document.getElementById('projectImportFile').click());
-document.getElementById('exportProjectBtn').addEventListener('click', async ()=>{ await exportProject(); clearDirty(); });
+document.getElementById('exportProjectBtn').addEventListener('click', async ()=>{ if(await exportProject()) clearDirty(); });
 document.getElementById('projectImportFile').addEventListener('change', async (e)=>{ const file = e.target.files[0]; if(file) await importProject(file); e.target.value=''; });
 
 

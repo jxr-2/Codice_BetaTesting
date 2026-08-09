@@ -62,6 +62,50 @@ async function renderHomeDashboard(){
   }
 }
 
+const HOME_GREETINGS = [
+  'Bienvenido',
+  'Qué alegría verte',
+  'Qué gusto tenerte de vuelta',
+  'Es un placer verte'
+];
+
+function renderHomeGreeting(){
+  const userName = worldMeta.userName && worldMeta.userName.trim();
+  if(!userName) return;
+  const greeting = HOME_GREETINGS[Math.floor(Math.random() * HOME_GREETINGS.length)];
+  document.getElementById('homeGreetTitle').textContent = `${greeting}, ${userName}.`;
+  document.getElementById('homeGreetText').textContent = 'Tu mundo te está esperando.';
+}
+
+function openInitialWelcome(){
+  openModal({
+    title:'¡Bienvenido a tu Códice!', fields:[], submitLabel:'Conectar carpeta', showDelete:true, deleteLabel:'Empezar de cero',
+    message:'¿Querés conectar una carpeta con un proyecto existente, o empezar de cero acá mismo?',
+    onSubmit: connectFolder, onDelete: ()=>{}
+  });
+}
+
+function requestUserName(showInitialWelcome){
+  openModal({
+    title:'¡Bienvenido a Códice!',
+    message:'¿Cómo querés que te llamemos?',
+    fields:[{ key:'userName', label:'Tu nombre', placeholder:'Ej: Ada' }],
+    submitLabel:'Continuar',
+    onSubmit: async (values) => {
+      const userName = values.userName.trim();
+      if(!userName){
+        requestUserName(showInitialWelcome);
+        return;
+      }
+      worldMeta.userName = userName;
+      await storeSet('world-meta', worldMeta);
+      markDirty();
+      renderHomeGreeting();
+      if(showInitialWelcome) openInitialWelcome();
+    }
+  });
+}
+
 async function loadWorld(){
   const meta = await storeGet('world-meta');
   const metaExisted = !!meta;
@@ -84,16 +128,12 @@ async function loadWorld(){
     document.getElementById('mapWorkspace').style.display = 'none';
   }
 
-  renderFolderList(); renderTypeFilterList(); renderFichasGrid(); renderHomeDashboard();
+  renderFolderList(); renderTypeFilterList(); renderFichasGrid(); renderHomeDashboard(); renderHomeGreeting();
   renderWsFolderOptions(null);
 
-  if(!metaExisted && entriesIndex.length === 0 && !dirHandle){
-    openModal({
-      title:'¡Bienvenido a tu Códice!', fields:[], submitLabel:'Conectar carpeta', showDelete:true, deleteLabel:'Empezar de cero',
-      message:'¿Querés conectar una carpeta con un proyecto existente, o empezar de cero acá mismo?',
-      onSubmit: connectFolder, onDelete: ()=>{}
-    });
-  }
+  const showInitialWelcome = !metaExisted && entriesIndex.length === 0 && !dirHandle;
+  if(!worldMeta.userName || !worldMeta.userName.trim()) requestUserName(showInitialWelcome);
+  else if(showInitialWelcome) openInitialWelcome();
 }
 document.getElementById('worldName').addEventListener('change', async (e)=>{
   worldMeta.worldName = e.target.value.trim() || 'Mundo sin nombre';
