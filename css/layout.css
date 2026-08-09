@@ -2,7 +2,7 @@
 .topbar{ display:flex; align-items:center; gap:16px; padding:14px 24px;
   background: linear-gradient(180deg, var(--topbar-from), var(--topbar-to)); border-bottom:2px solid var(--topbar-border); box-shadow:0 2px 12px rgba(0,0,0,0.4); flex-wrap:wrap; }
 .brand-mark{ font-family:'Cinzel', serif; font-weight:700; font-size:17px; color:var(--brass-bright); letter-spacing:0.08em; display:flex; align-items:center; gap:8px; }
-.world-name-input{ background:transparent; border:none; border-bottom:1px dashed var(--border-brass); color:var(--parchment);
+.world-name-input{ background:transparent; border:none; border-bottom:1px dashed var(--border-brass); color:var(--text);
   font-family:'Cinzel', serif; font-size:17px; font-weight:600; padding:2px 4px; min-width:140px; }
 .world-name-input:focus{ outline:none; border-bottom-color:var(--verdigris); }
 /* ---- NAV LATERAL DRAWER ---- */
@@ -62,7 +62,7 @@
 .topbar-actions{ display:flex; align-items:center; gap:10px; margin-left:auto; }
 .icon-round-btn{ background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--text); width:36px; height:36px; border-radius:50%; font-size:15px; display:flex; align-items:center; justify-content:center; }
 .icon-round-btn:hover{ box-shadow:0 0 10px rgba(241,210,122,0.3); }
-.topbar-clock{ min-width:60px; text-align:center; font-family:'Special Elite',monospace; color:var(--parchment);
+.topbar-clock{ min-width:60px; text-align:center; font-family:'Special Elite',monospace; color:var(--text);
   background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); padding:8px 12px; border-radius:999px; font-size:13px; }
 .btn-brass.spinning{ position:relative; color:transparent !important; pointer-events:none; }
 .btn-brass.spinning::after{ content:''; position:absolute; inset:0; margin:auto; width:14px; height:14px; border:2px solid rgba(36,26,13,0.35); border-top-color:#241a0d; border-radius:50%; animation: spin 0.6s linear infinite; }
@@ -77,12 +77,12 @@
 .home-panel{ flex:1; padding:28px 28px 40px; display:flex; flex-direction:column; gap:24px; }
 .home-copy{ max-width:720px; }
 .home-overline{ font-family:'Special Elite', monospace; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--brass-dim); margin-bottom:12px; }
-.home-title{ font-family:'Cormorant Garamond', serif; font-size:38px; color:var(--parchment); line-height:1.06; margin-bottom:14px; }
+.home-title{ font-family:'Cormorant Garamond', serif; font-size:38px; color:var(--text); line-height:1.06; margin-bottom:14px; }
 .home-text{ color:var(--text-dim2); line-height:1.8; max-width:680px; }
 .home-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
 .home-grid{ display:grid; grid-template-columns: minmax(360px,1.6fr) minmax(280px,1fr); gap:22px; }
-.home-card-preview, .home-sidebar{ background: rgba(30,22,16,0.94); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:24px; }
-.home-card-preview h2{ font-family:'Cormorant Garamond', serif; font-size:28px; color:var(--parchment); margin-bottom:6px; }
+.home-card-preview, .home-sidebar{ background: var(--bg-panel-raised); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:24px; }
+.home-card-preview h2{ font-family:'Cormorant Garamond', serif; font-size:28px; color:var(--text); margin-bottom:6px; }
 .home-card-preview p{ color:var(--text-dim2); line-height:1.75; }
 .home-card-meta{ display:flex; flex-wrap:wrap; gap:10px; font-size:13px; color:var(--text-dim2); margin-top:12px; }
 .home-card-meta span{ background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:999px; padding:8px 12px; }

@@ -56,6 +56,7 @@ function openModal(cfg){
       </div>
     </div>`;
   overlay.classList.add('open');
+  overlay.onclick = (e) => { if(e.target === overlay) closeModal(); };
   document.getElementById('modalCancel').onclick = closeModal;
   document.getElementById('modalSubmit').onclick = () => {
     const values = {};
@@ -81,6 +82,7 @@ function openConfirm({title, message, onConfirm}){
       <button class="btn-delete" id="modalConfirm">Eliminar</button>
     </div></div>`;
   overlay.classList.add('open');
+  overlay.onclick = (e) => { if(e.target === overlay) closeModal(); };
   document.getElementById('modalCancel').onclick = closeModal;
   document.getElementById('modalConfirm').onclick = () => { closeModal(); onConfirm(); };
 }
@@ -96,6 +98,7 @@ function openUnsavedGuard(name, onSave, onDiscard){
       <div><button class="btn-ghost" id="guardCancel">Cancelar</button><button class="btn-brass" id="guardSave">Guardar y continuar</button></div>
     </div>`;
   overlay.classList.add('open');
+  overlay.onclick = (e) => { if(e.target === overlay) closeModal(); };
   document.getElementById('guardCancel').onclick = closeModal;
   document.getElementById('guardSave').onclick = async ()=>{ closeModal(); await onSave(); };
   document.getElementById('guardDiscard').onclick = async ()=>{ closeModal(); await onDiscard(); };
@@ -139,86 +142,86 @@ const THEME_PRESETS = {
   lotr: {
     label: 'Tierra Media',
     logo: 'assets/Imagenes/Temas/lotr.png',
-    brass:'#b89b51', brassB:'#e7d5a4', brassD:'#7b6538',
-    verd:'#527a4a', verdB:'#8aa978',
-    parch:'#e7decd', parchD:'#c7b791',
-    text:'#ede4d6', textD:'#9f8b74',
-    bgDeep:'#0b1208', bgFrom:'#1f2f17', bgTo:'#09110a',
-    bgPanel:'rgba(20,26,14,0.95)', bgRaised:'rgba(32,42,24,0.96)', bgHover:'rgba(48,62,32,0.92)',
-    topFrom:'#24321a', topTo:'#121b0f', topBorder:'rgba(184,155,81,0.22)',
-    borderBrass:'rgba(184,155,81,0.38)',
+    brass:'#b89b51', brassB:'#d4af5e', brassD:'#7b6538',
+    verd:'#6b9a6f', verdB:'#8ab878',
+    parch:'#c9bfa8', parchD:'#3a3a38',
+    text:'#ddd5c8', textD:'#9a8f80',
+    bgDeep:'#0b0f08', bgFrom:'#15191f', bgTo:'#08090a',
+    bgPanel:'rgba(18,22,15,0.96)', bgRaised:'rgba(26,30,20,0.96)', bgHover:'rgba(38,44,28,0.92)',
+    topFrom:'#1a1f15', topTo:'#0e1109', topBorder:'rgba(184,155,81,0.26)',
+    borderBrass:'rgba(184,155,81,0.42)',
   },
   starwars: {
     label: 'Star Wars',
     logo: 'assets/Imagenes/Temas/starwars.svg',
-    brass:'#ffffff', brassB:'#ffe81f', brassD:'#b2b2b2',
-    verd:'#00b8ff', verdB:'#6de0ff',
-    parch:'#08121f', parchD:'#151f2d',
-    text:'#f2f2f2', textD:'#8fa7c1',
-    bgDeep:'#02040a', bgFrom:'#070c18', bgTo:'#04060f',
-    bgPanel:'rgba(8,12,24,0.96)', bgRaised:'rgba(14,20,36,0.97)', bgHover:'rgba(24,32,56,0.93)',
-    topFrom:'#09101d', topTo:'#050812', topBorder:'rgba(255,232,31,0.22)',
-    borderBrass:'rgba(255,232,31,0.35)',
+    brass:'#ffffff', brassB:'#ffe81f', brassD:'#d0d0d0',
+    verd:'#00d9ff', verdB:'#66f0ff',
+    parch:'#1a2942', parchD:'#0d1620',
+    text:'#ffffff', textD:'#e8f0ff',
+    bgDeep:'#02040a', bgFrom:'#0a1424', bgTo:'#050810',
+    bgPanel:'rgba(10,15,28,0.96)', bgRaised:'rgba(16,22,40,0.97)', bgHover:'rgba(26,35,56,0.93)',
+    topFrom:'#0b1428', topTo:'#050810', topBorder:'rgba(255,232,31,0.3)',
+    borderBrass:'rgba(255,232,31,0.45)',
   },
   assassin: {
     label: 'Assassin\'s Creed',
     logo: 'assets/Imagenes/Temas/assassins_creed.png',
-    brass:'#bf1f24', brassB:'#f7f7f7', brassD:'#7d1016',
-    verd:'#b0b0b0', verdB:'#dedede',
-    parch:'#ffffff', parchD:'#d8d8d8',
-    text:'#111111', textD:'#4f4f4f',
-    bgDeep:'#060608', bgFrom:'#0d0d0f', bgTo:'#050507',
-    bgPanel:'rgba(255,255,255,0.96)', bgRaised:'rgba(245,245,245,0.96)', bgHover:'rgba(230,230,230,0.94)',
-    topFrom:'#18181a', topTo:'#0c0c0d', topBorder:'rgba(191,31,36,0.24)',
-    borderBrass:'rgba(191,31,36,0.40)',
+    brass:'#bf1f24', brassB:'#ff4d52', brassD:'#7d1016',
+    verd:'#b0b0b0', verdB:'#e0e0e0',
+    parch:'#e8e8e8', parchD:'#2a2a2c',
+    text:'#f0f0f0', textD:'#a8a8a8',
+    bgDeep:'#0a0a0c', bgFrom:'#141416', bgTo:'#080809',
+    bgPanel:'rgba(20,20,22,0.96)', bgRaised:'rgba(30,30,32,0.96)', bgHover:'rgba(45,45,48,0.92)',
+    topFrom:'#1a1a1c', topTo:'#0d0d0e', topBorder:'rgba(191,31,36,0.28)',
+    borderBrass:'rgba(191,31,36,0.45)',
   },
   stalker: {
     label: 'S.T.A.L.K.E.R.',
     logo: 'assets/Imagenes/Temas/stalker.png',
-    brass:'#7a8a5a', brassB:'#a4b87a', brassD:'#505e38',
-    verd:'#c4b454', verdB:'#e0cc72',
-    parch:'#d2cdb0', parchD:'#a09a80',
-    text:'#ccc8a8', textD:'#8a8464',
-    bgDeep:'#080b06', bgFrom:'#111508', bgTo:'#040502',
-    bgPanel:'rgba(10,13,7,0.96)', bgRaised:'rgba(16,20,10,0.97)', bgHover:'rgba(24,30,14,0.93)',
-    topFrom:'#141a09', topTo:'#0a0e05', topBorder:'rgba(122,138,90,0.22)',
-    borderBrass:'rgba(122,138,90,0.38)',
+    brass:'#8a9a6a', brassB:'#c0d890', brassD:'#5a7038',
+    verd:'#d4c458', verdB:'#f0e88a',
+    parch:'#2a2820', parchD:'#151310',
+    text:'#e8e4d0', textD:'#b8b0a0',
+    bgDeep:'#080b06', bgFrom:'#14180c', bgTo:'#040502',
+    bgPanel:'rgba(14,16,8,0.96)', bgRaised:'rgba(22,26,12,0.97)', bgHover:'rgba(32,40,16,0.93)',
+    topFrom:'#1a2010', topTo:'#0d1206', topBorder:'rgba(154,170,90,0.28)',
+    borderBrass:'rgba(154,170,90,0.42)',
   },
   fallout: {
     label: 'Fallout (Vault-Tec)',
     logo: 'assets/Imagenes/Temas/fallout.png',
-    brass:'#ffd800', brassB:'#ffff6d', brassD:'#b2a500',
-    verd:'#1c4f8a', verdB:'#5ca6ff',
+    brass:'#e6c200', brassB:'#f0e34d', brassD:'#9a8800',
+    verd:'#2d5fa3', verdB:'#4a90d9',
     parch:'#c4d7f2', parchD:'#9ab6d4',
-    text:'#f1f8ff', textD:'#aac4dd',
+    text:'#e8f0ff', textD:'#9ab8d4',
     bgDeep:'#031024', bgFrom:'#0a1a3d', bgTo:'#061129',
     bgPanel:'rgba(10,20,45,0.94)', bgRaised:'rgba(16,28,60,0.96)', bgHover:'rgba(20,35,75,0.92)',
-    topFrom:'#0a1b44', topTo:'#051025', topBorder:'rgba(255,216,0,0.24)',
-    borderBrass:'rgba(255,216,0,0.40)',
+    topFrom:'#0a1b44', topTo:'#051025', topBorder:'rgba(230,194,0,0.22)',
+    borderBrass:'rgba(230,194,0,0.38)',
   },
   skyrim: {
     label: 'Skyrim',
     logo: 'assets/Imagenes/Temas/skyrim.svg',
-    brass:'#7890b4', brassB:'#a4b8d8', brassD:'#4e6890',
-    verd:'#9070b0', verdB:'#b898d4',
-    parch:'#dce4f0', parchD:'#b0bcd4',
-    text:'#d8e4f8', textD:'#8898b8',
-    bgDeep:'#060810', bgFrom:'#0e1220', bgTo:'#020308',
-    bgPanel:'rgba(8,10,18,0.96)', bgRaised:'rgba(14,18,30,0.97)', bgHover:'rgba(20,26,44,0.93)',
-    topFrom:'#10162a', topTo:'#070b18', topBorder:'rgba(120,144,180,0.24)',
-    borderBrass:'rgba(120,144,180,0.36)',
+    brass:'#8fa4c8', brassB:'#b8d0e8', brassD:'#5a7a9a',
+    verd:'#a488c4', verdB:'#d0a8e8',
+    parch:'#1e2d42', parchD:'#0f1623',
+    text:'#e0e8f8', textD:'#a8b8d8',
+    bgDeep:'#060810', bgFrom:'#0f1828', bgTo:'#020308',
+    bgPanel:'rgba(12,16,26,0.96)', bgRaised:'rgba(18,24,38,0.97)', bgHover:'rgba(28,38,56,0.93)',
+    topFrom:'#121a32', topTo:'#080f1c', topBorder:'rgba(143,164,200,0.28)',
+    borderBrass:'rgba(143,164,200,0.42)',
   },
   hogwarts: {
     label: 'Hogwarts',
     logo: 'assets/Imagenes/Temas/hogwarts.png',
-    brass:'#a12b0f', brassB:'#f0b429', brassD:'#7b1f09',
-    verd:'#87191f', verdB:'#b94a1f',
-    parch:'#f3dfb7', parchD:'#ceb77b',
-    text:'#f7edde', textD:'#aa7f3b',
-    bgDeep:'#15090b', bgFrom:'#321819', bgTo:'#12050a',
-    bgPanel:'rgba(48,14,16,0.95)', bgRaised:'rgba(55,18,18,0.97)', bgHover:'rgba(72,20,22,0.93)',
-    topFrom:'#3a1513', topTo:'#220b0b', topBorder:'rgba(240,180,41,0.24)',
-    borderBrass:'rgba(240,180,41,0.40)',
+    brass:'#d4a644', brassB:'#f0c86a', brassD:'#b8903a',
+    verd:'#9a7a5a', verdB:'#c0a070',
+    parch:'#2a2620', parchD:'#151310',
+    text:'#f0f0f0', textD:'#d0c0b0',
+    bgDeep:'#0a0805', bgFrom:'#15110d', bgTo:'#080604',
+    bgPanel:'rgba(18,14,12,0.96)', bgRaised:'rgba(26,20,18,0.96)', bgHover:'rgba(40,30,26,0.92)',
+    topFrom:'#191512', topTo:'#0d0a08', topBorder:'rgba(180,160,140,0.24)',
+    borderBrass:'rgba(212,166,68,0.42)',
   },
 };
 
@@ -258,7 +261,7 @@ function openSettings(){
   const presetGrid = Object.entries(THEME_PRESETS).map(([k, p])=>`
     <button type="button" class="theme-preset-btn ${k===currentPresetKey && !isCustom ?'active':''}"
       data-preset="${k}"
-      style="--th-brass:${p.brassB}; --th-verd:${p.verdB}; --th-bg:${p.bgFrom}; --th-text:${p.parch};">
+      style="--th-brass:${p.brassB}; --th-verd:${p.verdB}; --th-bg:${p.bgFrom}; --th-text:${p.text};">
       <img class="theme-preset-logo" src="${p.logo}" alt="">
       <span>${p.label}</span>
     </button>`).join('');
@@ -289,6 +292,7 @@ function openSettings(){
     </div>`;
 
   overlay.classList.add('open');
+  overlay.onclick = (e) => { if(e.target === overlay) closeModal(); };
   document.getElementById('modalCancel').onclick = closeModal;
   document.getElementById('connectFolderBtn2').onclick = connectFolder;
 
