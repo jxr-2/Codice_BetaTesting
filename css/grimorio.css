@@ -15,4 +15,4 @@
 .spell-detail-heading{ border-bottom:1px solid var(--border-brass); margin-bottom:16px; padding-bottom:12px; }
 .spell-detail-heading .modal-title{ margin:5px 0 0; font-size:25px; }
 .spell-detail-metadata{ margin:0 0 18px; font-size:12px; }
-.spell-detail-description{ color:var(--parchment-dim); font-size:15px; line-height:1.75; }
+.spell-detail-description{ color:var(--text-dim2); font-size:15px; line-height:1.75; }

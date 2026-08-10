@@ -30,20 +30,6 @@
 
 <div id="codice-toast" role="status" aria-live="polite"></div>
 
-<!-- NAV LATERAL DRAWER -->
-<button class="nav-edge-trigger" id="navEdgeBtn" type="button" title="Secciones"><span>▸</span></button>
-<div class="nav-drawer-scrim" id="navScrim"></div>
-<nav class="nav-menu" id="navMenu" aria-label="Secciones">
-  <div class="nav-menu-logo">⚙ CÓDICE</div>
-  <button data-view="home" class="active">🏠 Inicio</button>
-  <button data-view="fichas">📋 Fichas</button>
-  <button data-view="diario">📔 Diario</button>
-  <button data-view="bitacora">🗒 Bitácora</button>
-  <button data-view="canvas">🕸 Canvas</button>
-  <button data-view="mapas">🗺 Mapas</button>
-  <button data-view="grimorio">✨ Grimorio</button>
-</nav>
-
 <div class="topbar">
   <div class="brand-mark">
     <img id="brandLogo" class="brand-logo" src="" alt="" style="display:none;">
@@ -51,16 +37,16 @@
   </div>
   <input id="worldName" class="world-name-input" value="Mundo sin nombre" spellcheck="false">
   <nav class="topbar-nav">
-    <button class="topbar-nav-btn" data-view="home" title="Inicio">🏠</button>
-    <button class="topbar-nav-btn" data-view="fichas" title="Fichas">📋</button>
-    <button class="topbar-nav-btn" data-view="diario" title="Diario">📔</button>
-    <button class="topbar-nav-btn" data-view="bitacora" title="Bitácora">🗒</button>
-    <button class="topbar-nav-btn" data-view="mapas" title="Mapas">🗺</button>
+    <button class="topbar-nav-btn" data-view="home" title="Inicio"><img src="assets/Imagenes/logos_negros/hogar.png" alt="Inicio" class="nav-icon"></button>
+    <button class="topbar-nav-btn" data-view="fichas" title="Fichas"><img src="assets/Imagenes/logos_negros/portapapeles.png" alt="Fichas" class="nav-icon"></button>
+    <button class="topbar-nav-btn" data-view="diario" title="Diario"><img src="assets/Imagenes/logos_negros/escribir.png" alt="Diario" class="nav-icon"></button>
+    <button class="topbar-nav-btn" data-view="bitacora" title="Bitácora"><img src="assets/Imagenes/logos_negros/notas.png" alt="Bitácora" class="nav-icon"></button>
+    <button class="topbar-nav-btn" data-view="mapas" title="Mapas"><img src="assets/Imagenes/logos_negros/continentes.png" alt="Mapas" class="nav-icon"></button>
     <div class="topbar-dropdown">
       <button class="topbar-nav-btn" id="moreNavBtn" title="Más">▾</button>
       <div class="topbar-dropdown-menu" id="moreNavMenu">
-        <button data-view="canvas">🕸 Canvas</button>
-        <button data-view="grimorio">✨ Grimorio</button>
+        <button data-view="canvas"><img src="assets/Imagenes/logos_negros/chincheta.png" alt="Canvas" class="nav-icon-small"> Canvas</button>
+        <button data-view="grimorio"><img src="assets/Imagenes/logos_negros/show-de-magia.png" alt="Grimorio" class="nav-icon-small"> Grimorio</button>
       </div>
     </div>
   </nav>
@@ -68,7 +54,7 @@
   <div class="topbar-actions">
     <button class="icon-round-btn" id="helpBtn" title="Ayuda" type="button">?</button>
     <button class="icon-round-btn" id="settingsBtn" title="Ajustes" type="button">⚙</button>
-    <button class="icon-round-btn" id="folderBtn" title="Conectar carpeta" type="button">📁</button>
+    <button class="icon-round-btn" id="folderBtn" title="Conectar carpeta" type="button"><img src="assets/Imagenes/logos_negros/carpeta.png" alt="Carpeta" class="nav-icon-round"></button>
     <button class="btn-ghost" id="importProjectBtn">Importar</button>
     <button class="btn-brass" id="exportProjectBtn">Exportar</button>
     <div class="topbar-clock" id="topbarClock">00:00</div>

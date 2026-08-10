@@ -75,11 +75,12 @@
 .ws-topbar{
   background: rgba(35,25,20,0.88);
   border-radius:12px 12px 0 0;
+  color: var(--topbar-from);
 }
 .ws-topbar .btn-ghost{
   background: rgba(255,255,255,0.08);
   border-color: rgba(255,255,255,0.18);
-  color: var(--parchment-dim);
+  color: var(--text-dim2);
 }
 .ws-topbar .btn-ghost:hover{
   background: rgba(255,255,255,0.15);

@@ -1,18 +1,5 @@
 /* app.js — Orquestación: navegación entre vistas, home dashboard, bootstrap. */
 /* ========================= NAV ========================= */
-document.getElementById('navEdgeBtn').addEventListener('click', (e)=>{ e.stopPropagation(); document.getElementById('navMenu').classList.toggle('open'); document.getElementById('navEdgeBtn').classList.toggle('open'); document.getElementById('navScrim').classList.toggle('open'); });
-document.getElementById('navScrim').addEventListener('click', ()=>{ document.getElementById('navMenu').classList.remove('open'); document.getElementById('navEdgeBtn').classList.remove('open'); document.getElementById('navScrim').classList.remove('open'); });
-document.addEventListener('click', (e)=>{ if(!e.target.closest('#navMenu') && !e.target.closest('#navEdgeBtn')){ document.getElementById('navMenu').classList.remove('open'); document.getElementById('navEdgeBtn').classList.remove('open'); document.getElementById('navScrim').classList.remove('open'); } });
-document.querySelectorAll('#navMenu button').forEach(btn=>{
-  btn.addEventListener('click', async (e)=>{
-    e.stopPropagation();
-    document.getElementById('navMenu').classList.remove('open');
-    document.getElementById('navEdgeBtn').classList.remove('open');
-    document.getElementById('navScrim').classList.remove('open');
-    await navigateTo(btn.dataset.view);
-    document.querySelectorAll('#navMenu button').forEach(b=>b.classList.toggle('active', b===btn));
-  });
-});
 
 /* TOPBAR NAV */
 document.getElementById('moreNavBtn').addEventListener('click', (e)=>{
