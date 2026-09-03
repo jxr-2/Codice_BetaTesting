@@ -22,7 +22,13 @@
   cursor:pointer; line-height:1;
 }
 .img-toolbar button:hover{ background: rgba(255,255,255,0.22); }
-.img-block img{ border-radius:0 0 4px 4px; max-width:100%; }
+.img-block img{ border-radius:0 0 4px 4px; max-width:100%; width:100%; display:block; }
+.img-frame{ position:relative; }
+.img-resize-handle{ position:absolute; width:11px; height:11px; background:var(--verdigris); border:2px solid #fff; border-radius:50%; z-index:3; box-shadow:0 1px 3px rgba(0,0,0,0.4); }
+.img-resize-nw{ top:-6px; left:-6px; cursor:nwse-resize; }
+.img-resize-ne{ top:-6px; right:-6px; cursor:nesw-resize; }
+.img-resize-sw{ bottom:-6px; left:-6px; cursor:nesw-resize; }
+.img-resize-se{ bottom:-6px; right:-6px; cursor:nwse-resize; }
 
 /* MODAL */
 .modal-overlay{ position:fixed; inset:0; background: rgba(8,6,4,0.7); z-index:100; display:none; align-items:center; justify-content:center; }

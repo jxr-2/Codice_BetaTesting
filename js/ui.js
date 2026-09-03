@@ -23,6 +23,151 @@ function resizeImageFile(file, maxDim, quality){
   });
 }
 
+/* ========================= BLOQUES DE IMAGEN (redimensionar/alinear) =========================
+   Sistema compartido entre Fichas, Diario y Bitácora. Estructura guardada:
+   <div class="img-block" contenteditable="false">
+     <div class="img-toolbar">...</div>
+     <span class="img-frame" style="width:X%;margin:...">
+       <img>
+       <span class="img-resize-handle img-resize-nw|ne|sw|se"></span> x4
+     </span>
+   </div>
+   El "frame" (no la img) es lo que se alinea/redimensiona, para que las esquinas
+   queden siempre pegadas a la imagen sin importar cómo esté alineada. */
+function insertNodeAtCursor(container, node){
+  const sel = window.getSelection();
+  if(sel && sel.rangeCount && container.contains(sel.anchorNode)){
+    const range = sel.getRangeAt(0);
+    range.deleteContents();
+    range.insertNode(node);
+    range.setStartAfter(node);
+    range.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  } else {
+    container.appendChild(node);
+  }
+}
+function startImageResize(e, frame, corner, onChange){
+  e.preventDefault(); e.stopPropagation();
+  const editable = frame.closest('[contenteditable]');
+  const refWidth = (editable || frame.parentElement).clientWidth || 1;
+  const startX = e.clientX;
+  const startPercent = parseFloat(frame.style.width) || 60;
+  const sign = (corner === 'nw' || corner === 'sw') ? -1 : 1;
+  function onMove(ev){
+    const deltaPercent = ((ev.clientX - startX) * sign / refWidth) * 100;
+    frame.style.width = Math.min(100, Math.max(15, startPercent + deltaPercent)) + '%';
+  }
+  function onUp(){
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    if(onChange) onChange();
+  }
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+function wireImgFrameHandles(frame, onChange){
+  /* Los handles pueden ya existir en el HTML guardado (se serializan con el resto del
+     bloque) pero sin listeners propios — hay que conectarlos de nuevo cada vez que el
+     bloque se carga desde HTML, no solo crearlos la primera vez. */
+  if(frame.querySelectorAll('.img-resize-handle').length === 0){
+    ['nw','ne','sw','se'].forEach(corner=>{
+      const handle = document.createElement('span');
+      handle.className = 'img-resize-handle img-resize-'+corner;
+      frame.appendChild(handle);
+    });
+  }
+  frame.querySelectorAll('.img-resize-handle').forEach(handle=>{
+    const corner = ['nw','ne','sw','se'].find(c=> handle.classList.contains('img-resize-'+c));
+    handle.addEventListener('mousedown', (e)=> startImageResize(e, frame, corner, onChange));
+  });
+}
+function wireImgBlockToolbar(wrapper, frame, toolbar, onChange){
+  toolbar.querySelectorAll('[data-align]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const a = btn.dataset.align;
+      if(a==='left')  { frame.style.marginLeft='0'; frame.style.marginRight='auto'; frame.style.display='block'; }
+      else if(a==='center'){ frame.style.margin='8px auto'; frame.style.display='block'; }
+      else if(a==='right') { frame.style.marginLeft='auto'; frame.style.marginRight='0'; frame.style.display='block'; }
+      else if(a==='full')  { frame.style.width='100%'; frame.style.margin='8px 0'; }
+      if(onChange) onChange();
+    });
+  });
+  const removeBtn = toolbar.querySelector('[data-remove]');
+  if(removeBtn){
+    removeBtn.addEventListener('click', ()=>{ wrapper.remove(); if(onChange) onChange(); });
+  }
+}
+function createImageBlock(src, onChange){
+  const wrapper = document.createElement('div');
+  wrapper.className = 'img-block';
+  wrapper.contentEditable = 'false';
+
+  const toolbar = document.createElement('div');
+  toolbar.className = 'img-toolbar';
+  toolbar.innerHTML = `
+    <button data-align="left"   title="Izquierda">◀</button>
+    <button data-align="center" title="Centro">▬</button>
+    <button data-align="right"  title="Derecha">▶</button>
+    <button data-align="full"   title="Ancho completo">⇔</button>
+    <button data-remove title="Eliminar">✕</button>`;
+
+  const frame = document.createElement('span');
+  frame.className = 'img-frame';
+  frame.style.width = '60%';
+  frame.style.margin = '8px auto';
+  frame.style.display = 'block';
+
+  const img = document.createElement('img');
+  img.src = src;
+  img.draggable = false;
+  frame.appendChild(img);
+  wireImgFrameHandles(frame, onChange);
+  wireImgBlockToolbar(wrapper, frame, toolbar, onChange);
+
+  wrapper.appendChild(toolbar);
+  wrapper.appendChild(frame);
+  return wrapper;
+}
+/* Conecta los controles de un .img-block ya presente en el DOM (cargado desde HTML guardado).
+   Si es un bloque viejo (imagen suelta con width/margin inline, sin .img-frame ni esquinas),
+   lo migra a la estructura nueva en memoria sin tocar lo guardado hasta el próximo cambio. */
+function wireImageBlock(wrapper, onChange){
+  const img = wrapper.querySelector('img');
+  if(!img) return;
+  let frame = wrapper.querySelector('.img-frame');
+  if(!frame){
+    frame = document.createElement('span');
+    frame.className = 'img-frame';
+    frame.style.width = img.style.width || '60%';
+    frame.style.margin = img.style.margin || '8px auto';
+    frame.style.display = 'block';
+    img.parentNode.insertBefore(frame, img);
+    frame.appendChild(img);
+    img.style.width = ''; img.style.margin = ''; img.style.display = '';
+  }
+  wireImgFrameHandles(frame, onChange);
+  const toolbar = wrapper.querySelector('.img-toolbar');
+  if(toolbar){
+    const oldRange = toolbar.querySelector('input[type=range]');
+    if(oldRange) oldRange.remove();
+    wireImgBlockToolbar(wrapper, frame, toolbar, onChange);
+  }
+}
+function wireImageBlocksIn(container, onChange){
+  container.querySelectorAll('.img-block').forEach(wrapper=> wireImageBlock(wrapper, onChange));
+}
+
+/* ========================= IMPRESIÓN (ventana compartida) ========================= */
+function openPrintWindow(html){
+  const win = window.open('', '_blank');
+  if(!win) return;
+  win.document.write(html);
+  win.document.close(); win.focus();
+  setTimeout(()=>win.print(), 400);
+}
+
 
 /* ========================= MODAL ========================= */
 function renderField(f){
@@ -436,3 +581,89 @@ function openHelp(){
   });
 }
 document.getElementById('helpBtn').addEventListener('click', openHelp);
+
+/* ========================= TOOLBAR DE TEXTO ENRIQUECIDO ========================= */
+/* Compartido entre Diario y Bitácora: los botones ya están en el HTML estático de cada
+   editor (data-rt-cmd / data-rt-block / data-rt-size), esta función solo los conecta. */
+function wireRichTextToolbar(toolbarEl, contentEl, onChange){
+  if(!toolbarEl || !contentEl) return;
+  toolbarEl.querySelectorAll('[data-rt-cmd]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      contentEl.focus();
+      if(btn.dataset.rtCmd === 'hr') document.execCommand('insertHorizontalRule');
+      else document.execCommand(btn.dataset.rtCmd);
+      if(onChange) onChange();
+    });
+  });
+  const blockSelect = toolbarEl.querySelector('[data-rt-block]');
+  if(blockSelect){
+    blockSelect.addEventListener('change', ()=>{
+      contentEl.focus();
+      document.execCommand('formatBlock', false, blockSelect.value);
+      if(onChange) onChange();
+    });
+  }
+  const sizeSelect = toolbarEl.querySelector('[data-rt-size]');
+  if(sizeSelect){
+    sizeSelect.addEventListener('change', ()=>{
+      contentEl.focus();
+      document.execCommand('fontSize', false, sizeSelect.value);
+      if(onChange) onChange();
+    });
+  }
+}
+
+/* ========================= BÚSQUEDA GLOBAL ========================= */
+function stripHtml(html){ return String(html||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim(); }
+function openGlobalSearch(){
+  document.getElementById('searchOverlay').classList.add('open');
+  const input = document.getElementById('globalSearchInput');
+  input.value = '';
+  renderGlobalSearchResults('');
+  setTimeout(()=> input.focus(), 30);
+}
+function closeGlobalSearch(){ document.getElementById('searchOverlay').classList.remove('open'); }
+function renderGlobalSearchResults(q){
+  const el = document.getElementById('globalSearchResults');
+  const query = q.trim().toLowerCase();
+  if(!query){ el.innerHTML = '<div class="hint" style="padding:8px;">Escribí para buscar en fichas, diario, bitácora y mapas.</div>'; return; }
+  const results = [];
+  entriesIndex.forEach(e=>{
+    const hay = `${e.name||''} ${e.summary||''} ${(e.tags||[]).join(' ')}`.toLowerCase();
+    if(hay.includes(query)) results.push({ kind:'ficha', id:e.id, icon: TYPES[e.type]?.glyph || '☉', title: e.name||'Sin nombre', sub: TYPES[e.type]?.label || 'Ficha' });
+  });
+  journalEntries.forEach(j=>{
+    const hay = `${j.title||''} ${stripHtml(j.content)}`.toLowerCase();
+    if(hay.includes(query)) results.push({ kind:'journal', id:j.id, icon:'📔', title: j.title||'Sin título', sub:'Diario' });
+  });
+  sessionLog.forEach(s=>{
+    const hay = `${s.title||''} ${s.summary||''} ${stripHtml(s.notes)}`.toLowerCase();
+    if(hay.includes(query)) results.push({ kind:'session', id:s.id, icon:'🗒', title: s.title||'Sesión', sub:'Bitácora' });
+  });
+  mapsIndex.forEach(m=>{
+    if((m.name||'').toLowerCase().includes(query)) results.push({ kind:'map', id:m.id, icon:'🗺', title: m.name, sub:'Mapa' });
+  });
+  if(!results.length){ el.innerHTML = '<div class="hint" style="padding:8px;">Sin resultados.</div>'; return; }
+  el.innerHTML = results.slice(0,40).map(r=>`
+    <div class="mention-option global-search-result" data-kind="${r.kind}" data-id="${r.id}">
+      <span style="margin-right:8px;">${r.icon}</span><strong>${escapeHtml(r.title)}</strong>
+      <span class="hint" style="margin-left:8px;">${r.sub}</span>
+    </div>`).join('');
+  el.querySelectorAll('.global-search-result').forEach(row=>{
+    row.addEventListener('click', ()=> goToSearchResult(row.dataset.kind, row.dataset.id));
+  });
+}
+async function goToSearchResult(kind, id){
+  closeGlobalSearch();
+  if(kind==='ficha') await openFichaEditor(id);
+  else if(kind==='journal'){ await navigateTo('diario'); openJournalEntry(id); }
+  else if(kind==='session'){ await navigateTo('bitacora'); loadSession(id); }
+  else if(kind==='map'){ await navigateTo('mapas'); loadMap(id); }
+}
+document.getElementById('globalSearchBtn').addEventListener('click', openGlobalSearch);
+document.getElementById('globalSearchInput').addEventListener('input', (e)=> renderGlobalSearchResults(e.target.value));
+document.getElementById('searchOverlay').addEventListener('click', (e)=>{ if(e.target.id==='searchOverlay') closeGlobalSearch(); });
+document.addEventListener('keydown', (e)=>{
+  if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); openGlobalSearch(); }
+  else if(e.key==='Escape' && document.getElementById('searchOverlay').classList.contains('open')){ closeGlobalSearch(); }
+});

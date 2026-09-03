@@ -52,6 +52,7 @@
   </nav>
   <button class="rail-btn" id="railToggleBtn" type="button">☰ Panel</button>
   <div class="topbar-actions">
+    <button class="icon-round-btn" id="globalSearchBtn" title="Buscar (Ctrl+K)" type="button">🔍</button>
     <button class="icon-round-btn" id="helpBtn" title="Ayuda" type="button">?</button>
     <button class="icon-round-btn" id="settingsBtn" title="Ajustes" type="button">⚙</button>
     <button class="icon-round-btn" id="folderBtn" title="Conectar carpeta" type="button"><img src="assets/Imagenes/logos_negros/carpeta.png" alt="Carpeta" class="nav-icon-round"></button>
@@ -176,6 +177,10 @@
         <input type="file" id="contentImgFile" accept="image/*" style="display:none">
       </div>
       <div id="wsBlocks"></div>
+      <div class="links-box" id="wsBacklinks" style="display:none;">
+        <div class="ws-section-title" style="margin-top:0;">Dónde aparece esta ficha</div>
+        <div id="wsBacklinksList"></div>
+      </div>
       <div class="ws-actions">
         <button class="btn-delete" id="wsDelete">Eliminar ficha</button>
         <button class="btn-brass" id="wsSave">Guardar ficha</button>
@@ -186,29 +191,69 @@
 
 <!-- ===== DIARIO (capítulos) ===== -->
 <section id="view-diario" class="view">
-  <aside class="rail">
-    <div class="rail-title">Diario del viajero</div>
-    <div id="journalList"></div>
-    <button class="rail-btn" id="newJournalBtn" style="width:100%;">+ Nuevo capítulo</button>
-  </aside>
   <div class="fichas-main" style="padding:26px 32px 60px;">
+    <div id="journalGridWrap">
+      <div class="fichas-toolbar">
+        <div class="rail-title" style="margin:0;">Diario del viajero</div>
+        <button class="btn-ghost" id="journalSelectModeBtn" type="button" style="margin-left:auto;">☑ Seleccionar</button>
+        <button class="btn-brass" id="newJournalBtn">+ Nuevo capítulo</button>
+      </div>
+      <div id="journalGrid" class="cards-grid"></div>
+      <div class="empty" id="journalEmpty" style="display:none;"><div class="glyph">📔</div><div class="title">Sin capítulos todavía</div><div class="sub">Creá el primer capítulo de tu diario.</div></div>
+      <div class="bulk-bar" id="journalBulkBar">
+        <span id="journalBulkCount">0 seleccionados</span>
+        <button class="rail-btn" id="journalBulkPrintBtn" type="button">🖨 Imprimir</button>
+        <button class="btn-ghost" id="journalBulkCancelBtn" type="button">Cancelar</button>
+      </div>
+    </div>
     <div class="workspace-inline riveted chapter-writing" id="journalEditor" style="display:none;">
+      <div class="ws-topbar">
+        <button class="btn-ghost" id="backToJournalGridBtn" type="button">← Volver a capítulos</button>
+        <button class="btn-ghost" id="journalPrevBtn" type="button">‹ Anterior</button>
+        <button class="btn-ghost" id="journalNextBtn" type="button">Siguiente ›</button>
+        <button class="btn-ghost" id="journalPrintBtn" type="button">🖨 Imprimir</button>
+        <span class="hint" id="journalDirtyHint" style="margin-left:auto;"></span>
+      </div>
       <div class="ws-header">
         <div class="chapter-title-row"><span class="chapter-num" id="journalNum"></span></div>
         <input class="ws-name-input" id="journalTitle" placeholder="Título del capítulo">
         <div class="ws-meta-row"><input type="date" id="journalDate"></div>
       </div>
-      <div class="ws-toolbar" id="journalToolbar">
-        <button id="journalInsertImgBtn" type="button">🖼 Imagen</button>
+      <div class="ws-toolbar rt-toolbar" id="journalToolbar">
+        <select class="rt-select" data-rt-block title="Estilo de párrafo">
+          <option value="p">Párrafo</option>
+          <option value="h1">Título 1</option>
+          <option value="h2">Título 2</option>
+          <option value="h3">Título 3</option>
+        </select>
+        <select class="rt-select" data-rt-size title="Tamaño de texto">
+          <option value="2">Chico</option>
+          <option value="3" selected>Normal</option>
+          <option value="5">Grande</option>
+          <option value="7">Enorme</option>
+        </select>
+        <span class="toolbar-sep"></span>
+        <button class="rt-btn" type="button" data-rt-cmd="bold" title="Negrita"><b>N</b></button>
+        <button class="rt-btn" type="button" data-rt-cmd="italic" title="Cursiva"><i>K</i></button>
+        <button class="rt-btn" type="button" data-rt-cmd="underline" title="Subrayado"><u>S</u></button>
+        <span class="toolbar-sep"></span>
+        <button class="rt-btn" type="button" data-rt-cmd="justifyLeft" title="Alinear a la izquierda">◀</button>
+        <button class="rt-btn" type="button" data-rt-cmd="justifyCenter" title="Centrar">▬</button>
+        <button class="rt-btn" type="button" data-rt-cmd="justifyRight" title="Alinear a la derecha">▶</button>
+        <span class="toolbar-sep"></span>
+        <button class="rt-btn" type="button" data-rt-cmd="insertUnorderedList" title="Lista con viñetas">•</button>
+        <button class="rt-btn" type="button" data-rt-cmd="insertOrderedList" title="Lista numerada">1.</button>
+        <button class="rt-btn" type="button" data-rt-cmd="hr" title="Separador">―</button>
+        <span class="toolbar-sep"></span>
+        <button class="rt-btn" id="journalInsertImgBtn" type="button" title="Insertar imagen">🖼</button>
         <input type="file" id="journalImgFile" accept="image/*" style="display:none">
       </div>
-      <div class="ws-content chapter-content" id="journalContent" contenteditable="true" data-placeholder="Qué pasó hoy en el viaje…" style="margin:0 32px 0;"></div>
+      <div class="ws-content chapter-content" id="journalContent" contenteditable="true" data-placeholder="Qué pasó hoy en el viaje…"></div>
       <div class="ws-actions">
         <button class="btn-delete" id="journalDelete">Eliminar</button>
         <button class="btn-brass" id="journalSave">Guardar capítulo</button>
       </div>
     </div>
-    <div class="empty" id="journalEmpty"><div class="glyph">📔</div><div class="title">Sin capítulos todavía</div><div class="sub">Creá el primer capítulo de tu diario.</div></div>
   </div>
 </section>
 
@@ -226,6 +271,36 @@
         <div class="ws-meta-row"><input type="date" id="sessionDate"></div>
         <textarea class="session-summary" id="sessionSummary" placeholder="Resumen de lo ocurrido…" style="margin-top:0;"></textarea>
       </div>
+      <div class="ws-toolbar rt-toolbar" id="sessionToolbar">
+        <select class="rt-select" data-rt-block title="Estilo de párrafo">
+          <option value="p">Párrafo</option>
+          <option value="h1">Título 1</option>
+          <option value="h2">Título 2</option>
+          <option value="h3">Título 3</option>
+        </select>
+        <select class="rt-select" data-rt-size title="Tamaño de texto">
+          <option value="2">Chico</option>
+          <option value="3" selected>Normal</option>
+          <option value="5">Grande</option>
+          <option value="7">Enorme</option>
+        </select>
+        <span class="toolbar-sep"></span>
+        <button class="rt-btn" type="button" data-rt-cmd="bold" title="Negrita"><b>N</b></button>
+        <button class="rt-btn" type="button" data-rt-cmd="italic" title="Cursiva"><i>K</i></button>
+        <button class="rt-btn" type="button" data-rt-cmd="underline" title="Subrayado"><u>S</u></button>
+        <span class="toolbar-sep"></span>
+        <button class="rt-btn" type="button" data-rt-cmd="justifyLeft" title="Alinear a la izquierda">◀</button>
+        <button class="rt-btn" type="button" data-rt-cmd="justifyCenter" title="Centrar">▬</button>
+        <button class="rt-btn" type="button" data-rt-cmd="justifyRight" title="Alinear a la derecha">▶</button>
+        <span class="toolbar-sep"></span>
+        <button class="rt-btn" type="button" data-rt-cmd="insertUnorderedList" title="Lista con viñetas">•</button>
+        <button class="rt-btn" type="button" data-rt-cmd="insertOrderedList" title="Lista numerada">1.</button>
+        <button class="rt-btn" type="button" data-rt-cmd="hr" title="Separador">―</button>
+        <span class="toolbar-sep"></span>
+        <button class="rt-btn" id="sessionInsertImgBtn" type="button" title="Insertar imagen">🖼</button>
+        <input type="file" id="sessionImgFile" accept="image/*" style="display:none">
+        <span class="hint" style="margin-left:8px;">Escribí @ para mencionar una ficha</span>
+      </div>
       <div class="ws-content" id="sessionNotes" contenteditable="true" data-placeholder="Notas detalladas de la sesión…" style="margin:14px 32px 0;"></div>
       <div class="links-box">
         <div class="ws-section-title" style="margin-top:0;">Fichas relacionadas</div>
@@ -233,6 +308,7 @@
       </div>
       <div class="ws-actions">
         <button class="btn-delete" id="sessionDelete">Eliminar</button>
+        <span class="hint" id="sessionDirtyHint"></span>
         <button class="btn-brass" id="sessionSave">Guardar sesión</button>
       </div>
     </div>
@@ -314,6 +390,12 @@
 </section>
 
 <div class="modal-overlay" id="modalOverlay"><div class="modal-box" id="modalBox"></div></div>
+<div class="modal-overlay" id="searchOverlay">
+  <div class="modal-box" id="searchBox" style="width:min(560px,92vw); max-height:76vh; display:flex; flex-direction:column;">
+    <input type="text" id="globalSearchInput" class="search-input" placeholder="Buscar fichas, capítulos, sesiones, mapas…" style="width:100%; margin-bottom:12px;">
+    <div id="globalSearchResults" style="overflow-y:auto;"></div>
+  </div>
+</div>
 
 <script src="js/state.js"></script>
 <script src="js/storage.js"></script>

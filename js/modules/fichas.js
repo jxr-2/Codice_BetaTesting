@@ -235,6 +235,8 @@ function wireBlockEvents(){
   });
   document.querySelectorAll('[data-block-content]').forEach(el=>{
     el.addEventListener('input', ()=>{ const b = currentBlocks.find(x=>x.id===el.dataset.blockContent); if(b){ b.html = el.innerHTML; markWsDirty(); } });
+    const blockId = el.dataset.blockContent;
+    wireImageBlocksIn(el, ()=> syncBlock(blockId, el));
   });
   document.querySelectorAll('[data-fmt]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
@@ -267,7 +269,8 @@ document.getElementById('contentImgFile').addEventListener('change', async (e)=>
   const target = document.querySelector(`[data-block-content="${blockId}"]`);
   if(target){
     target.focus();
-    insertResizableImage(target, dataUrl, blockId);
+    const block = createImageBlock(dataUrl, ()=> syncBlock(blockId, target));
+    insertNodeAtCursor(target, block);
     const b = currentBlocks.find(x=>x.id===blockId);
     if(b) b.html = target.innerHTML;
     markWsDirty();
@@ -275,93 +278,9 @@ document.getElementById('contentImgFile').addEventListener('change', async (e)=>
   e.target.value = '';
 });
 
-/* ---- Resizable / alignable image helper ---- */
-function insertResizableImage(container, src, blockId){
-  const wrapper = document.createElement('div');
-  wrapper.className = 'img-block';
-  wrapper.dataset.imgBlock = '1';
-  wrapper.contentEditable = 'false';
-
-  const img = document.createElement('img');
-  img.src = src;
-  img.style.width = '60%';
-  img.style.display = 'block';
-  img.style.margin = '8px auto';
-  img.draggable = false;
-
-  const toolbar = document.createElement('div');
-  toolbar.className = 'img-toolbar';
-  toolbar.innerHTML = `
-    <button data-align="left"   title="Izquierda">◀</button>
-    <button data-align="center" title="Centro">▬</button>
-    <button data-align="right"  title="Derecha">▶</button>
-    <button data-align="full"   title="Ancho completo">⇔</button>
-    <input type="range" min="20" max="100" value="60" title="Tamaño" style="width:70px;">
-    <button data-remove title="Eliminar">✕</button>`;
-
-  toolbar.querySelector('input[type=range]').addEventListener('input', ev=>{
-    img.style.width = ev.target.value + '%';
-    syncBlock(blockId, container);
-  });
-  toolbar.querySelectorAll('[data-align]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const a = btn.dataset.align;
-      if(a==='left')  { img.style.marginLeft='0'; img.style.marginRight='auto'; img.style.display='block'; }
-      else if(a==='center'){ img.style.margin='8px auto'; img.style.display='block'; }
-      else if(a==='right') { img.style.marginLeft='auto'; img.style.marginRight='0'; img.style.display='block'; }
-      else if(a==='full')  { img.style.width='100%'; img.style.margin='8px 0'; }
-      syncBlock(blockId, container);
-    });
-  });
-  toolbar.querySelector('[data-remove]').addEventListener('click', ()=>{
-    wrapper.remove();
-    syncBlock(blockId, container);
-  });
-
-  wrapper.appendChild(toolbar);
-  wrapper.appendChild(img);
-
-  // Insert at cursor position or append
-  const sel = window.getSelection();
-  if(sel && sel.rangeCount && container.contains(sel.anchorNode)){
-    const range = sel.getRangeAt(0);
-    range.deleteContents();
-    range.insertNode(wrapper);
-    range.setStartAfter(wrapper);
-    range.collapse(true);
-    sel.removeAllRanges();
-    sel.addRange(range);
-  } else {
-    container.appendChild(wrapper);
-  }
-}
-
 function syncBlock(blockId, container){
   const b = currentBlocks.find(x=>x.id===blockId);
   if(b){ b.html = container.innerHTML; markWsDirty(); }
-}
-
-/* Wire click-to-show-toolbar on existing saved images when a block renders */
-function wireExistingImages(container, blockId){
-  container.querySelectorAll('img:not([data-wired])').forEach(img=>{
-    img.dataset.wired = '1';
-    img.style.cursor = 'pointer';
-    img.addEventListener('click', ()=>{
-      // wrap orphan img in a block and show controls
-      if(!img.closest('.img-block')){
-        const w = document.createElement('div');
-        w.className = 'img-block';
-        w.contentEditable = 'false';
-        img.parentNode.insertBefore(w, img);
-        w.appendChild(img);
-        const dataUrl = img.src;
-        img.parentNode.replaceChild(document.createElement('span'), img); // remove then re-insert
-        w.innerHTML = '';
-        insertResizableImage(container, dataUrl, blockId);
-        img.remove();
-      }
-    });
-  });
 }
 
 async function loadEntryIntoWorkspace(id){
@@ -401,9 +320,52 @@ async function loadEntryIntoWorkspace(id){
   update5EVisibility();
   renderBlocks();
   wsDirty = false;
+  clearTimeout(wsAutosaveTimer);
   document.getElementById('wsDirtyHint').textContent = '';
+  await renderWsBacklinks();
 }
-function markWsDirty(){ wsDirty = true; document.getElementById('wsDirtyHint').textContent = '● cambios sin guardar'; }
+/* "Dónde aparece esta ficha": junta referencias que ya existen en Bitácora (linkedEntryIds),
+   Canvas (nodo kind:'entry') y Mapas (pin.entryId) — no agrega datos nuevos, solo los muestra. */
+async function renderWsBacklinks(){
+  const panel = document.getElementById('wsBacklinks');
+  const list = document.getElementById('wsBacklinksList');
+  if(!currentEntryId){ panel.style.display = 'none'; return; }
+  const entryId = currentEntryId;
+  const items = [];
+  sessionLog.filter(s => (s.linkedEntryIds||[]).includes(entryId)).forEach(s=>{
+    items.push(`<div class="linked-ficha-check">🗒 Sesión: <a href="#" data-goto-session="${s.id}">${escapeHtml(s.title||'Sesión')}</a></div>`);
+  });
+  const canvasSrc = canvasLoaded ? canvasData : ((await storeGet('canvas-data')) || { nodes:[], edges:[] });
+  if(canvasSrc.nodes.some(n=>n.kind==='entry' && n.entryId===entryId)){
+    items.push(`<div class="linked-ficha-check">🔗 <a href="#" data-goto-canvas="1">Aparece en el lienzo de conexiones</a></div>`);
+  }
+  for(const m of mapsIndex){
+    const mapData = await storeGet('map:'+m.id);
+    if(!mapData || !mapData.pins) continue;
+    mapData.pins.filter(p=>p.entryId===entryId).forEach(p=>{
+      items.push(`<div class="linked-ficha-check">📍 Pin "${escapeHtml(p.title||'Sin título')}" en <a href="#" data-goto-map="${m.id}">${escapeHtml(m.name)}</a></div>`);
+    });
+  }
+  if(currentEntryId !== entryId) return; // cambiaste de ficha mientras se buscaban los mapas
+  if(!items.length){ panel.style.display = 'none'; return; }
+  panel.style.display = 'block';
+  list.innerHTML = items.join('');
+  list.querySelectorAll('[data-goto-session]').forEach(a=> a.addEventListener('click', (e)=>{ e.preventDefault(); navigateTo('bitacora').then(()=> loadSession(a.dataset.gotoSession)); }));
+  list.querySelectorAll('[data-goto-map]').forEach(a=> a.addEventListener('click', (e)=>{ e.preventDefault(); navigateTo('mapas').then(()=> loadMap(a.dataset.gotoMap)); }));
+  list.querySelectorAll('[data-goto-canvas]').forEach(a=> a.addEventListener('click', (e)=>{ e.preventDefault(); navigateTo('canvas'); }));
+}
+let wsAutosaveTimer = null;
+function markWsDirty(){
+  wsDirty = true;
+  document.getElementById('wsDirtyHint').textContent = '● cambios sin guardar';
+  clearTimeout(wsAutosaveTimer);
+  wsAutosaveTimer = setTimeout(async ()=>{
+    if(!document.getElementById('wsName').value.trim()) return;
+    document.getElementById('wsDirtyHint').textContent = 'Guardando…';
+    const ok = await saveCurrentWorkspace({ silent:true });
+    document.getElementById('wsDirtyHint').textContent = ok ? '✓ Guardado' : '● cambios sin guardar';
+  }, 2500);
+}
 ['wsName','wsTags','wsSummary','wsSTR','wsDEX','wsCON','wsINT','wsWIS','wsCHA','wsHP','wsAC','wsSpeed','wsProf','wsSpells','wsInventory'].forEach(id=>{
   document.getElementById(id).addEventListener('input', markWsDirty);
 });
@@ -435,9 +397,10 @@ window.addEventListener('mousemove', (e)=>{
 window.addEventListener('mouseup', ()=>{ coverDragState = null; });
 document.getElementById('wsCoverZoomInput').addEventListener('input', (e)=>{ wsCoverZoom = parseFloat(e.target.value); applyCoverStyle(); markWsDirty(); });
 
-async function saveCurrentWorkspace(){
+async function saveCurrentWorkspace(opts={}){
+  const silent = !!opts.silent;
   const name = document.getElementById('wsName').value.trim();
-  if(!name){ document.getElementById('wsName').focus(); return false; }
+  if(!name){ if(!silent) document.getElementById('wsName').focus(); return false; }
   const type = document.getElementById('wsType').value;
   const folderId = document.getElementById('wsFolder').value || null;
   const tags = document.getElementById('wsTags').value.split(',').map(t=>t.trim()).filter(Boolean);
@@ -460,28 +423,49 @@ async function saveCurrentWorkspace(){
   if(prevIdx>-1) entriesIndex[prevIdx] = lightEntry; else entriesIndex.push(lightEntry);
   await storeSet('entries-index', entriesIndex);
   currentEntryId = id; wsDirty = false;
+  clearTimeout(wsAutosaveTimer);
   renderFolderList(); renderTypeFilterList(); renderFichasGrid(); renderHomeDashboard();
   if(canvasLoaded){ renderCanvasNodes(); renderCanvasEdges(); }
-  setFichasMode('grid');
+  if(!silent) setFichasMode('grid'); else await renderWsBacklinks();
   return true;
 }
-document.getElementById('wsSave').addEventListener('click', saveCurrentWorkspace);
+document.getElementById('wsSave').addEventListener('click', ()=> saveCurrentWorkspace());
 
+/* Al borrar una ficha, tanto el canvas como los mapas pueden tener referencias a su id
+   (nodo de canvas, pin.entryId). Si esos módulos no fueron abiertos en esta sesión, sus
+   datos en memoria son solo el default vacío — hay que leerlos de storage para limpiarlos
+   de verdad, no solo el estado en memoria. */
+async function cleanupOrphanedMapPins(entryId){
+  for(const m of mapsIndex){
+    const mapData = await storeGet('map:'+m.id);
+    if(!mapData || !mapData.pins || !mapData.pins.length) continue;
+    const before = mapData.pins.length;
+    mapData.pins = mapData.pins.filter(p=>p.entryId !== entryId);
+    if(mapData.pins.length !== before){
+      await storeSet('map:'+m.id, mapData);
+      if(currentMap && currentMap.id === m.id){ currentMap = mapData; if(mapsLoaded) renderPins(); }
+    }
+  }
+}
 document.getElementById('wsDelete').addEventListener('click', ()=>{
   if(!currentEntryId) return;
   openConfirm({
     title:'Eliminar ficha', message:'Esta ficha se borrará de tu códice de forma permanente.',
     onConfirm: async ()=>{
-      await storeDelete('entry:'+currentEntryId);
-      entriesIndex = entriesIndex.filter(e=>e.id!==currentEntryId);
+      const deletedId = currentEntryId;
+      await storeDelete('entry:'+deletedId);
+      entriesIndex = entriesIndex.filter(e=>e.id!==deletedId);
       await storeSet('entries-index', entriesIndex);
-      const removedIds = canvasData.nodes.filter(n=>n.kind==='entry'&&n.entryId===currentEntryId).map(n=>n.id);
+      const canvasSrc = canvasLoaded ? canvasData : ((await storeGet('canvas-data')) || { nodes:[], edges:[] });
+      const removedIds = canvasSrc.nodes.filter(n=>n.kind==='entry'&&n.entryId===deletedId).map(n=>n.id);
       if(removedIds.length){
-        canvasData.nodes = canvasData.nodes.filter(n=>!removedIds.includes(n.id));
-        canvasData.edges = canvasData.edges.filter(ed=>!removedIds.includes(ed.from)&&!removedIds.includes(ed.to));
+        canvasSrc.nodes = canvasSrc.nodes.filter(n=>!removedIds.includes(n.id));
+        canvasSrc.edges = canvasSrc.edges.filter(ed=>!removedIds.includes(ed.from)&&!removedIds.includes(ed.to));
+        canvasData = canvasSrc;
         await saveCanvas();
         if(canvasLoaded){ renderCanvasNodes(); renderCanvasEdges(); }
       }
+      await cleanupOrphanedMapPins(deletedId);
       markDirty();
       renderFolderList(); renderTypeFilterList(); renderFichasGrid(); renderHomeDashboard();
       setFichasMode('grid');
@@ -594,11 +578,5 @@ function printEntry(){
     summary: document.getElementById('wsSummary').value, coverImage: wsCoverData, blocks: currentBlocks };
   printEntries([full]);
 }
-function printEntries(entries){
-  const win = window.open('', '_blank');
-  if(!win) return;
-  win.document.write(buildPrintHtml(entries));
-  win.document.close(); win.focus();
-  setTimeout(()=>win.print(), 400);
-}
+function printEntries(entries){ openPrintWindow(buildPrintHtml(entries)); }
 document.getElementById('printEntryBtn').addEventListener('click', printEntry);

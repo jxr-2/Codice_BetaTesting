@@ -194,5 +194,5 @@ try{
 async function loadExtras(){
   const jr = await storeGet('journal-entries'); journalEntries = jr || [];
   const sl = await storeGet('session-log'); sessionLog = sl || [];
-  renderJournalList(); renderSessionList();
+  renderJournalGrid(); renderSessionList();
 }

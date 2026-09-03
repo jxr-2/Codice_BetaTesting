@@ -115,7 +115,8 @@ async function importProject(file, silent){
     applyTheme();
     if(canvasLoaded){ applyCanvasTransform(); renderCanvasNodes(); renderCanvasEdges(); }
     if(mapsLoaded) renderMapList();
-    renderJournalList(); renderSessionList();
+    currentJournalId = null; setJournalMode('grid'); renderJournalGrid();
+    loadSession(null);
     clearDirty();
     if(!silent) openModal({ title:'Proyecto importado', fields:[], submitLabel:'Cerrar' });
   } catch(err){

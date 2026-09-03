@@ -46,13 +46,15 @@ let projectFileName = null;
 
 let journalEntries = [];
 let currentJournalId = null;
+let journalDirty = false;
 let sessionLog = [];
 let currentSessionId = null;
+let sessionDirty = false;
 let grimorioInited = false;
 
 function markDirty(){ projectDirty = true; }
 function clearDirty(){ projectDirty = false; }
 window.addEventListener('beforeunload', (e)=>{
-  if(projectDirty || wsDirty){ e.preventDefault(); e.returnValue = ''; }
+  if(projectDirty || wsDirty || journalDirty || sessionDirty){ e.preventDefault(); e.returnValue = ''; }
 });
 
