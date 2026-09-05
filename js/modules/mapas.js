@@ -4,26 +4,58 @@ async function initMapas(){
   mapsLoaded = true;
   const idx = await storeGet('maps-index');
   mapsIndex = idx || [];
+  renderMapFolderList();
   renderMapList();
+}
+function filteredMaps(){
+  if(activeMapFolder === 'none') return mapsIndex.filter(m=>!m.folderId);
+  if(activeMapFolder !== 'all') return mapsIndex.filter(m=>m.folderId===activeMapFolder);
+  return mapsIndex;
+}
+function renderMapFolderList(){
+  renderFolderTree({
+    containerId: 'mapFolderList',
+    items: mapsIndex,
+    activeId: activeMapFolder,
+    getThumb: (m)=> m.thumb || null,
+    onLeafClick: (m)=> loadMap(m.id),
+    onMoveItem: moveMapToFolder,
+    onSelect: (id)=>{ activeMapFolder = id; renderMapFolderList(); renderMapList(); }
+  });
+}
+async function moveMapToFolder(mapId, folderId){
+  const idxEntry = mapsIndex.find(m=>m.id===mapId);
+  if(idxEntry) idxEntry.folderId = folderId;
+  await storeSet('maps-index', mapsIndex); markDirty();
+  renderMapFolderList(); renderMapList();
 }
 function renderMapList(){
   const el = document.getElementById('mapList');
-  el.innerHTML = mapsIndex.map(m => `<div class="rail-item ${currentMap && currentMap.id===m.id ? 'active':''}" data-map="${m.id}"><span>🗺 ${escapeHtml(m.name)}</span></div>`).join('');
+  const list = filteredMaps();
+  el.innerHTML = list.map(m => `<div class="rail-item map-rail-item ${currentMap && currentMap.id===m.id ? 'active':''}" data-map="${m.id}" draggable="true" data-drag-item="${m.id}">
+      <span class="map-rail-thumb" style="${m.thumb?`background-image:url('${m.thumb}')`:''}">${m.thumb?'':'<svg class="icon"><use href="#i-map"/></svg>'}</span>
+      <span>${escapeHtml(m.name)}</span>
+    </div>`).join('') || '<div class="hint" style="margin:8px 0;">Sin mapas en esta carpeta.</div>';
   el.querySelectorAll('.rail-item').forEach(item=> item.addEventListener('click', ()=> loadMap(item.dataset.map)));
 }
+document.getElementById('newMapFolderBtn').addEventListener('click', ()=>{
+  const defaultParent = (activeMapFolder && activeMapFolder!=='all' && activeMapFolder!=='none') ? activeMapFolder : null;
+  openNewFolderModal(defaultParent);
+});
 document.getElementById('newMapBtn').addEventListener('click', ()=> document.getElementById('mapFileInput').click());
 document.getElementById('mapFileInput').addEventListener('change', async (e)=>{
   const file = e.target.files[0]; if(!file) return;
   const dataUrl = await resizeImageFile(file, 1600, 0.78);
+  const thumb = await resizeImageFile(file, 200, 0.6);
   e.target.value = '';
   openModal({
     title:'Nombre del mapa', fields:[{ key:'name', label:'Nombre', placeholder:'ej: Continente Occidental' }], submitLabel:'Crear mapa',
     onSubmit: async (v)=>{
       const id = uid(); const name = v.name.trim() || 'Mapa sin nombre';
-      mapsIndex.push({ id, name });
+      mapsIndex.push({ id, name, thumb, folderId: activeMapFolder!=='all' && activeMapFolder!=='none' ? activeMapFolder : null });
       await storeSet('maps-index', mapsIndex);
       await storeSet('map:'+id, { id, name, image: dataUrl, pins: [], regions: [] });
-      markDirty(); renderMapList(); loadMap(id); renderHomeDashboard();
+      markDirty(); renderMapFolderList(); renderMapList(); loadMap(id); renderHomeDashboard();
     }
   });
 });
@@ -68,9 +100,44 @@ document.getElementById('mapDeleteBtn').addEventListener('click', ()=>{
       markDirty(); currentMap = null;
       document.getElementById('mapEmpty').style.display = 'block';
       document.getElementById('mapWorkspace').style.display = 'none';
-      renderMapList(); renderHomeDashboard();
+      renderMapFolderList(); renderMapList(); renderHomeDashboard();
     }
   });
+});
+document.getElementById('mapFolderBtn').addEventListener('click', ()=>{
+  if(!currentMap) return;
+  openModal({
+    title:'Mover a carpeta', wide:false,
+    fields:[{ key:'folderId', label:'Carpeta', type:'select', value: currentMap.folderId||'',
+      options:[{value:'',label:'Sin carpeta'}, ...folderSelectOptions()] }],
+    submitLabel:'Mover',
+    onSubmit: async (v)=>{
+      currentMap.folderId = v.folderId || null;
+      const idxEntry = mapsIndex.find(m=>m.id===currentMap.id);
+      if(idxEntry) idxEntry.folderId = currentMap.folderId;
+      await storeSet('maps-index', mapsIndex); await saveCurrentMap();
+      renderMapFolderList(); renderMapList();
+    }
+  });
+});
+/* Print */
+function buildMapPrintHtml(map){
+  return `<html><head><title>${escapeHtml(map.name)}</title><style>
+    body{ font-family: Georgia, serif; padding:30px; color:#231914; max-width:900px; margin:auto; }
+    h1{ font-size:24px; margin-bottom:16px; }
+    img{ max-width:100%; border-radius:6px; margin-bottom:20px; }
+    .legend-title{ font-size:13px; color:#7d5f2c; margin:16px 0 6px; text-transform:uppercase; letter-spacing:0.06em; }
+    ul{ margin:0; padding-left:20px; } li{ margin-bottom:4px; }
+  </style></head><body>
+    <h1>${escapeHtml(map.name)}</h1>
+    <img src="${map.image}">
+    ${map.pins.length ? `<div class="legend-title">Pines</div><ul>${map.pins.map(p=>`<li><strong>${escapeHtml(p.title||'Sin título')}</strong>${p.note?': '+escapeHtml(p.note):''}</li>`).join('')}</ul>` : ''}
+    ${map.regions.length ? `<div class="legend-title">Regiones</div><ul>${map.regions.map(r=>`<li>${escapeHtml(r.name)}</li>`).join('')}</ul>` : ''}
+  </body></html>`;
+}
+document.getElementById('mapPrintBtn').addEventListener('click', ()=>{
+  if(!currentMap) return;
+  openPrintWindow(buildMapPrintHtml(currentMap));
 });
 document.getElementById('pinModeBtn').addEventListener('click', ()=> setMapMode('pin'));
 document.getElementById('regionModeBtn').addEventListener('click', ()=> setMapMode('region'));

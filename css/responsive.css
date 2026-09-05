@@ -10,4 +10,7 @@
   .ws-meta-row{ flex-direction:column; }
   .ws-stats-grid{ grid-template-columns: repeat(2, minmax(100px,1fr)); }
   .canvas-palette{ flex-direction:row; top:auto; bottom:16px; right:16px; }
+  .ws-header-grid{ flex-direction:column-reverse; }
+  .ws-cover-wrap{ width:100%; }
+  .ws-cover{ width:100%; height:160px; }
 }

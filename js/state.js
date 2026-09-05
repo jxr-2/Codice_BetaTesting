@@ -1,10 +1,5 @@
 /* state.js — Estado global y constantes compartidas.
    Extraído sin modificar de index.html (Fase 2 de la migración modular). */
-const TYPES = {
-  personaje: { label:'Personaje', color:'#e0b45c', glyph:'☉' },
-  lugar:     { label:'Lugar',     color:'#8fc4b0', glyph:'△' },
-  objeto:    { label:'Objeto',    color:'#c98fd6', glyph:'◆' }
-};
 const uid = () => 'id_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8);
 const PROJECT_FILE_NAME_SUFFIX = '_project.json';
 
@@ -12,7 +7,7 @@ const PROJECT_FILE_NAME_SUFFIX = '_project.json';
 let worldMeta = { worldName:'Mundo sin nombre', folders:[], settings:{}, theme:{} };
 let entriesIndex = [];
 let activeFolder = 'all';
-let activeType = 'all';
+let folderExpandedIds = new Set();
 let searchTerm = '';
 let currentEntryId = null;
 let currentBlocks = [];
@@ -40,6 +35,7 @@ let mapsLoaded = false;
 let currentMap = null;
 let mapMode = 'pin';
 let regionDraft = [];
+let activeMapFolder = 'all';
 let projectDirty = false;
 let dirHandle = null;
 let projectFileName = null;

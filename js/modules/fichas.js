@@ -1,68 +1,28 @@
 /* modules/fichas.js — Carpetas, grilla de fichas, editor completo, impresión. */
 function renderFolderList(){
-  const el = document.getElementById('folderList');
-  const counts = { all: entriesIndex.length, none: entriesIndex.filter(e=>!e.folderId).length };
-  worldMeta.folders.forEach(f => counts[f.id] = entriesIndex.filter(e=>e.folderId===f.id).length);
-  let html = `<div class="rail-item ${activeFolder==='all'?'active':''}" data-folder="all"><span>Todas</span><span class="rail-count">${counts.all}</span></div>`;
-  html += `<div class="rail-item ${activeFolder==='none'?'active':''}" data-folder="none"><span>Sin carpeta</span><span class="rail-count">${counts.none}</span></div>`;
-  worldMeta.folders.forEach(f=>{
-    html += `<div class="rail-item ${activeFolder===f.id?'active':''}" data-folder="${f.id}">
-      <span>${escapeHtml(f.name)}</span>
-      <span style="display:flex;align-items:center;gap:4px;"><span class="rail-count">${counts[f.id]||0}</span><span class="icon-btn" data-del-folder="${f.id}" title="Eliminar carpeta">✕</span></span>
-    </div>`;
-  });
-  el.innerHTML = html;
-  el.querySelectorAll('.rail-item').forEach(item=>{
-    item.addEventListener('click', (e)=>{
-      if(e.target.closest('[data-del-folder]')) return;
-      activeFolder = item.dataset.folder; setFichasMode('grid'); renderFolderList(); renderFichasGrid();
-    });
-  });
-  el.querySelectorAll('[data-del-folder]').forEach(btn=>{
-    btn.addEventListener('click', (e)=>{
-      e.stopPropagation();
-      const fid = btn.dataset.delFolder;
-      openConfirm({
-        title:'Eliminar carpeta', message:'Las fichas dentro quedarán sin carpeta. Esta acción no se puede deshacer.',
-        onConfirm: async ()=>{
-          worldMeta.folders = worldMeta.folders.filter(f=>f.id!==fid);
-          for(const en of entriesIndex){
-            if(en.folderId===fid){
-              en.folderId = null;
-              const full = await storeGet('entry:'+en.id);
-              if(full){ full.folderId = null; await storeSet('entry:'+en.id, full); }
-            }
-          }
-          await storeSet('world-meta', worldMeta); await storeSet('entries-index', entriesIndex); markDirty();
-          if(activeFolder===fid) activeFolder = 'all';
-          renderFolderList(); renderFichasGrid(); renderWsFolderOptions(document.getElementById('wsFolder').value);
-        }
-      });
-    });
+  renderFolderTree({
+    containerId: 'folderList',
+    items: entriesIndex,
+    activeId: activeFolder,
+    getThumb: (e)=> e.coverThumb || null,
+    onLeafClick: (e)=> openFichaEditor(e.id),
+    onMoveItem: moveEntryToFolder,
+    onSelect: (id)=>{ activeFolder = id; setFichasMode('grid'); renderFolderList(); renderFichasGrid(); }
   });
 }
-function renderTypeFilterList(){
-  const el = document.getElementById('typeFilterList');
-  const counts = { all: entriesIndex.length };
-  Object.keys(TYPES).forEach(k => counts[k] = entriesIndex.filter(e=>e.type===k).length);
-  let html = `<div class="rail-item ${activeType==='all'?'active':''}" data-type="all"><span>Todas</span><span class="rail-count">${counts.all}</span></div>`;
-  Object.keys(TYPES).forEach(k=>{
-    html += `<div class="rail-item ${activeType===k?'active':''}" data-type="${k}"><span>${TYPES[k].glyph} ${TYPES[k].label}</span><span class="rail-count">${counts[k]}</span></div>`;
-  });
-  el.innerHTML = html;
-  el.querySelectorAll('.rail-item').forEach(item=>{
-    item.addEventListener('click', ()=>{ activeType = item.dataset.type; setFichasMode('grid'); renderTypeFilterList(); renderFichasGrid(); });
-  });
+async function moveEntryToFolder(entryId, folderId){
+  const full = await storeGet('entry:'+entryId);
+  if(full){ full.folderId = folderId; await storeSet('entry:'+entryId, full); }
+  const light = entriesIndex.find(e=>e.id===entryId); if(light) light.folderId = folderId;
+  await storeSet('entries-index', entriesIndex); markDirty();
+  renderFolderList(); renderFichasGrid();
 }
-
-
 /* ========================= FICHAS GRID (auto-fit summary) ========================= */
 document.getElementById('searchFichas').addEventListener('input', (e)=>{ searchTerm = e.target.value; renderFichasGrid(); });
 function filteredEntries(){
   let list = entriesIndex;
   if(activeFolder === 'none') list = list.filter(e=>!e.folderId);
   else if(activeFolder !== 'all') list = list.filter(e=>e.folderId===activeFolder);
-  if(activeType !== 'all') list = list.filter(e=>e.type===activeType);
   if(searchTerm.trim()){
     const q = searchTerm.toLowerCase();
     list = list.filter(e => (e.name||'').toLowerCase().includes(q) || (e.summary||'').toLowerCase().includes(q) || (e.tags||[]).some(t=>t.toLowerCase().includes(q)));
@@ -78,7 +38,7 @@ function renderFichasGrid(){
   const grid = document.getElementById('fichasGrid');
   const list = filteredEntries();
   if(entriesIndex.length === 0){
-    grid.innerHTML = `<div class="empty"><div class="glyph">⚙</div><div class="title">El taller está vacío</div><div class="sub">Creá tu primera ficha de personaje, lugar u objeto.</div></div>`;
+    grid.innerHTML = `<div class="empty"><div class="glyph"><svg class="icon"><use href="#i-cards"/></svg></div><div class="title">El taller está vacío</div><div class="sub">Creá tu primera ficha de personaje, lugar u objeto.</div></div>`;
     document.getElementById('bulkBar').style.display = 'none';
     return;
   }
@@ -87,16 +47,17 @@ function renderFichasGrid(){
     return;
   }
   grid.innerHTML = `<div class="cards-grid">${list.map(e=>{
-    const t = TYPES[e.type] || TYPES.personaje;
+    const folder = e.folderId ? worldMeta.folders.find(f=>f.id===e.folderId) : null;
+    const accentColor = (folder && folder.color) || 'var(--verdigris)';
     const pos = e.coverPosition || {x:50,y:50};
     const zoom = e.coverZoom || 1;
     const coverStyle = e.coverThumb ? `background-image:url('${e.coverThumb}');background-position:${pos.x}% ${pos.y}%;background-size:${zoom*100}%;` : '';
     const checked = selectedIds.has(e.id);
-    return `<div class="ficha-card" style="--type-color:${t.color}" data-id="${e.id}">
+    return `<div class="ficha-card" style="--type-color:${accentColor}" data-id="${e.id}" draggable="true" data-drag-item="${e.id}">
       ${selectMode ? `<input type="checkbox" class="ficha-check" data-check="${e.id}" ${checked?'checked':''}>` : ''}
-      <div class="ficha-cover" style="${coverStyle}">${e.coverThumb ? '' : t.glyph}</div>
+      <div class="ficha-cover" style="${coverStyle}">${e.coverThumb ? '' : '<svg class="icon icon-lg"><use href="#i-cards"/></svg>'}</div>
       <div class="ficha-body">
-        <div class="ficha-type">${t.glyph} ${t.label}</div>
+        ${folder ? `<div class="ficha-type">${escapeHtml(folder.name)}</div>` : ''}
         <div class="ficha-name">${escapeHtml(e.name||'Sin nombre')}</div>
         <div class="ficha-summary" data-summary>${escapeHtml(e.summary||'')}</div>
         ${(e.tags&&e.tags.length) ? `<div class="ficha-tags">${e.tags.map(tg=>`<span class="tag-pill">${escapeHtml(tg)}</span>`).join('')}</div>` : ''}
@@ -150,7 +111,7 @@ function renderBulkBar(){
 document.getElementById('bulkCancelBtn').addEventListener('click', ()=>{ selectMode=false; selectedIds.clear(); document.getElementById('selectModeBtn').classList.remove('active'); renderFichasGrid(); });
 document.getElementById('bulkFolderBtn').addEventListener('click', ()=>{
   openModal({
-    title:'Mover a carpeta', fields:[{ key:'folderId', label:'Carpeta', type:'select', options:[{value:'',label:'Sin carpeta'}, ...worldMeta.folders.map(f=>({value:f.id,label:f.name}))] }],
+    title:'Mover a carpeta', fields:[{ key:'folderId', label:'Carpeta', type:'select', options:[{value:'',label:'Sin carpeta'}, ...folderSelectOptions()] }],
     submitLabel:'Mover',
     onSubmit: async (v)=>{
       for(const id of selectedIds){
@@ -170,7 +131,7 @@ document.getElementById('bulkDeleteBtn').addEventListener('click', ()=>{
     entriesIndex = entriesIndex.filter(e=>!selectedIds.has(e.id));
     await storeSet('entries-index', entriesIndex); markDirty();
     selectMode=false; selectedIds.clear(); document.getElementById('selectModeBtn').classList.remove('active');
-    renderFolderList(); renderTypeFilterList(); renderFichasGrid(); renderHomeDashboard();
+    renderFolderList(); renderFichasGrid(); renderHomeDashboard();
   }});
 });
 document.getElementById('bulkPrintBtn').addEventListener('click', async ()=>{
@@ -181,15 +142,12 @@ document.getElementById('bulkPrintBtn').addEventListener('click', async ()=>{
 
 /* ========================= WORKSPACE (Fichas, unificado) ========================= */
 function defaultEntry(){
-  return { name:'', type:'personaje', folderId:null, tags:[], summary:'', blocks:[], coverImage:null, coverThumb:null,
+  return { name:'', folderId:null, tags:[], summary:'', blocks:[], coverImage:null, coverThumb:null,
     coverPosition:{x:50,y:50}, coverZoom:1, enable5eSheet:false, stats:{}, spells:'', inventory:'' };
-}
-function renderWsTypeOptions(selected){
-  document.getElementById('wsType').innerHTML = Object.keys(TYPES).map(k=>`<option value="${k}" ${k===selected?'selected':''}>${TYPES[k].glyph} ${TYPES[k].label}</option>`).join('');
 }
 function renderWsFolderOptions(selected){
   let html = `<option value="">Sin carpeta</option>`;
-  html += worldMeta.folders.map(f=>`<option value="${f.id}" ${f.id===selected?'selected':''}>${escapeHtml(f.name)}</option>`).join('');
+  html += folderSelectOptions().map(o=>`<option value="${o.value}" ${o.value===selected?'selected':''}>${escapeHtml(o.label)}</option>`).join('');
   document.getElementById('wsFolder').innerHTML = html;
 }
 function applyCoverStyle(){
@@ -201,14 +159,9 @@ function applyCoverStyle(){
   document.getElementById('wsCoverControls').style.display = wsCoverData ? 'flex' : 'none';
 }
 function update5EVisibility(){
-  const type = document.getElementById('wsType').value;
-  const toggle = document.getElementById('ws5eToggle');
   const panel = document.getElementById('ws5ePanel');
-  if(type === 'personaje'){
-    toggle.style.display = 'flex';
-    panel.classList.toggle('active', wsEnable5E);
-    document.getElementById('wsToggle5E').textContent = wsEnable5E ? 'Ocultar hoja 5E' : 'Activar hoja 5E';
-  } else { toggle.style.display = 'none'; panel.classList.remove('active'); wsEnable5E = false; }
+  panel.classList.toggle('active', wsEnable5E);
+  document.getElementById('wsToggle5E').textContent = wsEnable5E ? 'Ocultar hoja 5E' : 'Activar hoja 5E';
 }
 function miniToolbarHtml(id){
   return `<button type="button" class="mini-fmt-btn" data-fmt="bold" data-target="${id}"><b>N</b></button>
@@ -222,7 +175,7 @@ function renderBlocks(){
       <div class="ws-block-header">
         <input class="ws-block-title" value="${escapeHtml(b.title)}" data-block-title="${b.id}">
         <div class="ws-block-toolbar">${miniToolbarHtml(b.id)}</div>
-        <button class="icon-btn mini-fmt-btn" data-block-img="${b.id}" title="Insertar imagen" type="button">🖼</button>
+        <button class="icon-btn mini-fmt-btn" data-block-img="${b.id}" title="Insertar imagen" type="button"><svg class="icon"><use href="#i-image"/></svg></button>
         <button class="icon-btn mini-fmt-btn" data-block-del="${b.id}" title="Eliminar sección" type="button">✕</button>
       </div>
       <div class="ws-content" contenteditable="true" data-block-content="${b.id}" data-placeholder="Escribí aquí…">${b.html||''}</div>
@@ -297,7 +250,6 @@ async function loadEntryIntoWorkspace(id){
   wsCoverPos = full.coverPosition || { x:50, y:50 };
   wsCoverZoom = full.coverZoom || 1;
   wsEnable5E = full.enable5eSheet || false;
-  renderWsTypeOptions(full.type);
   renderWsFolderOptions(full.folderId);
   document.getElementById('wsName').value = full.name || '';
   document.getElementById('wsTags').value = (full.tags||[]).join(', ');
@@ -333,17 +285,17 @@ async function renderWsBacklinks(){
   const entryId = currentEntryId;
   const items = [];
   sessionLog.filter(s => (s.linkedEntryIds||[]).includes(entryId)).forEach(s=>{
-    items.push(`<div class="linked-ficha-check">🗒 Sesión: <a href="#" data-goto-session="${s.id}">${escapeHtml(s.title||'Sesión')}</a></div>`);
+    items.push(`<div class="linked-ficha-check"><svg class="icon"><use href="#i-notebook"/></svg> Sesión: <a href="#" data-goto-session="${s.id}">${escapeHtml(s.title||'Sesión')}</a></div>`);
   });
   const canvasSrc = canvasLoaded ? canvasData : ((await storeGet('canvas-data')) || { nodes:[], edges:[] });
   if(canvasSrc.nodes.some(n=>n.kind==='entry' && n.entryId===entryId)){
-    items.push(`<div class="linked-ficha-check">🔗 <a href="#" data-goto-canvas="1">Aparece en el lienzo de conexiones</a></div>`);
+    items.push(`<div class="linked-ficha-check"><svg class="icon"><use href="#i-link"/></svg> <a href="#" data-goto-canvas="1">Aparece en el lienzo de conexiones</a></div>`);
   }
   for(const m of mapsIndex){
     const mapData = await storeGet('map:'+m.id);
     if(!mapData || !mapData.pins) continue;
     mapData.pins.filter(p=>p.entryId===entryId).forEach(p=>{
-      items.push(`<div class="linked-ficha-check">📍 Pin "${escapeHtml(p.title||'Sin título')}" en <a href="#" data-goto-map="${m.id}">${escapeHtml(m.name)}</a></div>`);
+      items.push(`<div class="linked-ficha-check"><svg class="icon"><use href="#i-pin"/></svg> Pin "${escapeHtml(p.title||'Sin título')}" en <a href="#" data-goto-map="${m.id}">${escapeHtml(m.name)}</a></div>`);
     });
   }
   if(currentEntryId !== entryId) return; // cambiaste de ficha mientras se buscaban los mapas
@@ -369,7 +321,6 @@ function markWsDirty(){
 ['wsName','wsTags','wsSummary','wsSTR','wsDEX','wsCON','wsINT','wsWIS','wsCHA','wsHP','wsAC','wsSpeed','wsProf','wsSpells','wsInventory'].forEach(id=>{
   document.getElementById(id).addEventListener('input', markWsDirty);
 });
-document.getElementById('wsType').addEventListener('change', ()=>{ markWsDirty(); update5EVisibility(); });
 document.getElementById('wsFolder').addEventListener('change', markWsDirty);
 document.getElementById('wsToggle5E').addEventListener('click', ()=>{ wsEnable5E = !wsEnable5E; markWsDirty(); update5EVisibility(); });
 
@@ -382,8 +333,14 @@ document.getElementById('wsCoverFile').addEventListener('change', async (e)=>{
   applyCoverStyle(); markWsDirty();
 });
 document.getElementById('wsCover').addEventListener('mousedown', (e)=>{
-  if(!wsCoverData) return;
+  if(!wsCoverData || e.target.closest('.ws-cover-controls')) return;
   coverDragState = { startX:e.clientX, startY:e.clientY, origX:wsCoverPos.x, origY:wsCoverPos.y, rect: document.getElementById('wsCover').getBoundingClientRect() };
+});
+document.getElementById('wsCoverRemove').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  wsCoverData = null; wsCoverPos = { x:50, y:50 }; wsCoverZoom = 1;
+  document.getElementById('wsCoverZoomInput').value = 1;
+  applyCoverStyle(); markWsDirty();
 });
 window.addEventListener('mousemove', (e)=>{
   if(coverDragState){
@@ -401,7 +358,6 @@ async function saveCurrentWorkspace(opts={}){
   const silent = !!opts.silent;
   const name = document.getElementById('wsName').value.trim();
   if(!name){ if(!silent) document.getElementById('wsName').focus(); return false; }
-  const type = document.getElementById('wsType').value;
   const folderId = document.getElementById('wsFolder').value || null;
   const tags = document.getElementById('wsTags').value.split(',').map(t=>t.trim()).filter(Boolean);
   const summary = document.getElementById('wsSummary').value.trim();
@@ -414,17 +370,17 @@ async function saveCurrentWorkspace(opts={}){
   const inventory = document.getElementById('wsInventory').value.trim();
   const id = currentEntryId || uid();
   const now = Date.now();
-  const full = { id, name, type, folderId, tags, summary, blocks: currentBlocks, stats, spells, inventory, enable5eSheet: wsEnable5E,
+  const full = { id, name, folderId, tags, summary, blocks: currentBlocks, stats, spells, inventory, enable5eSheet: wsEnable5E,
     coverImage: wsCoverData, coverThumb: wsCoverData, coverPosition: wsCoverPos, coverZoom: wsCoverZoom, updatedAt: now, createdAt: currentEntryId ? undefined : now };
   const prevIdx = entriesIndex.findIndex(e=>e.id===id);
   if(prevIdx>-1 && full.createdAt===undefined) full.createdAt = entriesIndex[prevIdx].createdAt || now;
   await storeSet('entry:'+id, full); markDirty();
-  const lightEntry = { id, name, type, folderId, tags, summary, coverThumb: wsCoverData, coverPosition: wsCoverPos, coverZoom: wsCoverZoom, updatedAt: now, createdAt: full.createdAt };
+  const lightEntry = { id, name, folderId, tags, summary, coverThumb: wsCoverData, coverPosition: wsCoverPos, coverZoom: wsCoverZoom, updatedAt: now, createdAt: full.createdAt };
   if(prevIdx>-1) entriesIndex[prevIdx] = lightEntry; else entriesIndex.push(lightEntry);
   await storeSet('entries-index', entriesIndex);
   currentEntryId = id; wsDirty = false;
   clearTimeout(wsAutosaveTimer);
-  renderFolderList(); renderTypeFilterList(); renderFichasGrid(); renderHomeDashboard();
+  renderFolderList(); renderFichasGrid(); renderHomeDashboard();
   if(canvasLoaded){ renderCanvasNodes(); renderCanvasEdges(); }
   if(!silent) setFichasMode('grid'); else await renderWsBacklinks();
   return true;
@@ -467,7 +423,7 @@ document.getElementById('wsDelete').addEventListener('click', ()=>{
       }
       await cleanupOrphanedMapPins(deletedId);
       markDirty();
-      renderFolderList(); renderTypeFilterList(); renderFichasGrid(); renderHomeDashboard();
+      renderFolderList(); renderFichasGrid(); renderHomeDashboard();
       setFichasMode('grid');
     }
   });
@@ -495,7 +451,7 @@ document.getElementById('wsSwitchBtn').addEventListener('click', ()=>{
   if(entriesIndex.length===0) return;
   openModal({
     title:'Cambiar de ficha', wide:false,
-    fields:[{ key:'id', label:'Ficha', type:'select', options: entriesIndex.slice().sort((a,b)=>(a.name||'').localeCompare(b.name||'')).map(e=>({value:e.id,label:`${TYPES[e.type].glyph} ${e.name||'Sin nombre'}`})) }],
+    fields:[{ key:'id', label:'Ficha', type:'select', options: entriesIndex.slice().sort((a,b)=>(a.name||'').localeCompare(b.name||'')).map(e=>({value:e.id,label:e.name||'Sin nombre'})) }],
     submitLabel:'Abrir',
     onSubmit: (v)=> openFichaEditor(v.id)
   });
@@ -566,7 +522,7 @@ function buildPrintHtml(entries){
     <div class="page-break">
       ${full.coverImage?`<img class="cover" src="${full.coverImage}">`:''}
       <h1>${escapeHtml(full.name)}</h1>
-      <div class="meta">${escapeHtml(TYPES[full.type]?.label||'')} ${full.tags?.length?'· '+escapeHtml(full.tags.join(', ')):''}</div>
+      <div class="meta">${escapeHtml(worldMeta.folders.find(f=>f.id===full.folderId)?.name||'')} ${full.tags?.length?'· '+escapeHtml(full.tags.join(', ')):''}</div>
       ${full.summary?`<p class="summary">${escapeHtml(full.summary)}</p>`:''}
       ${(full.blocks||[]).map(b=>`<div class="entry-block"><h3>${escapeHtml(b.title)}</h3><div>${b.html||''}</div></div>`).join('')}
     </div>`).join('')}
@@ -574,7 +530,7 @@ function buildPrintHtml(entries){
 }
 function printEntry(){
   const name = document.getElementById('wsName').value || 'Ficha';
-  const full = { name, type: document.getElementById('wsType').value, tags: document.getElementById('wsTags').value.split(',').map(t=>t.trim()).filter(Boolean),
+  const full = { name, tags: document.getElementById('wsTags').value.split(',').map(t=>t.trim()).filter(Boolean),
     summary: document.getElementById('wsSummary').value, coverImage: wsCoverData, blocks: currentBlocks };
   printEntries([full]);
 }

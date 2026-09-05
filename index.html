@@ -21,23 +21,38 @@
 </head>
 <body>
 
+<svg style="display:none" aria-hidden="true">
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="20" y1="20" x2="15.2" y2="15.2"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><g><line x1="12" y1="2.5" x2="12" y2="5.5"/><line x1="12" y1="18.5" x2="12" y2="21.5"/><line x1="2.5" y1="12" x2="5.5" y2="12"/><line x1="18.5" y1="12" x2="21.5" y2="12"/><line x1="5.1" y1="5.1" x2="7.2" y2="7.2"/><line x1="16.8" y1="16.8" x2="18.9" y2="18.9"/><line x1="5.1" y1="18.9" x2="7.2" y2="16.8"/><line x1="16.8" y1="7.2" x2="18.9" y2="5.1"/></g></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6.5A1.5 1.5 0 014.5 5H9l2 2.2h8.5A1.5 1.5 0 0121 8.7v9.8A1.5 1.5 0 0119.5 20h-15A1.5 1.5 0 013 18.5v-12z"/></symbol>
+  <symbol id="i-print" viewBox="0 0 24 24"><path d="M6.5 8.5V4h11v4.5"/><rect x="4" y="8.5" width="16" height="7.5" rx="1.2"/><rect x="7" y="13.5" width="10" height="6.5" rx="0.6"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3.2" y="3.5" width="17.6" height="17" rx="1.6"/><circle cx="8.3" cy="9" r="1.6"/><path d="M4 17.5l5.2-5 4 3.7 3-2.7 4.6 4"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 2.3c-4.3 0-7.6 3.4-7.6 7.6 0 5.8 7.6 11.8 7.6 11.8s7.6-6 7.6-11.8c0-4.2-3.3-7.6-7.6-7.6z"/><circle cx="12" cy="9.9" r="2.6"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 3.3L3.5 5.2v15.5L9 18.8l6 2 5.5-2V3.3l-5.5 2-6-2z"/><line x1="9" y1="3.3" x2="9" y2="18.8"/><line x1="15" y1="5.3" x2="15" y2="20.8"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4.5 4.2A1.7 1.7 0 016.2 2.5H19v18H6.2a1.7 1.7 0 000 3.4H19"/></symbol>
+  <symbol id="i-notebook" viewBox="0 0 24 24"><rect x="4.5" y="2.5" width="15" height="19" rx="1.6"/><line x1="8" y1="7.5" x2="16" y2="7.5"/><line x1="8" y1="11.5" x2="16" y2="11.5"/><line x1="8" y1="15.5" x2="13" y2="15.5"/></symbol>
+  <symbol id="i-checkbox" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><polyline points="7.5,12.3 10.5,15.3 16.8,8.5"/></symbol>
+  <symbol id="i-cards" viewBox="0 0 24 24"><rect x="3" y="5.5" width="13" height="16" rx="1.6" transform="rotate(-8 9.5 13.5)"/><rect x="7.5" y="4" width="13" height="16" rx="1.6"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M8 16.5a3.5 3.5 0 010-5l2-2a3.5 3.5 0 015 5"/><path d="M16 7.5a3.5 3.5 0 010 5l-2 2a3.5 3.5 0 01-5-5"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></symbol>
+</svg>
+
 <div id="loading-screen">
   <div class="loading-content">
     <img id="loadingLogo" class="loading-logo" src="Logo.jpeg" alt="Códice">
-    <div class="loading-text">⚙ CÓDICE</div>
+    <div class="loading-text"><svg class="icon"><use href="#i-book"/></svg> CÓDICE</div>
   </div>
 </div>
 
 <div id="codice-toast" role="status" aria-live="polite"></div>
 
 <div class="topbar">
-  <div class="brand-mark">
+  <button class="brand-mark" id="brandHomeBtn" type="button" title="Ir al inicio">
     <img id="brandLogo" class="brand-logo" src="" alt="" style="display:none;">
-    <span id="brandText">⚙ CÓDICE</span>
-  </div>
+    <span id="brandText"><svg class="icon"><use href="#i-book"/></svg> CÓDICE</span>
+  </button>
   <input id="worldName" class="world-name-input" value="Mundo sin nombre" spellcheck="false">
   <nav class="topbar-nav">
-    <button class="topbar-nav-btn" data-view="home" title="Inicio"><img src="assets/Imagenes/logos_negros/hogar.png" alt="Inicio" class="nav-icon"></button>
     <button class="topbar-nav-btn" data-view="fichas" title="Fichas"><img src="assets/Imagenes/logos_negros/portapapeles.png" alt="Fichas" class="nav-icon"></button>
     <button class="topbar-nav-btn" data-view="diario" title="Diario"><img src="assets/Imagenes/logos_negros/escribir.png" alt="Diario" class="nav-icon"></button>
     <button class="topbar-nav-btn" data-view="bitacora" title="Bitácora"><img src="assets/Imagenes/logos_negros/notas.png" alt="Bitácora" class="nav-icon"></button>
@@ -50,11 +65,11 @@
       </div>
     </div>
   </nav>
-  <button class="rail-btn" id="railToggleBtn" type="button">☰ Panel</button>
+  <button class="rail-btn" id="railToggleBtn" type="button"><svg class="icon"><use href="#i-menu"/></svg> Panel</button>
   <div class="topbar-actions">
-    <button class="icon-round-btn" id="globalSearchBtn" title="Buscar (Ctrl+K)" type="button">🔍</button>
+    <button class="icon-round-btn" id="globalSearchBtn" title="Buscar (Ctrl+K)" type="button"><svg class="icon"><use href="#i-search"/></svg></button>
     <button class="icon-round-btn" id="helpBtn" title="Ayuda" type="button">?</button>
-    <button class="icon-round-btn" id="settingsBtn" title="Ajustes" type="button">⚙</button>
+    <button class="icon-round-btn" id="settingsBtn" title="Ajustes" type="button"><svg class="icon"><use href="#i-settings"/></svg></button>
     <button class="icon-round-btn" id="folderBtn" title="Conectar carpeta" type="button"><img src="assets/Imagenes/logos_negros/carpeta.png" alt="Carpeta" class="nav-icon-round"></button>
     <button class="btn-ghost" id="importProjectBtn">Importar</button>
     <button class="btn-brass" id="exportProjectBtn">Exportar</button>
@@ -99,22 +114,20 @@
   <aside class="rail">
     <div class="rail-title">Carpetas</div>
     <div id="folderList"></div>
-    <button class="rail-btn" id="newFolderBtn" style="width:100%;">+ Nueva carpeta</button>
-    <div class="rail-title" style="margin-top:10px;">Tipo</div>
-    <div id="typeFilterList"></div>
+    <button class="rail-btn w-full" id="newFolderBtn">+ Nueva carpeta</button>
   </aside>
   <div class="fichas-main">
     <div id="fichasGridWrap">
       <div class="fichas-toolbar">
         <input class="search-input" id="searchFichas" placeholder="Buscar por nombre, etiqueta o contenido…">
-        <button class="btn-ghost" id="selectModeBtn" type="button">☑ Seleccionar</button>
+        <button class="btn-ghost" id="selectModeBtn" type="button"><svg class="icon"><use href="#i-checkbox"/></svg> Seleccionar</button>
         <button class="btn-brass" id="newFichaBtn">+ Nueva ficha</button>
       </div>
       <div id="fichasGrid"></div>
       <div class="bulk-bar" id="bulkBar">
         <span id="bulkCount">0 seleccionadas</span>
-        <button class="rail-btn" id="bulkFolderBtn" type="button">📁 Mover a carpeta</button>
-        <button class="rail-btn" id="bulkPrintBtn" type="button">🖨 Imprimir</button>
+        <button class="rail-btn" id="bulkFolderBtn" type="button"><svg class="icon"><use href="#i-folder"/></svg> Mover a carpeta</button>
+        <button class="rail-btn" id="bulkPrintBtn" type="button"><svg class="icon"><use href="#i-print"/></svg> Imprimir</button>
         <button class="btn-delete" id="bulkDeleteBtn" type="button">Eliminar</button>
         <button class="btn-ghost" id="bulkCancelBtn" type="button">Cancelar</button>
       </div>
@@ -123,28 +136,31 @@
       <div class="ws-topbar">
         <button class="btn-ghost" id="backToGridBtn" type="button">← Volver a fichas</button>
         <button class="btn-ghost" id="wsSwitchBtn" type="button">⇅ Cambiar ficha</button>
-        <button class="btn-ghost" id="printEntryBtn" type="button">🖨 Imprimir</button>
-        <span class="hint" id="wsDirtyHint" style="margin-left:auto;"></span>
+        <button class="btn-ghost" id="printEntryBtn" type="button"><svg class="icon"><use href="#i-print"/></svg> Imprimir</button>
+        <span class="hint ml-auto" id="wsDirtyHint"></span>
       </div>
-      <div class="ws-cover" id="wsCover">
-        <span class="cover-hint" id="wsCoverHint">🖼 Click para subir portada</span>
-        <input type="file" id="wsCoverFile" accept="image/*">
-      </div>
-      <div class="ws-cover-controls" id="wsCoverControls" style="display:none;">
-        <span class="hint">Arrastrá la imagen para reposicionarla</span>
-        <input type="range" id="wsCoverZoomInput" min="1" max="2.5" step="0.05" value="1">
-      </div>
-      <div class="ws-header">
-        <input class="ws-name-input" id="wsName" placeholder="Nombre de la ficha">
-        <div class="ws-meta-row">
-          <select id="wsType"></select>
-          <select id="wsFolder"></select>
-          <input id="wsTags" placeholder="etiquetas, separadas, por coma">
+      <div class="ws-header ws-header-grid">
+        <div class="ws-header-main">
+          <input class="ws-name-input" id="wsName" placeholder="Nombre de la ficha">
+          <div class="ws-meta-row">
+            <select id="wsFolder"></select>
+            <input id="wsTags" placeholder="etiquetas, separadas, por coma">
+          </div>
+          <textarea class="ws-summary" id="wsSummary" placeholder="Resumen breve…"></textarea>
         </div>
-        <textarea class="ws-summary" id="wsSummary" placeholder="Resumen breve…"></textarea>
-        <div class="ws-5e-toggle" id="ws5eToggle" style="display:none;">
-          <button id="wsToggle5E" type="button">Activar hoja 5E</button>
+        <div class="ws-cover-wrap">
+          <div class="ws-cover" id="wsCover" title="Click para subir portada · arrastrá para reposicionarla">
+            <span class="cover-hint" id="wsCoverHint"><svg class="icon"><use href="#i-image"/></svg> Portada</span>
+            <input type="file" id="wsCoverFile" accept="image/*">
+            <div class="ws-cover-controls" id="wsCoverControls" style="display:none;">
+              <input type="range" id="wsCoverZoomInput" min="1" max="2.5" step="0.05" value="1" title="Zoom">
+              <button class="ws-cover-remove" id="wsCoverRemove" type="button" title="Quitar portada">✕</button>
+            </div>
+          </div>
         </div>
+      </div>
+      <div class="ws-quick-actions">
+        <button class="chip-btn" id="wsToggle5E" type="button">Hoja 5E</button>
       </div>
       <div id="ws5ePanel" class="ws-5e-panel">
         <div class="ws-section-title">Hoja de personaje</div>
@@ -163,7 +179,7 @@
         <div class="ws-sheet-columns">
           <div class="ws-sheet-card">
             <div class="ws-sheet-title">Hechizos</div>
-            <button class="rail-btn" id="openGrimoireBtn" type="button" style="margin-bottom:8px;">📖 Grimorio básico</button>
+            <button class="rail-btn" id="openGrimoireBtn" type="button"><svg class="icon"><use href="#i-book"/></svg> Grimorio básico</button>
             <textarea id="wsSpells" placeholder="Lista de conjuros..."></textarea>
           </div>
           <div class="ws-sheet-card">
@@ -172,13 +188,13 @@
           </div>
         </div>
       </div>
-      <div class="ws-toolbar">
-        <button id="addBlockBtn" type="button">+ Añadir sección de texto</button>
+      <div class="ws-quick-actions">
+        <button class="chip-btn" id="addBlockBtn" type="button">+ Sección de texto</button>
         <input type="file" id="contentImgFile" accept="image/*" style="display:none">
       </div>
       <div id="wsBlocks"></div>
       <div class="links-box" id="wsBacklinks" style="display:none;">
-        <div class="ws-section-title" style="margin-top:0;">Dónde aparece esta ficha</div>
+        <div class="ws-section-title">Dónde aparece esta ficha</div>
         <div id="wsBacklinksList"></div>
       </div>
       <div class="ws-actions">
@@ -191,18 +207,18 @@
 
 <!-- ===== DIARIO (capítulos) ===== -->
 <section id="view-diario" class="view">
-  <div class="fichas-main" style="padding:26px 32px 60px;">
+  <div class="fichas-main">
     <div id="journalGridWrap">
       <div class="fichas-toolbar">
-        <div class="rail-title" style="margin:0;">Diario del viajero</div>
-        <button class="btn-ghost" id="journalSelectModeBtn" type="button" style="margin-left:auto;">☑ Seleccionar</button>
+        <div class="rail-title m-0">Diario del viajero</div>
+        <button class="btn-ghost ml-auto" id="journalSelectModeBtn" type="button"><svg class="icon"><use href="#i-checkbox"/></svg> Seleccionar</button>
         <button class="btn-brass" id="newJournalBtn">+ Nuevo capítulo</button>
       </div>
       <div id="journalGrid" class="cards-grid"></div>
-      <div class="empty" id="journalEmpty" style="display:none;"><div class="glyph">📔</div><div class="title">Sin capítulos todavía</div><div class="sub">Creá el primer capítulo de tu diario.</div></div>
+      <div class="empty" id="journalEmpty" style="display:none;"><div class="glyph"><svg class="icon"><use href="#i-book"/></svg></div><div class="title">Sin capítulos todavía</div><div class="sub">Creá el primer capítulo de tu diario.</div></div>
       <div class="bulk-bar" id="journalBulkBar">
         <span id="journalBulkCount">0 seleccionados</span>
-        <button class="rail-btn" id="journalBulkPrintBtn" type="button">🖨 Imprimir</button>
+        <button class="rail-btn" id="journalBulkPrintBtn" type="button"><svg class="icon"><use href="#i-print"/></svg> Imprimir</button>
         <button class="btn-ghost" id="journalBulkCancelBtn" type="button">Cancelar</button>
       </div>
     </div>
@@ -211,8 +227,8 @@
         <button class="btn-ghost" id="backToJournalGridBtn" type="button">← Volver a capítulos</button>
         <button class="btn-ghost" id="journalPrevBtn" type="button">‹ Anterior</button>
         <button class="btn-ghost" id="journalNextBtn" type="button">Siguiente ›</button>
-        <button class="btn-ghost" id="journalPrintBtn" type="button">🖨 Imprimir</button>
-        <span class="hint" id="journalDirtyHint" style="margin-left:auto;"></span>
+        <button class="btn-ghost" id="journalPrintBtn" type="button"><svg class="icon"><use href="#i-print"/></svg> Imprimir</button>
+        <span class="hint ml-auto" id="journalDirtyHint"></span>
       </div>
       <div class="ws-header">
         <div class="chapter-title-row"><span class="chapter-num" id="journalNum"></span></div>
@@ -245,7 +261,7 @@
         <button class="rt-btn" type="button" data-rt-cmd="insertOrderedList" title="Lista numerada">1.</button>
         <button class="rt-btn" type="button" data-rt-cmd="hr" title="Separador">―</button>
         <span class="toolbar-sep"></span>
-        <button class="rt-btn" id="journalInsertImgBtn" type="button" title="Insertar imagen">🖼</button>
+        <button class="rt-btn" id="journalInsertImgBtn" type="button" title="Insertar imagen"><svg class="icon"><use href="#i-image"/></svg></button>
         <input type="file" id="journalImgFile" accept="image/*" style="display:none">
       </div>
       <div class="ws-content chapter-content" id="journalContent" contenteditable="true" data-placeholder="Qué pasó hoy en el viaje…"></div>
@@ -262,14 +278,14 @@
   <aside class="rail">
     <div class="rail-title">Bitácora de sesiones</div>
     <div id="sessionList"></div>
-    <button class="rail-btn" id="newSessionBtn" style="width:100%;">+ Nueva sesión</button>
+    <button class="rail-btn w-full" id="newSessionBtn">+ Nueva sesión</button>
   </aside>
-  <div class="fichas-main" style="padding:26px 32px 60px;">
+  <div class="fichas-main">
     <div class="workspace-inline riveted" id="sessionEditor" style="display:none;">
       <div class="ws-header">
         <input class="ws-name-input" id="sessionTitle" placeholder="Título de la sesión">
         <div class="ws-meta-row"><input type="date" id="sessionDate"></div>
-        <textarea class="session-summary" id="sessionSummary" placeholder="Resumen de lo ocurrido…" style="margin-top:0;"></textarea>
+        <textarea class="session-summary" id="sessionSummary" placeholder="Resumen de lo ocurrido…"></textarea>
       </div>
       <div class="ws-toolbar rt-toolbar" id="sessionToolbar">
         <select class="rt-select" data-rt-block title="Estilo de párrafo">
@@ -297,13 +313,13 @@
         <button class="rt-btn" type="button" data-rt-cmd="insertOrderedList" title="Lista numerada">1.</button>
         <button class="rt-btn" type="button" data-rt-cmd="hr" title="Separador">―</button>
         <span class="toolbar-sep"></span>
-        <button class="rt-btn" id="sessionInsertImgBtn" type="button" title="Insertar imagen">🖼</button>
+        <button class="rt-btn" id="sessionInsertImgBtn" type="button" title="Insertar imagen"><svg class="icon"><use href="#i-image"/></svg></button>
         <input type="file" id="sessionImgFile" accept="image/*" style="display:none">
-        <span class="hint" style="margin-left:8px;">Escribí @ para mencionar una ficha</span>
+        <span class="hint mention-hint">Escribí @ para mencionar una ficha</span>
       </div>
-      <div class="ws-content" id="sessionNotes" contenteditable="true" data-placeholder="Notas detalladas de la sesión…" style="margin:14px 32px 0;"></div>
+      <div class="ws-content" id="sessionNotes" contenteditable="true" data-placeholder="Notas detalladas de la sesión…"></div>
       <div class="links-box">
-        <div class="ws-section-title" style="margin-top:0;">Fichas relacionadas</div>
+        <div class="ws-section-title">Fichas relacionadas</div>
         <div id="sessionLinks"></div>
       </div>
       <div class="ws-actions">
@@ -312,25 +328,25 @@
         <button class="btn-brass" id="sessionSave">Guardar sesión</button>
       </div>
     </div>
-    <div class="empty" id="sessionEmpty"><div class="glyph">🗒</div><div class="title">Sin sesiones registradas</div><div class="sub">Creá tu primera entrada de bitácora.</div></div>
+    <div class="empty" id="sessionEmpty"><div class="glyph"><svg class="icon"><use href="#i-notebook"/></svg></div><div class="title">Sin sesiones registradas</div><div class="sub">Creá tu primera entrada de bitácora.</div></div>
   </div>
 </section>
 
 <!-- ===== CANVAS ===== -->
 <section id="view-canvas" class="view">
-  <div style="display:flex; flex-direction:column; width:100%;">
+  <div class="canvas-wrap">
     <div class="canvas-toolbar">
       <button class="mode-btn" id="addNoteBtn">+ Nota</button>
       <button class="mode-btn" id="addFichaNodeBtn">+ Ficha</button>
-      <button class="mode-btn" id="connectModeBtn">🔗 Conectar</button>
+      <button class="mode-btn" id="connectModeBtn"><svg class="icon"><use href="#i-link"/></svg> Conectar</button>
       <button class="mode-btn" id="zoomOutBtn">－</button>
       <button class="mode-btn" id="zoomInBtn">＋</button>
       <span class="hint" id="canvasHint">Arrastrá el fondo para mover el lienzo, o arrastrá los chips de la derecha</span>
     </div>
     <div class="canvas-viewport" id="canvasViewport">
       <div class="canvas-palette">
-        <div class="palette-chip" draggable="true" data-kind="note">📝 Nota</div>
-        <div class="palette-chip" draggable="true" data-kind="entry">🃏 Ficha</div>
+        <div class="palette-chip" draggable="true" data-kind="note"><svg class="icon"><use href="#i-notebook"/></svg> Nota</div>
+        <div class="palette-chip" draggable="true" data-kind="entry"><svg class="icon"><use href="#i-cards"/></svg> Ficha</div>
       </div>
       <div class="canvas-inner" id="canvasInner"><svg class="canvas-edges" id="canvasEdges"></svg></div>
     </div>
@@ -340,23 +356,28 @@
 <!-- ===== MAPAS ===== -->
 <section id="view-mapas" class="view">
   <aside class="rail">
-    <div class="rail-title">Mapas</div>
+    <div class="rail-title">Carpetas</div>
+    <div id="mapFolderList"></div>
+    <button class="rail-btn w-full" id="newMapFolderBtn">+ Nueva carpeta</button>
+    <div class="rail-title rail-title-sub">Mapas</div>
     <div id="mapList"></div>
-    <button class="rail-btn" id="newMapBtn" style="width:100%;">+ Subir mapa</button>
+    <button class="rail-btn w-full" id="newMapBtn">+ Subir mapa</button>
     <input type="file" id="mapFileInput" accept="image/*" style="display:none">
   </aside>
   <div class="mapas-main">
     <div id="mapEmpty" class="empty">
-      <div class="glyph">🗺</div><div class="title">Ningún mapa cargado</div>
+      <div class="glyph"><svg class="icon"><use href="#i-map"/></svg></div><div class="title">Ningún mapa cargado</div>
       <div class="sub">Subí una imagen para empezar a marcar pines y regiones sobre tu geografía.</div>
     </div>
-    <div id="mapWorkspace" style="display:none; flex-direction:column;">
+    <div id="mapWorkspace" class="map-workspace" style="display:none;">
       <div class="map-toolbar">
-        <button class="mode-btn active" id="pinModeBtn">📍 Pines</button>
+        <button class="mode-btn active" id="pinModeBtn"><svg class="icon"><use href="#i-pin"/></svg> Pines</button>
         <button class="mode-btn" id="regionModeBtn">▲ Regiones</button>
         <button class="mode-btn" id="finishRegionBtn" style="display:none;">Cerrar región</button>
         <span class="hint" id="mapHint">Click sobre el mapa para agregar un pin</span>
-        <button class="btn-ghost" id="mapRenameBtn" style="margin-left:auto;">Renombrar</button>
+        <button class="btn-ghost ml-auto" id="mapFolderBtn"><svg class="icon"><use href="#i-folder"/></svg> Carpeta</button>
+        <button class="btn-ghost" id="mapPrintBtn"><svg class="icon"><use href="#i-print"/></svg> Imprimir</button>
+        <button class="btn-ghost" id="mapRenameBtn">Renombrar</button>
         <button class="btn-delete" id="mapDeleteBtn">Eliminar mapa</button>
       </div>
       <div class="map-image-wrap" id="mapImageWrap">
@@ -368,7 +389,7 @@
 
 <!-- ===== GRIMORIO ===== -->
 <section id="view-grimorio" class="view">
-  <div class="fichas-main" style="padding:26px 32px 60px;">
+  <div class="fichas-main">
     <div class="fichas-toolbar">
       <input class="search-input" id="grimoireBasicSearch" placeholder="Buscar en el grimorio básico (español)…">
       <select class="grimoire-filter" id="grimoireClassFilter" aria-label="Filtrar por clase">
@@ -380,7 +401,7 @@
     </div>
     <div class="rail-title">Grimorio básico (español, sin conexión)</div>
     <div id="grimoireBasicList" class="cards-grid"></div>
-    <div class="rail-title" style="margin-top:26px;">Catálogo completo — dnd5eapi.co (inglés)</div>
+    <div class="rail-title rail-title-lg">Catálogo completo — dnd5eapi.co (inglés)</div>
     <div class="fichas-toolbar">
       <input class="search-input" id="grimoireApiSearch" placeholder="Buscar hechizo en la API completa…">
       <button class="btn-ghost" id="grimoireApiSearchBtn" type="button">Buscar</button>
@@ -391,9 +412,9 @@
 
 <div class="modal-overlay" id="modalOverlay"><div class="modal-box" id="modalBox"></div></div>
 <div class="modal-overlay" id="searchOverlay">
-  <div class="modal-box" id="searchBox" style="width:min(560px,92vw); max-height:76vh; display:flex; flex-direction:column;">
-    <input type="text" id="globalSearchInput" class="search-input" placeholder="Buscar fichas, capítulos, sesiones, mapas…" style="width:100%; margin-bottom:12px;">
-    <div id="globalSearchResults" style="overflow-y:auto;"></div>
+  <div class="modal-box search-box" id="searchBox">
+    <input type="text" id="globalSearchInput" class="search-input" placeholder="Buscar fichas, capítulos, sesiones, mapas…">
+    <div id="globalSearchResults"></div>
   </div>
 </div>
 

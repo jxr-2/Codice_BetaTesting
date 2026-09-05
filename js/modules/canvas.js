@@ -20,11 +20,11 @@ function buildNodeEl(node){
   el.className = 'canvas-node'; el.style.left = node.x+'px'; el.style.top = node.y+'px'; el.dataset.id = node.id;
   if(node.kind === 'entry'){
     const entry = entriesIndex.find(e=>e.id===node.entryId);
-    const t = TYPES[(entry&&entry.type)||'personaje'];
-    el.style.setProperty('--type-color', t.color);
+    const folder = entry && entry.folderId ? worldMeta.folders.find(f=>f.id===entry.folderId) : null;
+    el.style.setProperty('--type-color', (folder && folder.color) || 'var(--verdigris)');
     el.innerHTML = `<span class="node-del" data-del="${node.id}">✕</span>
       ${entry && entry.coverThumb ? `<div class="node-thumb" style="background-image:url('${entry.coverThumb}')"></div>` : ''}
-      <div class="node-type">${t.glyph} ${t.label}</div>
+      ${folder ? `<div class="node-type">${escapeHtml(folder.name)}</div>` : ''}
       <div class="node-title">${escapeHtml(entry ? entry.name : 'Ficha eliminada')}</div>`;
     el.addEventListener('dblclick', (e)=>{ e.stopPropagation(); if(entry) openFichaEditor(entry.id); });
   } else {
@@ -96,7 +96,7 @@ document.getElementById('addNoteBtn').addEventListener('click', ()=>{
 document.getElementById('addFichaNodeBtn').addEventListener('click', ()=>{
   if(entriesIndex.length===0){ openModal({title:'No hay fichas todavía', fields:[], submitLabel:'Cerrar'}); return; }
   openModal({
-    title:'Elegí una ficha', fields:[{ key:'entryId', label:'Ficha', type:'select', options: entriesIndex.map(e=>({value:e.id,label:`${TYPES[e.type].glyph} ${e.name}`})) }],
+    title:'Elegí una ficha', fields:[{ key:'entryId', label:'Ficha', type:'select', options: entriesIndex.map(e=>({value:e.id,label:e.name})) }],
     submitLabel:'Agregar al lienzo',
     onSubmit: async (v)=>{
       canvasData.nodes.push({ id: uid(), kind:'entry', entryId: v.entryId, x: 220 - canvasPan.x + 100, y: 180 - canvasPan.y + 60 });
@@ -162,7 +162,7 @@ canvasViewport.addEventListener('drop', async (e)=>{
   } else if(kind === 'entry'){
     if(entriesIndex.length===0) return;
     openModal({
-      title:'Elegí una ficha', fields:[{ key:'entryId', label:'Ficha', type:'select', options: entriesIndex.map(en=>({value:en.id,label:`${TYPES[en.type].glyph} ${en.name}`})) }],
+      title:'Elegí una ficha', fields:[{ key:'entryId', label:'Ficha', type:'select', options: entriesIndex.map(en=>({value:en.id,label:en.name})) }],
       submitLabel:'Agregar',
       onSubmit: async (v)=>{ canvasData.nodes.push({ id: uid(), kind:'entry', entryId: v.entryId, x, y }); await saveCanvas(); renderCanvasNodes(); renderCanvasEdges(); }
     });

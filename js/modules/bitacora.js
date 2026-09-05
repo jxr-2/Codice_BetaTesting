@@ -29,7 +29,7 @@ function loadSession(id){
 function renderSessionLinks(s){
   const el = document.getElementById('sessionLinks');
   el.innerHTML = entriesIndex.map(en=>`
-    <label class="linked-ficha-check"><input type="checkbox" data-link="${en.id}" ${s.linkedEntryIds&&s.linkedEntryIds.includes(en.id)?'checked':''}> ${TYPES[en.type].glyph} ${escapeHtml(en.name)}</label>`).join('') || '<div class="hint">No hay fichas creadas.</div>';
+    <label class="linked-ficha-check"><input type="checkbox" data-link="${en.id}" ${s.linkedEntryIds&&s.linkedEntryIds.includes(en.id)?'checked':''}> ${escapeHtml(en.name)}</label>`).join('') || '<div class="hint">No hay fichas creadas.</div>';
   el.querySelectorAll('[data-link]').forEach(chk=> chk.addEventListener('change', markSessionDirty));
 }
 async function saveSessionEntry(opts={}){
@@ -106,7 +106,7 @@ function openMentionPopup(anchorRect, query){
   popup.className = 'mention-popup';
   popup.style.left = (anchorRect.left + window.scrollX) + 'px';
   popup.style.top = (anchorRect.bottom + window.scrollY + 4) + 'px';
-  popup.innerHTML = matches.map(e=>`<div class="mention-option" data-id="${e.id}">${TYPES[e.type]?.glyph||'☉'} ${escapeHtml(e.name||'Sin nombre')}</div>`).join('');
+  popup.innerHTML = matches.map(e=>`<div class="mention-option" data-id="${e.id}"><svg class="icon"><use href="#i-cards"/></svg> ${escapeHtml(e.name||'Sin nombre')}</div>`).join('');
   document.body.appendChild(popup);
   popup.querySelectorAll('.mention-option').forEach(opt=>{
     opt.addEventListener('mousedown', (e)=>{ e.preventDefault(); insertMention(opt.dataset.id); });

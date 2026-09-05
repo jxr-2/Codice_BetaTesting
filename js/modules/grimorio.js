@@ -125,7 +125,7 @@ function openSpellTargetPickerForLine(spellName, line){
   box.innerHTML = `
     <div class="modal-title">Agregar ${escapeHtml(spellName)}</div>
     <div class="modal-message">Elegí la ficha donde querés guardar este hechizo.</div>
-    <div class="modal-fields"><div class="field"><label>Ficha destino</label><select id="spellTargetEntry">${entries.map(entry => `<option value="${entry.id}">${escapeHtml(entry.name || 'Sin nombre')} · ${escapeHtml(TYPES[entry.type]?.label || 'Ficha')}</option>`).join('')}</select></div></div>
+    <div class="modal-fields"><div class="field"><label>Ficha destino</label><select id="spellTargetEntry">${entries.map(entry => `<option value="${entry.id}">${escapeHtml(entry.name || 'Sin nombre')}</option>`).join('')}</select></div></div>
     <div class="modal-actions"><div></div><div><button class="btn-ghost" id="modalCancel">Cancelar</button><button class="btn-brass" id="spellTargetConfirm">Agregar hechizo</button></div></div>`;
   overlay.classList.add('open');
   document.getElementById('modalCancel').onclick = closeModal;

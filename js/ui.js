@@ -480,7 +480,7 @@ function openSettings(){
         ${worldMeta.logoDataUrl ? `<div class="field"><button class="btn-delete" id="removeLogoBtn" type="button" style="width:100%;">Eliminar logo</button></div>` : ''}
       </div>
     </div>
-    <div class="modal-message">📁 Carpeta local: ${dirHandle ? 'conectada — '+escapeHtml(dirHandle.name) : 'no conectada'}.</div>
+    <div class="modal-message"><svg class="icon"><use href="#i-folder"/></svg> Carpeta local: ${dirHandle ? 'conectada — '+escapeHtml(dirHandle.name) : 'no conectada'}.</div>
     <div class="modal-actions">
       <div><button class="btn-ghost" id="connectFolderBtn2" type="button">${dirHandle?'Cambiar carpeta':'Conectar carpeta'}</button></div>
       <div>
@@ -630,18 +630,18 @@ function renderGlobalSearchResults(q){
   const results = [];
   entriesIndex.forEach(e=>{
     const hay = `${e.name||''} ${e.summary||''} ${(e.tags||[]).join(' ')}`.toLowerCase();
-    if(hay.includes(query)) results.push({ kind:'ficha', id:e.id, icon: TYPES[e.type]?.glyph || '☉', title: e.name||'Sin nombre', sub: TYPES[e.type]?.label || 'Ficha' });
+    if(hay.includes(query)) results.push({ kind:'ficha', id:e.id, icon:'<svg class="icon"><use href="#i-cards"/></svg>', title: e.name||'Sin nombre', sub: worldMeta.folders.find(f=>f.id===e.folderId)?.name || 'Ficha' });
   });
   journalEntries.forEach(j=>{
     const hay = `${j.title||''} ${stripHtml(j.content)}`.toLowerCase();
-    if(hay.includes(query)) results.push({ kind:'journal', id:j.id, icon:'📔', title: j.title||'Sin título', sub:'Diario' });
+    if(hay.includes(query)) results.push({ kind:'journal', id:j.id, icon:'<svg class="icon"><use href="#i-book"/></svg>', title: j.title||'Sin título', sub:'Diario' });
   });
   sessionLog.forEach(s=>{
     const hay = `${s.title||''} ${s.summary||''} ${stripHtml(s.notes)}`.toLowerCase();
-    if(hay.includes(query)) results.push({ kind:'session', id:s.id, icon:'🗒', title: s.title||'Sesión', sub:'Bitácora' });
+    if(hay.includes(query)) results.push({ kind:'session', id:s.id, icon:'<svg class="icon"><use href="#i-notebook"/></svg>', title: s.title||'Sesión', sub:'Bitácora' });
   });
   mapsIndex.forEach(m=>{
-    if((m.name||'').toLowerCase().includes(query)) results.push({ kind:'map', id:m.id, icon:'🗺', title: m.name, sub:'Mapa' });
+    if((m.name||'').toLowerCase().includes(query)) results.push({ kind:'map', id:m.id, icon:'<svg class="icon"><use href="#i-map"/></svg>', title: m.name, sub:'Mapa' });
   });
   if(!results.length){ el.innerHTML = '<div class="hint" style="padding:8px;">Sin resultados.</div>'; return; }
   el.innerHTML = results.slice(0,40).map(r=>`

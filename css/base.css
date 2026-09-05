@@ -21,7 +21,7 @@
   width: 120px;
   height: 120px;
   object-fit: contain;
-  border-radius: 8px;
+  border-radius:var(--radius-md);
 }
 .loading-text{
   font-family: 'Cinzel', serif;
@@ -67,12 +67,43 @@
   /* Background effects */
   --bg-grid-opacity: 0.04;
   --bg-blur: 0px;
+
+  /* Borde neutro para cromado cotidiano (toolbars, rails, modales) — el acento de marca
+     (--border-brass) queda reservado para estados activos y elementos protagonistas. */
+  --border-soft: rgba(255,255,255,0.10);
+
+  /* Escala tipográfica — antes había 15.5px, 14.5px, 13.5px, 11.5px... sueltos por todos
+     lados. Redondea al entero más cercano y le pone un solo lugar de referencia. */
+  --text-2xs: 9px;
+  --text-xs: 10px;
+  --text-sm: 11px;
+  --text-base: 12px;
+  --text-md: 13px;
+  --text-lg: 14px;
+  --text-xl: 15px;
+  --text-2xl: 16px;
+
+  /* Escala de espaciado — evita valores sueltos improvisados por componente. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* Escala de radios */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-pill: 999px;
 }
 *{box-sizing:border-box; margin:0; padding:0;}
 html,body{height:100%; scroll-behavior:smooth;}
 body{
   min-height:100vh; overflow-x:hidden; color: var(--text);
-  font-family: 'Inter', sans-serif; font-size: 15.5px;
+  font-family: 'Inter', sans-serif; font-size:var(--text-xl);
   background: radial-gradient(circle at top left, rgba(255,225,175,0.08), transparent 24%),
               linear-gradient(180deg, var(--bg-body-from) 0%, #0e0a07 55%, var(--bg-body-to) 100%);
   background-attachment: fixed;
@@ -104,9 +135,15 @@ body::before{
 }
 ::-webkit-scrollbar{ width:10px; height:10px; }
 ::-webkit-scrollbar-track{ background: rgba(255,255,255,0.03); }
-::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.12); border-radius:6px; }
+::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.12); border-radius:var(--radius-sm); }
 button{ cursor:pointer; font-family:'Inter',sans-serif; }
 input, select, textarea{ font-family:'Inter', sans-serif; }
+
+/* ICON SET — línea fina, hereda el color del texto que lo rodea (se adapta a
+   hover, estado activo y a cada preset de tema, a diferencia del emoji). */
+.icon{ width:1em; height:1em; display:inline-block; vertical-align:-0.15em; flex-shrink:0;
+  fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+.icon-lg{ width:40px; height:40px; stroke-width:1.3; }
 button, .rail-item, .ficha-card, .home-recent-item, .tab, .mode-btn, .canvas-node,
 .map-pin, .subtab, .icon-btn, .grimoire-row, .palette-chip, [data-add]{ cursor:pointer; }
 
@@ -132,3 +169,8 @@ button, .rail-item, .ficha-card, .home-recent-item, .tab, .mode-btn, .canvas-nod
 .btn-ghost:hover, .rail-btn:hover, .mode-btn:hover{ box-shadow:0 0 10px rgba(123,184,157,0.25); }
 .ficha-card{ transition: transform 0.18s ease, box-shadow 0.18s ease; }
 .ficha-card:hover{ transform:translateY(-3px); box-shadow:0 8px 22px rgba(0,0,0,0.45), 0 0 16px rgba(201,146,47,0.18); }
+
+/* Utilidades — para tweaks de layout puntuales, en vez de style="" repetido en el HTML. */
+.ml-auto{ margin-left:auto; }
+.w-full{ width:100%; }
+.m-0{ margin:0; }

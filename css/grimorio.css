@@ -1,18 +1,18 @@
 /* GRIMORIO */
-.grimoire-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 12px; border:1px solid var(--border-brass); border-radius:8px; background: rgba(255,255,255,0.04); }
-.grimoire-filter{ background:var(--bg-panel); border:1px solid var(--border-brass); border-radius:3px; padding:10px 14px; color:var(--text); font-size:14px; min-width:170px; }
+.grimoire-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 12px; border:1px solid var(--border-soft); border-radius:var(--radius-md); background: rgba(255,255,255,0.04); }
+.grimoire-filter{ background:var(--bg-panel); border:1px solid var(--border-soft); border-radius:var(--radius-xs); padding:10px 14px; color:var(--text); font-size:var(--text-lg); min-width:170px; }
 .grimoire-filter:focus{ outline:none; border-color:var(--verdigris); }
 .grimoire-spell-card{ grid-column:span 1; cursor:pointer; background:linear-gradient(145deg, var(--bg-panel-raised), rgba(20,14,10,0.98)); }
 .grimoire-spell-card:focus{ outline:2px solid var(--verdigris); outline-offset:2px; }
 .grimoire-spell-card .ficha-body{ padding:18px; }
 .grimoire-spell-card .ficha-name{ margin-bottom:14px; }
-.grimoire-metadata{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:7px; margin:10px 0; color:var(--text-dim2); font-size:11.5px; line-height:1.35; }
-.grimoire-metadata span{ display:flex; flex-direction:column; gap:2px; padding:7px 8px; border:1px solid rgba(255,255,255,0.07); border-radius:5px; background:rgba(255,255,255,0.025); }
-.grimoire-metadata strong{ color:var(--brass-dim); font-family:'Special Elite',monospace; font-size:9px; font-weight:400; letter-spacing:0.06em; text-transform:uppercase; }
+.grimoire-metadata{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:7px; margin:10px 0; color:var(--text-dim2); font-size:var(--text-sm); line-height:1.35; }
+.grimoire-metadata span{ display:flex; flex-direction:column; gap:2px; padding:7px 8px; border:1px solid rgba(255,255,255,0.07); border-radius:var(--radius-xs); background:rgba(255,255,255,0.025); }
+.grimoire-metadata strong{ color:var(--brass-dim); font-family:'Special Elite',monospace; font-size:var(--text-2xs); font-weight:400; letter-spacing:0.06em; text-transform:uppercase; }
 .grimoire-metadata .grimoire-meta-wide{ grid-column:1 / -1; }
-.grimoire-card-footer{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:14px; color:var(--brass-dim); font-family:'Special Elite',monospace; font-size:10px; letter-spacing:0.04em; }
+.grimoire-card-footer{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:14px; color:var(--brass-dim); font-family:'Special Elite',monospace; font-size:var(--text-xs); letter-spacing:0.04em; }
 .grimoire-card-footer .rail-btn{ padding:7px 10px; }
-.spell-detail-heading{ border-bottom:1px solid var(--border-brass); margin-bottom:16px; padding-bottom:12px; }
+.spell-detail-heading{ border-bottom:1px solid var(--border-soft); margin-bottom:16px; padding-bottom:12px; }
 .spell-detail-heading .modal-title{ margin:5px 0 0; font-size:25px; }
-.spell-detail-metadata{ margin:0 0 18px; font-size:12px; }
-.spell-detail-description{ color:var(--text-dim2); font-size:15px; line-height:1.75; }
+.spell-detail-metadata{ margin:0 0 18px; font-size:var(--text-base); }
+.spell-detail-description{ color:var(--text-dim2); font-size:var(--text-xl); line-height:1.75; }
