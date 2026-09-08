@@ -25,6 +25,7 @@
 .topbar-actions{ display:flex; align-items:center; gap:10px; margin-left:auto; }
 .icon-round-btn{ background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--text); width:36px; height:36px; border-radius:50%; font-size:var(--text-xl); display:flex; align-items:center; justify-content:center; }
 .icon-round-btn:hover{ box-shadow:0 0 10px rgba(241,210,122,0.3); }
+.icon-round-btn.active{ background: rgba(193,96,74,0.18); border-color: var(--danger-bright); color: var(--danger-bright); }
 .topbar-clock{ min-width:60px; text-align:center; font-family:'Special Elite',monospace; color:var(--text);
   background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); padding:8px 12px; border-radius:var(--radius-pill); font-size:var(--text-md); }
 .btn-brass.spinning{ position:relative; color:transparent !important; pointer-events:none; }

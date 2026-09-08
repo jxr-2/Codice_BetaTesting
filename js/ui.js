@@ -268,6 +268,15 @@ function escapeHtml(str){
 document.addEventListener('focusin', (e)=>{
   if(e.target.isContentEditable){ document.execCommand('defaultParagraphSeparator', false, 'p'); }
 });
+let _toastTimer = null;
+function showToast(msg, duration){
+  const el = document.getElementById('codice-toast');
+  if(!el) return;
+  el.textContent = msg;
+  el.classList.add('visible');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(()=> el.classList.remove('visible'), duration || 2200);
+}
 
 
 /* ========================= THEMES ========================= */

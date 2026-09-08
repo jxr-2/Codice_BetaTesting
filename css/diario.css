@@ -26,3 +26,21 @@
 .mention-popup{ position:absolute; z-index:500; background:var(--bg-panel-raised); border:1px solid var(--border-soft); border-radius:var(--radius-sm); box-shadow:0 8px 24px rgba(0,0,0,0.4); min-width:180px; max-height:220px; overflow-y:auto; padding:4px; }
 .mention-option{ padding:6px 10px; border-radius:var(--radius-xs); font-size:var(--text-md); color:var(--text); cursor:pointer; }
 .mention-option:hover{ background:var(--bg-panel-hover); }
+
+/* Manuscrito: fecha narrativa, secreto, conteo de palabras, modo enfoque */
+.journal-secret-label{ display:flex; align-items:center; gap:6px; font-size:var(--text-sm); color:var(--ink); }
+.journal-secret-label input{ width:auto !important; flex:none !important; }
+body.journal-focus-mode .topbar{ display:none; }
+body.journal-focus-mode .chapter-writing{ max-width:760px; margin:0 auto; }
+body.journal-focus-mode .chapter-content{ min-height:75vh; }
+
+/* Línea de tiempo */
+.timeline-list{ position:relative; padding:10px 0 10px 26px; }
+.timeline-list::before{ content:''; position:absolute; left:9px; top:0; bottom:0; width:2px; background:var(--border-soft); }
+.timeline-node{ position:relative; padding:0 0 26px 20px; cursor:pointer; }
+.timeline-dot{ position:absolute; left:-26px; top:4px; width:12px; height:12px; border-radius:50%; background:var(--verdigris); border:2px solid var(--bg-panel); box-shadow:0 0 0 2px var(--verdigris); }
+.timeline-date{ font-family:'Special Elite',monospace; font-size:var(--text-xs); color:var(--brass-dim); letter-spacing:0.05em; text-transform:uppercase; }
+.timeline-title{ font-family:'Cinzel',serif; font-weight:600; font-size:var(--text-lg); color:var(--text); margin:2px 0 4px; }
+.timeline-node:hover .timeline-title{ color:var(--verdigris-bright); }
+.timeline-preview{ color:var(--text-dim2); font-size:var(--text-sm); line-height:1.4; }
+.namecheck-row{ flex-direction:column; align-items:flex-start; gap:4px; }

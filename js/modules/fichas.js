@@ -170,16 +170,22 @@ function miniToolbarHtml(id){
 }
 function renderBlocks(){
   const wrap = document.getElementById('wsBlocks');
-  wrap.innerHTML = currentBlocks.map(b=>`
-    <div class="ws-block" data-id="${b.id}">
+  wrap.innerHTML = currentBlocks.map(b=>{
+    const hideContent = b.secret && readerMode;
+    return `
+    <div class="ws-block ${b.secret ? 'ws-block-marked-secret' : ''}" data-id="${b.id}">
       <div class="ws-block-header">
         <input class="ws-block-title" value="${escapeHtml(b.title)}" data-block-title="${b.id}">
         <div class="ws-block-toolbar">${miniToolbarHtml(b.id)}</div>
+        <button class="icon-btn mini-fmt-btn" data-block-secret="${b.id}" title="${b.secret ? 'Quitar marca de secreto' : 'Marcar como secreto (se oculta en modo lectura)'}" type="button"><svg class="icon"><use href="#${b.secret?'i-eye-off':'i-eye'}"/></svg></button>
         <button class="icon-btn mini-fmt-btn" data-block-img="${b.id}" title="Insertar imagen" type="button"><svg class="icon"><use href="#i-image"/></svg></button>
         <button class="icon-btn mini-fmt-btn" data-block-del="${b.id}" title="Eliminar sección" type="button">✕</button>
       </div>
-      <div class="ws-content" contenteditable="true" data-block-content="${b.id}" data-placeholder="Escribí aquí…">${b.html||''}</div>
-    </div>`).join('') || '<div class="hint" style="margin:14px 32px;">Sin secciones todavía. Usá "+ Añadir sección de texto" para empezar a escribir.</div>';
+      ${hideContent
+        ? `<div class="ws-content ws-block-secret-hidden" data-block-content="${b.id}" contenteditable="false">🔒 Sección oculta en modo lectura</div>`
+        : `<div class="ws-content" contenteditable="true" data-block-content="${b.id}" data-placeholder="Escribí aquí…">${b.html||''}</div>`}
+    </div>`;
+  }).join('') || '<div class="hint" style="margin:14px 32px;">Sin secciones todavía. Usá "+ Añadir sección de texto" para empezar a escribir.</div>';
   wireBlockEvents();
 }
 function wireBlockEvents(){
@@ -208,6 +214,12 @@ function wireBlockEvents(){
     btn.addEventListener('click', ()=>{
       currentBlocks = currentBlocks.filter(b=>b.id!==btn.dataset.blockDel);
       markWsDirty(); renderBlocks();
+    });
+  });
+  document.querySelectorAll('[data-block-secret]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const b = currentBlocks.find(x=>x.id===btn.dataset.blockSecret);
+      if(b){ b.secret = !b.secret; markWsDirty(); renderBlocks(); }
     });
   });
 }

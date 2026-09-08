@@ -48,6 +48,10 @@ let currentSessionId = null;
 let sessionDirty = false;
 let grimorioInited = false;
 
+let combatState = { combatants:[], round:1, turnIndex:0, active:false };
+let lootTables = [];
+let readerMode = false;
+
 function markDirty(){ projectDirty = true; }
 function clearDirty(){ projectDirty = false; }
 window.addEventListener('beforeunload', (e)=>{

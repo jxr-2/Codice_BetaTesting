@@ -3,9 +3,15 @@
 function setJournalMode(mode){
   document.getElementById('journalGridWrap').style.display = mode==='grid' ? 'block' : 'none';
   document.getElementById('journalEditor').style.display = mode==='editor' ? 'block' : 'none';
+  document.getElementById('journalTimelineWrap').style.display = mode==='timeline' ? 'block' : 'none';
+  if(mode==='timeline') renderJournalTimeline();
+  if(mode!=='editor') document.body.classList.remove('journal-focus-mode');
 }
 function sortedJournalEntries(){
   return journalEntries.slice().sort((a,b)=> (a.order||0)-(b.order||0));
+}
+function visibleJournalEntries(list){
+  return readerMode ? list.filter(j=>!j.secret) : list;
 }
 let journalSelectMode = false;
 let journalSelectedIds = new Set();
@@ -13,6 +19,7 @@ function renderJournalGrid(){
   const grid = document.getElementById('journalGrid');
   const empty = document.getElementById('journalEmpty');
   const sorted = sortedJournalEntries();
+  const visible = visibleJournalEntries(sorted);
   if(sorted.length === 0){
     grid.innerHTML = '';
     empty.style.display = 'flex';
@@ -20,20 +27,21 @@ function renderJournalGrid(){
     return;
   }
   empty.style.display = 'none';
-  grid.innerHTML = sorted.map((j,idx)=>{
+  grid.innerHTML = visible.map((j, visIdx)=>{
+    const idx = sorted.indexOf(j);
     const preview = stripHtml(j.content).slice(0,140);
     const checked = journalSelectedIds.has(j.id);
     return `<div class="ficha-card" data-id="${j.id}">
       ${journalSelectMode ? `<input type="checkbox" class="ficha-check" data-check="${j.id}" ${checked?'checked':''}>` : ''}
       <div class="ficha-body">
-        <div class="ficha-type">Capítulo ${idx+1}${j.date ? ' · '+escapeHtml(j.date) : ''}</div>
+        <div class="ficha-type">Capítulo ${idx+1}${j.date ? ' · '+escapeHtml(j.date) : ''}${j.secret ? ' · 🔒' : ''}</div>
         <div class="ficha-name">${escapeHtml(j.title||'Sin título')}</div>
         <div class="ficha-summary">${escapeHtml(preview)}${preview.length===140?'…':''}</div>
       </div>
-      <div class="journal-card-order">
-        <button type="button" data-move-up="${j.id}" title="Mover arriba" ${idx===0?'disabled':''}>↑</button>
-        <button type="button" data-move-down="${j.id}" title="Mover abajo" ${idx===sorted.length-1?'disabled':''}>↓</button>
-      </div>
+      ${readerMode ? '' : `<div class="journal-card-order">
+        <button type="button" data-move-up="${j.id}" title="Mover arriba" ${visIdx===0?'disabled':''}>↑</button>
+        <button type="button" data-move-down="${j.id}" title="Mover abajo" ${visIdx===visible.length-1?'disabled':''}>↓</button>
+      </div>`}
     </div>`;
   }).join('');
   grid.querySelectorAll('.ficha-card').forEach(card=>{
@@ -108,11 +116,20 @@ function openJournalEntry(id){
   document.getElementById('journalNum').textContent = 'Capítulo ' + (idx+1);
   document.getElementById('journalTitle').value = j.title || '';
   document.getElementById('journalDate').value = j.date || '';
+  document.getElementById('journalEventDate').value = j.eventDate || '';
+  document.getElementById('journalEventLabel').value = j.eventLabel || '';
+  document.getElementById('journalSecretToggle').checked = !!j.secret;
   const content = document.getElementById('journalContent');
   content.innerHTML = j.content || '';
   wireImageBlocksIn(content, markJournalDirty);
+  updateJournalWordCount();
   updateJournalNavButtons();
   setJournalMode('editor');
+}
+function updateJournalWordCount(){
+  const text = stripHtml(document.getElementById('journalContent').innerHTML);
+  const count = text ? text.split(/\s+/).filter(Boolean).length : 0;
+  document.getElementById('journalWordCount').textContent = count + (count===1 ? ' palabra' : ' palabras');
 }
 async function backToJournalGrid(){
   if(journalDirty) await saveJournalEntry();
@@ -135,6 +152,9 @@ async function saveJournalEntry(opts={}){
   if(silent) hint.textContent = 'Guardando…';
   j.title = document.getElementById('journalTitle').value.trim() || 'Sin título';
   j.date = document.getElementById('journalDate').value;
+  j.eventDate = document.getElementById('journalEventDate').value.trim();
+  j.eventLabel = document.getElementById('journalEventLabel').value.trim();
+  j.secret = document.getElementById('journalSecretToggle').checked;
   j.content = document.getElementById('journalContent').innerHTML;
   await storeSet('journal-entries', journalEntries);
   markDirty();
@@ -146,14 +166,50 @@ async function saveJournalEntry(opts={}){
 function markJournalDirty(){
   journalDirty = true;
   document.getElementById('journalDirtyHint').textContent = '● cambios sin guardar';
+  updateJournalWordCount();
   clearTimeout(journalAutosaveTimer);
   journalAutosaveTimer = setTimeout(()=> saveJournalEntry({silent:true}), 2500);
 }
 document.getElementById('newJournalBtn').addEventListener('click', async ()=>{
-  const j = { id:uid(), title:'', date: new Date().toISOString().slice(0,10), content:'', order: journalEntries.length };
+  const j = { id:uid(), title:'', date: new Date().toISOString().slice(0,10), eventDate:'', eventLabel:'', secret:false, content:'', order: journalEntries.length };
   journalEntries.push(j); await storeSet('journal-entries', journalEntries); markDirty();
   openJournalEntry(j.id);
 });
+document.getElementById('journalSecretToggle').addEventListener('change', markJournalDirty);
+document.getElementById('journalEventDate').addEventListener('input', markJournalDirty);
+document.getElementById('journalEventLabel').addEventListener('input', markJournalDirty);
+document.getElementById('journalFocusBtn').addEventListener('click', ()=>{
+  document.body.classList.toggle('journal-focus-mode');
+});
+document.addEventListener('keydown', (e)=>{
+  if(e.key==='Escape' && document.body.classList.contains('journal-focus-mode')) document.body.classList.remove('journal-focus-mode');
+});
+document.getElementById('journalTimelineBtn').addEventListener('click', ()=> setJournalMode('timeline'));
+document.getElementById('backFromTimelineBtn').addEventListener('click', ()=> setJournalMode('grid'));
+function renderJournalTimeline(){
+  const el = document.getElementById('journalTimelineList');
+  const sorted = visibleJournalEntries(journalEntries.slice()).sort((a,b)=>{
+    const da = a.eventDate || '', db = b.eventDate || '';
+    if(da && db) return da.localeCompare(db);
+    if(da && !db) return -1;
+    if(!da && db) return 1;
+    return (a.order||0)-(b.order||0);
+  });
+  el.innerHTML = sorted.map(j=>{
+    const preview = stripHtml(j.content).slice(0,120);
+    return `<div class="timeline-node" data-tid="${j.id}">
+      <div class="timeline-dot"></div>
+      <div class="timeline-body">
+        <div class="timeline-date">${escapeHtml(j.eventDate || j.date || 'Sin fecha')}</div>
+        <div class="timeline-title">${escapeHtml(j.title||'Sin título')}${j.eventLabel ? ' — '+escapeHtml(j.eventLabel) : ''}</div>
+        <div class="timeline-preview">${escapeHtml(preview)}${preview.length===120?'…':''}</div>
+      </div>
+    </div>`;
+  }).join('') || '<div class="hint">Todavía no hay capítulos.</div>';
+  el.querySelectorAll('.timeline-node').forEach(node=>{
+    node.addEventListener('click', ()=> openJournalEntry(node.dataset.tid));
+  });
+}
 document.getElementById('backToJournalGridBtn').addEventListener('click', backToJournalGrid);
 document.getElementById('journalPrevBtn').addEventListener('click', ()=> gotoAdjacentJournal(-1));
 document.getElementById('journalNextBtn').addEventListener('click', ()=> gotoAdjacentJournal(1));

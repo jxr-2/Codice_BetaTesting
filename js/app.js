@@ -40,6 +40,7 @@ function switchView(view){
   if(view === 'canvas' && !canvasLoaded) initCanvas();
   if(view === 'mapas' && !mapsLoaded) initMapas();
   if(view === 'grimorio' && !grimorioInited) initGrimorio();
+  if(view === 'master' && !masterInited) initMaster();
 }
 async function navigateTo(view){
   const leavingFichasEditor = document.getElementById('view-fichas').classList.contains('active') && fichasMode==='editor' && view !== 'fichas';
@@ -148,6 +149,9 @@ async function loadWorld(){
   entriesIndex = idx || [];
   const mapsIdx = await storeGet('maps-index');
   mapsIndex = mapsIdx || [];
+  combatState = (await storeGet('combat-state')) || { combatants:[], round:1, turnIndex:0, active:false };
+  lootTables = (await storeGet('loot-tables')) || [];
+  if(masterInited){ renderCombatList(); renderLootPanel(); }
 
   if(worldMeta.lastMapId && mapsIndex.some(m=>m.id===worldMeta.lastMapId)){
     await loadMap(worldMeta.lastMapId);

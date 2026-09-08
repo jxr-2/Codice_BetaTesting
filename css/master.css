@@ -1,0 +1,44 @@
+/* MASTER — iniciativa, bestiario, dados, botín */
+.master-main{ flex:1; padding:26px 32px 60px; min-width:0; }
+.master-tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+.master-panel{ display:none; }
+.master-panel.active{ display:block; }
+
+/* Iniciativa */
+.master-toolbar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+.combat-round{ font-family:'Special Elite',monospace; color:var(--brass-dim); letter-spacing:0.06em; padding:6px 12px; border:1px solid var(--border-soft); border-radius:var(--radius-pill); }
+.combat-list{ display:flex; flex-direction:column; gap:8px; }
+.combat-row{ display:flex; align-items:center; gap:14px; background:var(--bg-panel-raised); border:1px solid var(--border-soft); border-radius:var(--radius-xs); padding:10px 14px; }
+.combat-row-active{ border-color:var(--verdigris); box-shadow:0 0 0 1px var(--verdigris) inset; }
+.combat-init{ font-family:'Cinzel',serif; font-weight:600; font-size:var(--text-2xl); color:var(--brass-bright); min-width:34px; text-align:center; }
+.combat-name{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text); }
+.combat-pc-badge{ font-size:var(--text-2xs); color:var(--verdigris-bright); border:1px solid var(--verdigris); border-radius:var(--radius-xs); padding:1px 5px; margin-left:4px; }
+.combat-hp{ display:flex; align-items:center; gap:6px; flex-shrink:0; }
+.combat-hp-input{ width:52px; background:var(--bg-panel); border:1px solid var(--border-soft); border-radius:var(--radius-xs); color:var(--text); padding:4px 6px; text-align:center; }
+.combat-hp-max{ color:var(--text-dim2); font-size:var(--text-sm); }
+.combat-ac{ flex-shrink:0; color:var(--text-dim2); font-size:var(--text-sm); min-width:50px; }
+.combat-remove{ flex-shrink:0; opacity:0.6; }
+.combat-remove:hover{ opacity:1; color:var(--danger-bright); }
+
+/* Dados */
+.dice-panel{ max-width:640px; }
+.dice-quickbar{ display:flex; align-items:flex-end; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+.dice-qty-field, .dice-mod-field{ display:flex; flex-direction:column; gap:4px; }
+.dice-qty-field label, .dice-mod-field label{ font-size:var(--text-2xs); color:var(--brass-dim); text-transform:uppercase; letter-spacing:0.06em; }
+.dice-qty-field input, .dice-mod-field input{ width:64px; background:var(--bg-panel); border:1px solid var(--border-soft); border-radius:var(--radius-xs); color:var(--text); padding:8px; text-align:center; }
+.dice-btn{ background:var(--bg-panel-raised); border:1px solid var(--border-brass); color:var(--brass); padding:12px 16px; border-radius:var(--radius-xs); font-family:'Cinzel',serif; font-weight:600; font-size:var(--text-lg); }
+.dice-btn:hover{ background: rgba(201,146,47,0.1); border-color:var(--brass-bright); }
+.dice-custom-row{ display:flex; gap:8px; margin-bottom:18px; }
+.dice-result{ min-height:70px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:var(--bg-panel-raised); border:1px solid var(--border-soft); border-radius:var(--radius-md); margin-bottom:18px; padding:14px; }
+.dice-result-total{ font-family:'Cinzel',serif; font-weight:700; font-size:34px; color:var(--brass-bright); }
+.dice-result-breakdown{ color:var(--text-dim2); font-size:var(--text-sm); font-family:'Special Elite',monospace; }
+.dice-log{ display:flex; flex-direction:column; gap:4px; margin-bottom:12px; max-height:220px; overflow-y:auto; }
+.dice-log-row{ display:flex; justify-content:space-between; gap:10px; padding:6px 10px; border:1px solid var(--border-soft); border-radius:var(--radius-xs); background: rgba(255,255,255,0.02); font-size:var(--text-sm); }
+.dice-log-expr{ color:var(--text-dim2); font-family:'Special Elite',monospace; }
+.dice-log-total{ color:var(--brass-bright); font-weight:600; }
+
+/* Botín */
+.loot-result{ display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; background:var(--bg-panel-raised); border:1px solid var(--verdigris); border-radius:var(--radius-md); padding:14px 18px; margin-bottom:20px; }
+.loot-result-text{ color:var(--text); }
+.loot-table-card .grimoire-card-footer{ align-items:center; }
+.loot-table-card .rail-btn{ padding:6px 9px; }

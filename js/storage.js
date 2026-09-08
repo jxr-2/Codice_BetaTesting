@@ -65,7 +65,7 @@ async function exportProject(){
   const btn = document.getElementById('exportProjectBtn');
   btn.classList.add('spinning'); btn.disabled = true;
   try{
-    const project = { worldMeta, entriesIndex, canvasData, mapsIndex, journalEntries, sessionLog, entries:[], maps:[] };
+    const project = { worldMeta, entriesIndex, canvasData, mapsIndex, journalEntries, sessionLog, combatState, lootTables, entries:[], maps:[] };
     for(const entry of entriesIndex){ const full = await storeGet('entry:'+entry.id); if(full) project.entries.push(full); }
     for(const mapItem of mapsIndex){ const fullMap = await storeGet('map:'+mapItem.id); if(fullMap) project.maps.push(fullMap); }
     const json = JSON.stringify(project, null, 2);
@@ -110,6 +110,8 @@ async function importProject(file, silent){
     canvasData = data.canvasData || { nodes:[], edges:[] };
     journalEntries = data.journalEntries || []; await storeSet('journal-entries', journalEntries);
     sessionLog = data.sessionLog || []; await storeSet('session-log', sessionLog);
+    combatState = data.combatState || { combatants:[], round:1, turnIndex:0, active:false }; await storeSet('combat-state', combatState);
+    lootTables = data.lootTables || []; await storeSet('loot-tables', lootTables);
     currentMap = null;
     await loadWorld();
     applyTheme();

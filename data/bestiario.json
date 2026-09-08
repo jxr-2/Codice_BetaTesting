@@ -1,0 +1,403 @@
+[
+  {
+    "nombre": "Rata gigante",
+    "tipo": "Bestia",
+    "tamano": "Pequeño",
+    "alineamiento": "Sin alineamiento",
+    "ca": 12,
+    "pg": 7,
+    "pg_dado": "2d6",
+    "velocidad": "30 pies",
+    "str": 7, "dex": 15, "con": 11, "int": 2, "wis": 10, "cha": 4,
+    "sentidos": "Visión en la oscuridad 60 pies",
+    "idiomas": "—",
+    "desafio": "1/8",
+    "px": 25,
+    "rasgos": [
+      { "nombre": "Astucia de manada", "texto": "Tiene ventaja en tiradas de ataque contra una criatura si al menos un aliado de la rata está a 1,5 m de ella y no incapacitado." }
+    ],
+    "acciones": [
+      { "nombre": "Mordisco", "texto": "Ataque de arma cuerpo a cuerpo: +4 al impacto, alcance 1,5 m. Impacto: 4 (1d4+2) de daño perforante." }
+    ]
+  },
+  {
+    "nombre": "Kobold",
+    "tipo": "Humanoide (kobold)",
+    "tamano": "Pequeño",
+    "alineamiento": "Legal maligno",
+    "ca": 12,
+    "pg": 5,
+    "pg_dado": "2d6-2",
+    "velocidad": "30 pies",
+    "str": 7, "dex": 15, "con": 9, "int": 8, "wis": 7, "cha": 8,
+    "sentidos": "Visión en la oscuridad 18 m",
+    "idiomas": "Dracónico",
+    "desafio": "1/8",
+    "px": 25,
+    "rasgos": [
+      { "nombre": "Sensibilidad a la luz solar", "texto": "Desventaja en ataques y percepción por vista mientras haya luz solar directa." },
+      { "nombre": "Táctica de manada", "texto": "Ventaja en tiradas de ataque contra una criatura si al menos un aliado del kobold está a 1,5 m de ella y no incapacitado." }
+    ],
+    "acciones": [
+      { "nombre": "Daga", "texto": "Ataque de arma cuerpo a cuerpo o a distancia: +4 al impacto, alcance 1,5 m o 6/18 m. Impacto: 4 (1d4+2) de daño perforante." }
+    ]
+  },
+  {
+    "nombre": "Trasgo",
+    "tipo": "Humanoide (goblinoide)",
+    "tamano": "Pequeño",
+    "alineamiento": "Neutral maligno",
+    "ca": 15,
+    "pg": 7,
+    "pg_dado": "2d6",
+    "velocidad": "30 pies",
+    "str": 8, "dex": 14, "con": 10, "int": 10, "wis": 8, "cha": 8,
+    "sentidos": "Visión en la oscuridad 18 m",
+    "idiomas": "Común, Goblin",
+    "desafio": "1/4",
+    "px": 50,
+    "rasgos": [
+      { "nombre": "Fuga ágil", "texto": "Puede realizar la acción de Desengancharse o Esconderse como acción adicional en cada uno de sus turnos." }
+    ],
+    "acciones": [
+      { "nombre": "Cimitarra", "texto": "Ataque de arma cuerpo a cuerpo: +4 al impacto, alcance 1,5 m. Impacto: 5 (1d6+2) de daño cortante." },
+      { "nombre": "Arco corto", "texto": "Ataque de arma a distancia: +4 al impacto, alcance 24/96 m. Impacto: 5 (1d6+2) de daño perforante." }
+    ]
+  },
+  {
+    "nombre": "Esqueleto",
+    "tipo": "No-muerto",
+    "tamano": "Mediano",
+    "alineamiento": "Legal maligno",
+    "ca": 13,
+    "pg": 13,
+    "pg_dado": "2d8+4",
+    "velocidad": "30 pies",
+    "str": 10, "dex": 14, "con": 15, "int": 6, "wis": 8, "cha": 5,
+    "sentidos": "Visión en la oscuridad 18 m",
+    "idiomas": "Entiende los idiomas que conocía en vida pero no puede hablar",
+    "desafio": "1/4",
+    "px": 50,
+    "rasgos": [],
+    "resistencias": "—",
+    "inmunidades": "Veneno",
+    "condiciones_inmunes": "Envenenado, Exhausto",
+    "acciones": [
+      { "nombre": "Espada corta", "texto": "Ataque de arma cuerpo a cuerpo: +4 al impacto, alcance 1,5 m. Impacto: 5 (1d6+2) de daño perforante." },
+      { "nombre": "Arco corto", "texto": "Ataque de arma a distancia: +4 al impacto, alcance 24/96 m. Impacto: 5 (1d6+2) de daño perforante." }
+    ]
+  },
+  {
+    "nombre": "Zombi",
+    "tipo": "No-muerto",
+    "tamano": "Mediano",
+    "alineamiento": "Neutral maligno",
+    "ca": 8,
+    "pg": 22,
+    "pg_dado": "3d8+9",
+    "velocidad": "20 pies",
+    "str": 13, "dex": 6, "con": 16, "int": 3, "wis": 6, "cha": 5,
+    "sentidos": "Visión en la oscuridad 18 m",
+    "idiomas": "Entiende los idiomas que conocía en vida pero no puede hablar",
+    "desafio": "1/4",
+    "px": 50,
+    "rasgos": [
+      { "nombre": "Fortaleza de no-muerto", "texto": "Si un daño lo reduce a 0 pg, hace una salvación de Constitución (CD 5 + daño recibido); si tiene éxito, queda a 1 pg en su lugar. No funciona ante daño radiante o de crítico." }
+    ],
+    "condiciones_inmunes": "Envenenado",
+    "acciones": [
+      { "nombre": "Golpe (garra)", "texto": "Ataque de arma cuerpo a cuerpo: +3 al impacto, alcance 1,5 m. Impacto: 4 (1d6+1) de daño contundente." }
+    ]
+  },
+  {
+    "nombre": "Lobo",
+    "tipo": "Bestia",
+    "tamano": "Mediano",
+    "alineamiento": "Sin alineamiento",
+    "ca": 13,
+    "pg": 11,
+    "pg_dado": "2d8+2",
+    "velocidad": "40 pies",
+    "str": 12, "dex": 15, "con": 12, "int": 3, "wis": 12, "cha": 6,
+    "sentidos": "Percepción pasiva 13, olfato agudo",
+    "idiomas": "—",
+    "desafio": "1/4",
+    "px": 50,
+    "rasgos": [
+      { "nombre": "Oído y olfato agudos", "texto": "Ventaja en Sabiduría (Percepción) que dependan del oído u olfato." },
+      { "nombre": "Táctica de manada", "texto": "Ventaja en tiradas de ataque contra una criatura si al menos un aliado del lobo está a 1,5 m de ella y no incapacitado." }
+    ],
+    "acciones": [
+      { "nombre": "Mordisco", "texto": "Ataque de arma cuerpo a cuerpo: +4 al impacto, alcance 1,5 m. Impacto: 7 (2d4+2) de daño perforante. Si el objetivo es una criatura, debe superar una salvación de Fuerza CD 11 o caer derribado." }
+    ]
+  },
+  {
+    "nombre": "Bandido",
+    "tipo": "Humanoide (cualquiera)",
+    "tamano": "Mediano",
+    "alineamiento": "Cualquier alineamiento no legal",
+    "ca": 12,
+    "pg": 11,
+    "pg_dado": "2d8+2",
+    "velocidad": "30 pies",
+    "str": 11, "dex": 12, "con": 12, "int": 10, "wis": 10, "cha": 10,
+    "sentidos": "Percepción pasiva 10",
+    "idiomas": "Cualquier idioma",
+    "desafio": "1/8",
+    "px": 25,
+    "rasgos": [],
+    "acciones": [
+      { "nombre": "Cimitarra", "texto": "Ataque de arma cuerpo a cuerpo: +3 al impacto, alcance 1,5 m. Impacto: 4 (1d6+1) de daño cortante." },
+      { "nombre": "Ballesta ligera", "texto": "Ataque de arma a distancia: +3 al impacto, alcance 24/96 m. Impacto: 5 (1d8+1) de daño perforante." }
+    ]
+  },
+  {
+    "nombre": "Matón",
+    "tipo": "Humanoide (cualquiera)",
+    "tamano": "Mediano",
+    "alineamiento": "Cualquier alineamiento no legal",
+    "ca": 11,
+    "pg": 32,
+    "pg_dado": "5d8+10",
+    "velocidad": "30 pies",
+    "str": 15, "dex": 11, "con": 14, "int": 10, "wis": 10, "cha": 11,
+    "sentidos": "Percepción pasiva 10",
+    "idiomas": "Cualquier idioma",
+    "desafio": "1/2",
+    "px": 100,
+    "rasgos": [
+      { "nombre": "Ataque múltiple", "texto": "Realiza dos ataques cuerpo a cuerpo." }
+    ],
+    "acciones": [
+      { "nombre": "Puño americano", "texto": "Ataque de arma cuerpo a cuerpo: +4 al impacto, alcance 1,5 m. Impacto: 5 (1d4+3) de daño contundente." },
+      { "nombre": "Pistola pesada", "texto": "Ataque de arma a distancia: +2 al impacto, alcance 30/90 m. Impacto: 5 (1d10) de daño perforante." }
+    ]
+  },
+  {
+    "nombre": "Orco",
+    "tipo": "Humanoide (orco)",
+    "tamano": "Mediano",
+    "alineamiento": "Caótico maligno",
+    "ca": 13,
+    "pg": 15,
+    "pg_dado": "2d8+6",
+    "velocidad": "30 pies",
+    "str": 16, "dex": 12, "con": 16, "int": 7, "wis": 11, "cha": 10,
+    "sentidos": "Visión en la oscuridad 18 m",
+    "idiomas": "Común, Orco",
+    "desafio": "1/2",
+    "px": 100,
+    "rasgos": [
+      { "nombre": "Furia implacable", "texto": "Si el daño lo reduce a 0 pg pero no muere de inmediato, puede hacer una salvación de Constitución CD 10; si tiene éxito, queda a 1 pg. Solo una vez por descanso largo." }
+    ],
+    "acciones": [
+      { "nombre": "Hacha a dos manos", "texto": "Ataque de arma cuerpo a cuerpo: +5 al impacto, alcance 1,5 m. Impacto: 9 (1d12+3) de daño cortante." },
+      { "nombre": "Jabalina", "texto": "Ataque de arma cuerpo a cuerpo o a distancia: +5 al impacto, alcance 1,5 m o 9/36 m. Impacto: 6 (1d6+3) de daño perforante." }
+    ]
+  },
+  {
+    "nombre": "Hobgoblin",
+    "tipo": "Humanoide (goblinoide)",
+    "tamano": "Mediano",
+    "alineamiento": "Legal maligno",
+    "ca": 18,
+    "pg": 11,
+    "pg_dado": "2d8+2",
+    "velocidad": "30 pies",
+    "str": 13, "dex": 12, "con": 12, "int": 10, "wis": 10, "cha": 9,
+    "sentidos": "Visión en la oscuridad 18 m",
+    "idiomas": "Común, Goblin",
+    "desafio": "1/2",
+    "px": 100,
+    "rasgos": [
+      { "nombre": "Táctica marcial", "texto": "Cuando falla una tirada de ataque o de salvación, puede gastar un uso especial para volver a tirar, tomando el segundo resultado. Recupera este uso tras un descanso corto o largo." }
+    ],
+    "acciones": [
+      { "nombre": "Espada larga", "texto": "Ataque de arma cuerpo a cuerpo: +3 al impacto, alcance 1,5 m. Impacto: 5 (1d8+1) de daño cortante." },
+      { "nombre": "Jabalina", "texto": "Ataque de arma a distancia: +3 al impacto, alcance 9/36 m. Impacto: 5 (1d6+1) de daño perforante." }
+    ]
+  },
+  {
+    "nombre": "Osgo (Bugbear)",
+    "tipo": "Humanoide (goblinoide)",
+    "tamano": "Mediano",
+    "alineamiento": "Caótico maligno",
+    "ca": 16,
+    "pg": 27,
+    "pg_dado": "5d8+5",
+    "velocidad": "30 pies",
+    "str": 15, "dex": 14, "con": 13, "int": 8, "wis": 11, "cha": 9,
+    "sentidos": "Visión en la oscuridad 18 m",
+    "idiomas": "Común, Goblin",
+    "desafio": "1",
+    "px": 200,
+    "rasgos": [
+      { "nombre": "Sigilo natural", "texto": "Puede intentar esconderse incluso estando ligeramente oscurecido por una criatura de tamaño Mediano o más grande." }
+    ],
+    "acciones": [
+      { "nombre": "Morningstar", "texto": "Ataque de arma cuerpo a cuerpo: +4 al impacto, alcance 1,5 m. Impacto: 11 (2d8+2) de daño perforante." },
+      { "nombre": "Jabalina arrojadiza", "texto": "Ataque de arma a distancia: +4 al impacto, alcance 9/36 m. Impacto: 9 (2d6+2) de daño perforante." }
+    ]
+  },
+  {
+    "nombre": "Necrófago (Ghoul)",
+    "tipo": "No-muerto",
+    "tamano": "Mediano",
+    "alineamiento": "Caótico maligno",
+    "ca": 12,
+    "pg": 22,
+    "pg_dado": "5d8",
+    "velocidad": "30 pies",
+    "str": 13, "dex": 15, "con": 10, "int": 7, "wis": 10, "cha": 6,
+    "sentidos": "Visión en la oscuridad 18 m",
+    "idiomas": "Entiende Común pero no puede hablar",
+    "desafio": "1",
+    "px": 200,
+    "inmunidades": "Veneno",
+    "condiciones_inmunes": "Encantado, Envenenado",
+    "rasgos": [],
+    "acciones": [
+      { "nombre": "Mordisco", "texto": "Ataque de arma cuerpo a cuerpo: +2 al impacto, alcance 1,5 m. Impacto: 5 (2d4) de daño perforante." },
+      { "nombre": "Garras", "texto": "Ataque de arma cuerpo a cuerpo: +4 al impacto, alcance 1,5 m. Impacto: 7 (2d6+2) de daño cortante. Si el objetivo no es un no-muerto, debe superar una salvación de Constitución CD 10 o quedar paralizado durante 1 minuto (puede repetir la salvación al final de cada uno de sus turnos)." }
+    ]
+  },
+  {
+    "nombre": "Araña gigante",
+    "tipo": "Bestia",
+    "tamano": "Grande",
+    "alineamiento": "Sin alineamiento",
+    "ca": 14,
+    "pg": 26,
+    "pg_dado": "4d10+4",
+    "velocidad": "30 pies, trepar 30 pies",
+    "str": 14, "dex": 16, "con": 12, "int": 2, "wis": 11, "cha": 4,
+    "sentidos": "Visión ciega 3 m, visión en la oscuridad 18 m",
+    "idiomas": "—",
+    "desafio": "1",
+    "px": 200,
+    "rasgos": [
+      { "nombre": "Zancada de araña", "texto": "No sufre desventaja al hacer ataques con desventaja por estar agarrada, y puede moverse sobre telarañas sin gastar movimiento extra." },
+      { "nombre": "Sentido de la telaraña", "texto": "Mientras esté en contacto con una telaraña, sabe la ubicación exacta de cualquier otra criatura en contacto con la misma telaraña." },
+      { "nombre": "Camuflaje entre telarañas", "texto": "Ventaja en tiradas de Destreza (Sigilo) al esconderse en telarañas." }
+    ],
+    "acciones": [
+      { "nombre": "Mordisco", "texto": "Ataque de arma cuerpo a cuerpo: +5 al impacto, alcance 1,5 m. Impacto: 7 (1d8+3) de daño perforante más 9 (2d8) de daño de veneno; salvación de Constitución CD 11 reduce el veneno a la mitad." },
+      { "nombre": "Telaraña (recarga 5-6)", "texto": "Ataque a distancia contra una criatura: +5 al impacto, alcance 18/30 m. Impacto: el objetivo queda apresado en telarañas restrictivas." }
+    ]
+  },
+  {
+    "nombre": "Oso pardo",
+    "tipo": "Bestia",
+    "tamano": "Grande",
+    "alineamiento": "Sin alineamiento",
+    "ca": 11,
+    "pg": 34,
+    "pg_dado": "4d10+12",
+    "velocidad": "40 pies, trepar 30 pies",
+    "str": 19, "dex": 10, "con": 16, "int": 2, "wis": 13, "cha": 7,
+    "sentidos": "Percepción pasiva 13, olfato agudo",
+    "idiomas": "—",
+    "desafio": "1",
+    "px": 200,
+    "rasgos": [
+      { "nombre": "Olfato agudo", "texto": "Ventaja en Sabiduría (Percepción) que dependan del olfato." },
+      { "nombre": "Ataque múltiple", "texto": "Realiza dos ataques: uno de mordisco y uno de garras." }
+    ],
+    "acciones": [
+      { "nombre": "Mordisco", "texto": "Ataque de arma cuerpo a cuerpo: +5 al impacto, alcance 1,5 m. Impacto: 8 (1d8+4) de daño perforante." },
+      { "nombre": "Garras", "texto": "Ataque de arma cuerpo a cuerpo: +5 al impacto, alcance 1,5 m. Impacto: 11 (2d6+4) de daño cortante." }
+    ]
+  },
+  {
+    "nombre": "Espectro (Wight)",
+    "tipo": "No-muerto",
+    "tamano": "Mediano",
+    "alineamiento": "Neutral maligno",
+    "ca": 14,
+    "pg": 45,
+    "pg_dado": "6d8+18",
+    "velocidad": "30 pies",
+    "str": 15, "dex": 14, "con": 16, "int": 10, "wis": 13, "cha": 15,
+    "sentidos": "Visión en la oscuridad 18 m",
+    "idiomas": "Los idiomas que conocía en vida",
+    "desafio": "3",
+    "px": 700,
+    "resistencias": "Necrótico; contundente, perforante y cortante de armas no mágicas",
+    "inmunidades": "Veneno",
+    "condiciones_inmunes": "Agotado, Envenenado",
+    "rasgos": [
+      { "nombre": "Sensibilidad a la luz solar", "texto": "Desventaja en ataques y percepción por vista mientras haya luz solar directa." }
+    ],
+    "acciones": [
+      { "nombre": "Ataque múltiple", "texto": "Realiza dos ataques cuerpo a cuerpo, solo uno de los cuales puede ser con Absorbe-vida." },
+      { "nombre": "Garra", "texto": "Ataque de arma cuerpo a cuerpo: +4 al impacto, alcance 1,5 m. Impacto: 5 (1d6+2) de daño cortante." },
+      { "nombre": "Absorbe-vida", "texto": "Ataque de arma cuerpo a cuerpo: +4 al impacto, alcance 1,5 m. Impacto: 6 (1d6+3) de daño necrótico; el objetivo debe superar una salvación de Constitución CD 13 o su máximo de pg se reduce en la misma cantidad, y el espectro recupera esos pg." }
+    ]
+  },
+  {
+    "nombre": "Mímico",
+    "tipo": "Monstruosidad (metamorfo)",
+    "tamano": "Grande",
+    "alineamiento": "Neutral",
+    "ca": 12,
+    "pg": 58,
+    "pg_dado": "9d10+9",
+    "velocidad": "15 pies",
+    "str": 17, "dex": 12, "con": 15, "int": 5, "wis": 13, "cha": 8,
+    "sentidos": "Visión en la oscuridad 18 m",
+    "idiomas": "—",
+    "desafio": "2",
+    "px": 450,
+    "rasgos": [
+      { "nombre": "Cambiaformas", "texto": "Puede usar su acción para transformarse en un objeto de tamaño Mediano o Grande, o de vuelta a su forma real (una masa amorfa). Sus estadísticas son las mismas en cada forma." },
+      { "nombre": "Adherirse", "texto": "Mientras está en forma de objeto, cualquiera que la toque queda adherido si el mímico así lo desea." }
+    ],
+    "acciones": [
+      { "nombre": "Pseudópodo", "texto": "Ataque de arma cuerpo a cuerpo: +5 al impacto, alcance 1,5 m. Impacto: 7 (1d8+3) de daño contundente; si el mímico está en forma de objeto, el objetivo queda adherido." },
+      { "nombre": "Mordisco", "texto": "Ataque de arma cuerpo a cuerpo: +5 al impacto, alcance 1,5 m, solo contra objetivos adheridos. Impacto: 15 (2d10+4) de daño perforante." }
+    ]
+  },
+  {
+    "nombre": "Ogro",
+    "tipo": "Gigante",
+    "tamano": "Grande",
+    "alineamiento": "Caótico maligno",
+    "ca": 11,
+    "pg": 59,
+    "pg_dado": "7d10+21",
+    "velocidad": "40 pies",
+    "str": 19, "dex": 8, "con": 16, "int": 5, "wis": 7, "cha": 7,
+    "sentidos": "Visión en la oscuridad 18 m",
+    "idiomas": "Común, Gigante",
+    "desafio": "2",
+    "px": 450,
+    "rasgos": [],
+    "acciones": [
+      { "nombre": "Garrote grande", "texto": "Ataque de arma cuerpo a cuerpo: +6 al impacto, alcance 1,5 m. Impacto: 13 (2d8+4) de daño contundente." },
+      { "nombre": "Jabalina", "texto": "Ataque de arma a distancia: +6 al impacto, alcance 18/36 m. Impacto: 11 (2d6+4) de daño perforante." }
+    ]
+  },
+  {
+    "nombre": "Trol",
+    "tipo": "Gigante",
+    "tamano": "Grande",
+    "alineamiento": "Caótico maligno",
+    "ca": 15,
+    "pg": 84,
+    "pg_dado": "8d10+40",
+    "velocidad": "30 pies",
+    "str": 18, "dex": 13, "con": 20, "int": 7, "wis": 9, "cha": 7,
+    "sentidos": "Visión en la oscuridad 18 m, percepción pasiva 13",
+    "idiomas": "Gigante",
+    "desafio": "5",
+    "px": 1800,
+    "rasgos": [
+      { "nombre": "Regeneración", "texto": "Recupera 10 pg al comienzo de su turno mientras tenga al menos 1 pg. Si recibe daño de ácido o fuego, esta rasgo no funciona hasta el final de su siguiente turno." },
+      { "nombre": "Ataque múltiple", "texto": "Realiza tres ataques: uno de mordisco y dos de garras." }
+    ],
+    "acciones": [
+      { "nombre": "Mordisco", "texto": "Ataque de arma cuerpo a cuerpo: +7 al impacto, alcance 1,5 m. Impacto: 7 (1d6+4) de daño perforante." },
+      { "nombre": "Garra", "texto": "Ataque de arma cuerpo a cuerpo: +7 al impacto, alcance 1,5 m. Impacto: 11 (2d6+4) de daño cortante." }
+    ]
+  }
+]

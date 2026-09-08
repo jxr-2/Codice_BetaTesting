@@ -87,6 +87,8 @@
 .ws-5e-panel{ display:none; padding:0 32px; margin-top:8px; }
 .ws-5e-panel.active{ display:block; }
 .hint{ font-size:var(--text-sm); color:var(--text-dim2); font-family:'Special Elite',monospace; }
+.ws-block-marked-secret{ border-color: rgba(193,96,74,0.4); }
+.ws-block-secret-hidden{ display:flex; align-items:center; justify-content:center; min-height:80px; color: rgba(35,25,20,0.4); font-style:italic; }
 
 /* ---- WS TOPBAR contrast fix ---- */
 .ws-topbar{
